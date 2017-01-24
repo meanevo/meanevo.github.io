@@ -1,0 +1,761 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="MeanEVO!" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Wordpress默认安装时候的权限设置，会导致安装插件、主题，上传图片时候权限不足。
+有些时候朋友询问我这个问题时候，只能笼统的答道把wordpress文件夹权限修改为和php解析器相同的组，实在无办法就也只能临时开777，终究不是长远之道。
+于是就有了今天这篇。
+首先，要弄明白，是什么玩意儿的权限不足，导致无法写入。
+一般来说，这个得看Server的配置方式，基本上php的话两种常用方式：1、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wordpress 在 WebServer 中的权限配置">
+<meta property="og:url" content="https://www.wanna.one/2016/08/08/permissions-in-wordpress-on-webserver/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="Wordpress默认安装时候的权限设置，会导致安装插件、主题，上传图片时候权限不足。
+有些时候朋友询问我这个问题时候，只能笼统的答道把wordpress文件夹权限修改为和php解析器相同的组，实在无办法就也只能临时开777，终究不是长远之道。
+于是就有了今天这篇。
+首先，要弄明白，是什么玩意儿的权限不足，导致无法写入。
+一般来说，这个得看Server的配置方式，基本上php的话两种常用方式：1、">
+<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160808-0.png">
+<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160808-1.png">
+<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ截图20161003141521.png">
+<meta property="og:updated_time" content="2017-01-24T14:03:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Wordpress 在 WebServer 中的权限配置">
+<meta name="twitter:description" content="Wordpress默认安装时候的权限设置，会导致安装插件、主题，上传图片时候权限不足。
+有些时候朋友询问我这个问题时候，只能笼统的答道把wordpress文件夹权限修改为和php解析器相同的组，实在无办法就也只能临时开777，终究不是长远之道。
+于是就有了今天这篇。
+首先，要弄明白，是什么玩意儿的权限不足，导致无法写入。
+一般来说，这个得看Server的配置方式，基本上php的话两种常用方式：1、">
+<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160808-0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.wanna.one/2016/08/08/permissions-in-wordpress-on-webserver/"/>
+
+
+
+
+
+  <title> Wordpress 在 WebServer 中的权限配置 | MeanEVO! </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">MeanEVO!</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <h1 class="site-subtitle" itemprop="description">Inappreciable World</h1>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://www.wanna.one/2016/08/08/permissions-in-wordpress-on-webserver/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Mean Machine">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="MeanEVO!">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                Wordpress 在 WebServer 中的权限配置
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-08T19:00:35+08:00">
+                2016-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HTTP/" itemprop="url" rel="index">
+                    <span itemprop="name">HTTP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/08/08/permissions-in-wordpress-on-webserver/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/08/08/permissions-in-wordpress-on-webserver/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Wordpress默认安装时候的权限设置，会导致安装插件、主题，上传图片时候权限不足。</p>
+<p>有些时候朋友询问我这个问题时候，只能笼统的答道把wordpress文件夹权限修改为和php解析器相同的组，实在无办法就也只能临时开777，终究不是长远之道。</p>
+<p>于是就有了今天这篇。</p>
+<p>首先，要弄明白，是什么玩意儿的权限不足，导致无法写入。</p>
+<p>一般来说，这个得看Server的配置方式，基本上php的话两种常用方式：<br>1、Apache + 动态链接扩展，windows和*nix一般用的都是这种方式。（注：win系的话，使用此种方式需要使用对应PHP的TS版本，即线程安全版才有插件）<br>2、Apache or Nginx + PHP-FPM，此种方式效率较高，且配合nginx配置简便，基本原理就是PHP服务监听一个端口，网页服务器将php请求转发至其端口。</p>
+<p>对于第一种方式，访问使用的是apache运行的用户（组），那么就需要将wordpress文件夹及子目录设置为同httpd.conf中配置。（默认apache）:</p>
+<p>[bash]vi /etc/httpd/conf/httpd.conf[/bash]</p>
+<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160808-0.png" alt="QQ20160808-0"></p>
+<p>对于第二种，则需要查看php-fpm的配置文件。（默认apache）:</p>
+<p>[bash]vi /etc/opt/remi/php70/php-fpm.d/www.conf[/bash]</p>
+<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160808-1.png" alt="QQ20160808-1"></p>
+<p>知道了用户，那么就可以修改目录的属性了：<br>1、修改所属用户、用户组，以修改为nginx为例，wp目录/usr/share/nginx/html/wordpress，-R递归修改</p>
+<p>[bash]chown -R nginx:nginx /usr/share/nginx/html/wordpress[/bash]</p>
+<p>2、修复文件夹权限，还原正常文件夹权限</p>
+<p>[bash]find . -type d -exec chmod 755 {} \;[/bash]</p>
+<p>3、修复文件权限，还原正常文件权限</p>
+<p>[bash]find . -type f -exec chmod 644 {} \;[/bash]</p>
+<p>当然修改apache or fpm中配置的用户亦可，保持统一就行。</p>
+<p>补充：<br>如若开启了 Selinux，则需要额外的设置：<br>1、修改网页内容目录的 Selinux 权限 (Nginx or Apache)：</p>
+<p>[bash]chcon -R -h -t httpd_sys_script_rw_t /usr/share/nginx/html/wordpress[/bash]</p>
+<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ截图20161003141521.png" alt="qq%e6%88%aa%e5%9b%be20161003141521"><br>2、PS：若需调试 Selinux，请参考 <a href="https://wiki.centos.org/zh/HowTos/SELinux" target="_blank" rel="external">https://wiki.centos.org/zh/HowTos/SELinux</a></p>
+<p>完工</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/04/centos7-modify-dns-and-centos-native-base-repo/" rel="next" title="CentOS7 修改DNS，CentOS-Base.repo原生源">
+                <i class="fa fa-chevron-left"></i> CentOS7 修改DNS，CentOS-Base.repo原生源
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/08/apache-php7-on-macos/" rel="prev" title="Apache + PHP7 on MacOS">
+                Apache + PHP7 on MacOS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="Mean Machine" />
+          <p class="site-author-name" itemprop="name">Mean Machine</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/meanevo" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://ss.proxy.meanevo.com" target="_blank" title="Shadow">
+                  
+                    <i class="fa fa-fw fa-paper-plane"></i>
+                  
+                  Shadow
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/meanevo" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com/2820052877" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2010 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'meanevo';
+      var disqus_identifier = '2016/08/08/permissions-in-wordpress-on-webserver/';
+
+      var disqus_title = "Wordpress 在 WebServer 中的权限配置";
+
+
+      function run_disqus_script(disqus_script) {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+
+      
+        var disqus_config = function () {
+            this.page.url = disqus_url;
+            this.page.identifier = disqus_identifier;
+            this.page.title = disqus_title;
+        };
+        run_disqus_script('embed.js');
+      
+
+    </script>
+  
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
