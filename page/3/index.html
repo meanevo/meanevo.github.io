@@ -68,13 +68,13 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Personal Blog, Tech, Cloud Tech, Computer Science, Deep Learning, Linux, Networking" />
 
 
 
 
 
-  <link rel="alternate" href="/atom.xml" title="MeanEVO!" type="application/atom+xml" />
+  <link rel="alternate" href="/rss.xml" title="MeanEVO's" type="application/atom+xml" />
 
 
 
@@ -87,11 +87,11 @@
 
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="MeanEVO!">
+<meta property="og:title" content="MeanEVO's">
 <meta property="og:url" content="https://www.wanna.one/page/3/index.html">
-<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:site_name" content="MeanEVO's">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MeanEVO!">
+<meta name="twitter:title" content="MeanEVO's">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> MeanEVO! </title>
+  <title> MeanEVO's </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -158,12 +158,12 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">MeanEVO!</span>
+      <span class="site-title">MeanEVO's</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
     
-      <h1 class="site-subtitle" itemprop="description">Inappreciable World</h1>
+      <p class="site-subtitle">Inappreciable World</p>
     
 </div>
 
@@ -198,16 +198,6 @@
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
             Categories
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            About
           </a>
         </li>
       
@@ -259,9 +249,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
+    <meta itemprop="name" content="MeanEVO's">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO's" src="/images/logo.png">
     </span>
   </span>
 
@@ -270,7 +260,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
             
             
               
@@ -280,7 +270,7 @@
                 </a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -361,32 +351,14 @@
 
       
         
-          
-            <p>前些日子买了企鹅的香港云服务，作为此博客的架设和SS之用，但是蛋疼的TX为了GFW设置了内地的DNS地址，导致Google等域名无法解析。</p>
-<p>于是修改先修改DNS：</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/995FF0F3-AD4A-4C86-80BC-AD63D243EE01.jpg" alt="995FF0F3-AD4A-4C86-80BC-AD63D243EE01"></p>
-<p>[bash]nmcli connection show System\ eth0[/bash]</p>
-<p>[bash]nmcli connection modify System\ eth0 ipv4.dns &quot;8.8.4.4 8.8.8.8&quot;[/bash]</p>
-<p>[bash]nmcli connection up System\ eth0[/bash]</p>
-<p>修改完，yum update一下，咦？</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/7455F9B7-A409-49D8-B17C-451780CD0659-1024x141.jpg" alt="7455F9B7-A409-49D8-B17C-451780CD0659"><br>大意就是无法解析mirrors.tencentyun.com，经查证是个内网源。 8-O</p>
-<p>那么，就要修改yum源为CentOS自带的，163也可以但是由于在HK并且个人特殊的JP，所以用原生的。</p>
-<p>这里提供个原生的CentOS-Base.repo吧，每次找也麻烦。</p>
-<p>[code]</p>
-<h1 id="CentOS-Base-repo"><a href="#CentOS-Base-repo" class="headerlink" title="CentOS-Base.repo"></a>CentOS-Base.repo</h1><p>#</p>
-<h1 id="The-mirror-system-uses-the-connecting-IP-address-of-the-client-and-the"><a href="#The-mirror-system-uses-the-connecting-IP-address-of-the-client-and-the" class="headerlink" title="The mirror system uses the connecting IP address of the client and the"></a>The mirror system uses the connecting IP address of the client and the</h1><h1 id="update-status-of-each-mirror-to-pick-mirrors-that-are-updated-to-and"><a href="#update-status-of-each-mirror-to-pick-mirrors-that-are-updated-to-and" class="headerlink" title="update status of each mirror to pick mirrors that are updated to and"></a>update status of each mirror to pick mirrors that are updated to and</h1><h1 id="geographically-close-to-the-client-You-should-use-this-for-CentOS-updates"><a href="#geographically-close-to-the-client-You-should-use-this-for-CentOS-updates" class="headerlink" title="geographically close to the client.  You should use this for CentOS updates"></a>geographically close to the client.  You should use this for CentOS updates</h1><h1 id="unless-you-are-manually-picking-other-mirrors"><a href="#unless-you-are-manually-picking-other-mirrors" class="headerlink" title="unless you are manually picking other mirrors."></a>unless you are manually picking other mirrors.</h1><p>#</p>
-<h1 id="If-the-mirrorlist-does-not-work-for-you-as-a-fall-back-you-can-try-the"><a href="#If-the-mirrorlist-does-not-work-for-you-as-a-fall-back-you-can-try-the" class="headerlink" title="If the mirrorlist= does not work for you, as a fall back you can try the"></a>If the mirrorlist= does not work for you, as a fall back you can try the</h1><h1 id="remarked-out-baseurl-line-instead"><a href="#remarked-out-baseurl-line-instead" class="headerlink" title="remarked out baseurl= line instead."></a>remarked out baseurl= line instead.</h1><p>#<br>#</p>
-<p>[base]<br>name=CentOS-$releasever - Base<br>mirrorlist=<a href="http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os&amp;infra=$infra" target="_blank" rel="external">http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os&amp;infra=$infra</a></p>
-<p>#baseurl=<a href="http://mirror.centos.org/centos/$releasever/os/$basearch/" target="_blank" rel="external">http://mirror.centos.org/centos/$releasever/os/$basearch/</a><br>gpgcheck=1<br>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</p>
-<p>#released updates<br>[updates]<br>name=CentOS-$releasever - Updates<br>mirrorlist=<a href="http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates&amp;infra=$infra" target="_blank" rel="external">http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates&amp;infra=$infra</a></p>
-<p>#baseurl=<a href="http://mirror.centos.org/centos/$releasever/updates/$basearch/" target="_blank" rel="external">http://mirror.centos.org/centos/$releasever/updates/$basearch/</a><br>gpgcheck=1<br>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</p>
-<p>#additional packages that may be useful<br>[extras]<br>name=CentOS-$releasever - Extras<br>mirrorlist=<a href="http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras&amp;infra=$infra" target="_blank" rel="external">http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras&amp;infra=$infra</a></p>
-<p>#baseurl=<a href="http://mirror.centos.org/centos/$releasever/extras/$basearch/" target="_blank" rel="external">http://mirror.centos.org/centos/$releasever/extras/$basearch/</a><br>gpgcheck=1<br>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</p>
-<p>#additional packages that extend functionality of existing packages<br>[centosplus]<br>name=CentOS-$releasever - Plus<br>mirrorlist=<a href="http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=centosplus&amp;infra=$infra" target="_blank" rel="external">http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=centosplus&amp;infra=$infra</a></p>
-<p>#baseurl=<a href="http://mirror.centos.org/centos/$releasever/centosplus/$basearch/" target="_blank" rel="external">http://mirror.centos.org/centos/$releasever/centosplus/$basearch/</a><br>gpgcheck=1<br>enabled=0<br>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7<br>[/code]</p>
-<p>编辑/etc/yum.repos.d/CentOS-Base.repo，写入，完工。</p>
-
-          
+          <p>前些日子买了企鹅的香港云服务，作为此博客的架设和SS之用，但是蛋疼的TX为了GFW设置了内地的DNS地址，导致Google等域名无法解析。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/04/centos7-modify-dns-and-centos-native-base-repo/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -432,9 +404,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
+    <meta itemprop="name" content="MeanEVO's">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO's" src="/images/logo.png">
     </span>
   </span>
 
@@ -443,7 +415,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
             
             
               
@@ -453,7 +425,7 @@
                 </a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -534,20 +506,15 @@
 
       
         
-          
-            <p>整个六月，闲来无事逛逛张大妈，突然发现了这么一记剁手贴：<a href="http://www.smzdm.com/p/6201344/" target="_blank" rel="external">Prime会员专享： GIGABYTE 技嘉 GA-X99P-SLI 主板 $182.74（约1300）</a></p>
-<p>想来亚马逊间隔了几年又给了一次 Prime 的体验机会，于是就剁剁剁，但是就此产生的问题真是不少。首先是价格，虽然 x99 便宜了，但是其对应的 CPU 一直居高不下，毕竟5、6代还算是比较新出的，还有搭配的 DDR4 内存高频的价格简直不敢恭维。还有就是我根本没有考虑到 x 系列是不带核显的，这个在黑苹果时候再说。<br>其次是购买时候，此主板的 BIOS 还未更新支持 6 代的 CPU，由此到手后真是折腾了一番，以下主要记录此次折腾。</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/fx2.png" alt="fx2"><img src="https://www.meanevo.com/wp-content/uploads/2016/08/IMG_3450-1024x769.jpg" alt="IMG_3450"></p>
-<p>首先，收到主板和 U 之后，由于内存还在转运坑，于是京东淘了条先试机。收到内存，兴奋的装完机后，<strong>点亮。。。怎么重启了。。。</strong></p>
-<h4 id="还没见到自检画面即-reboot，这个问题在我看来有几种可能："><a href="#还没见到自检画面即-reboot，这个问题在我看来有几种可能：" class="headerlink" title="还没见到自检画面即 reboot，这个问题在我看来有几种可能："></a>还没见到自检画面即 reboot，这个问题在我看来有几种可能：</h4><p>1、CPU 插座接触不良（重新上）<br>2、电源问题（短接，负载）<br>3、主板有缺陷，运输途中损坏（这个比较悲催）<br>一个个试过去，详细过程就不记了，简单的操作网上都有。结果问题依旧存在，由于不插内存时触发重启间隔缩短，由此确定很有可能问题出在 CPU 上，由于 CPU 坏的案例很少（我是没坏过），那就暂时把问题缩小到 CPU-&gt;MotherBoard 之间。<br>逛了下技嘉的官网，由于这款未在国内上市，在其美帝官网上找到了支持，看了下，嗯。。6月中旬更新的 BIOS 才支持 6 系 CPU，这下好办了，问题就暂时转移到 BIOS 上（因为这种板子缺少 CPU微码 开不起的可能性很大）。<br>继续看 其兄弟 GA-X99-UD3P 支持 QFlash Plus，也就是可以通过优盘在无 CPU 的情况下升级 BIOS，在看手上这块的，What？只能QFlash，<span style="color: #333399;">没有 Plus 支持</span>也就是没有刷 BIOS 的 USB 口！！<img src="https://www.meanevo.com/wp-content/uploads/2016/08/IMG_3452-1024x295.jpg" alt="IMG_3452"><img src="https://www.meanevo.com/wp-content/uploads/2016/08/IMG_3451-1024x138.jpg" alt="IMG_3451"><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160819-1-1024x480.png" alt="QQ20160819-1"></p>
-<h4 id="这下比较棘手了，问题解决方案只有两种"><a href="#这下比较棘手了，问题解决方案只有两种" class="headerlink" title="这下比较棘手了，问题解决方案只有两种"></a>这下比较棘手了，问题解决方案只有两种</h4><p>1、带去本地电脑城，或者借一颗 5 系的 CPU 先点亮主板，升级 BIOS 后再换回<br>2、想到之前刷 Thinkpad x230 使用的编程器，也许可以用来直接刷呢？</p>
-<h4 id="由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马"><a href="#由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马" class="headerlink" title="由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马"></a>由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马</h4><p>方案2的进行需要以下步骤：</p>
-<p>1、确认 主板 BIOS 芯片型号：<span style="color: #333399;">MX25L12873F</span><br>2、确认 编程器支持的 芯片型号：未找到对应<br>3、确认封装，Google BIOS 芯片，找到对应定义图：<span style="color: #333399;">SOP8 封装</span></p>
-<h4 id="以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧"><a href="#以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧" class="headerlink" title="以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧"></a>以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧</h4><p>1、连接 编程器与主板 BIOS，先不接供电脚。这里直接刷的 主BIOS<br>2、选一个针脚定义相同的 大概可以替换的芯片型号，这里我选的：<span style="color: #333399;">MX25L12845E</span><br>3、开刷，提示接触不良，那么就给主板通电（就是一直重启的状态），目的是<span style="color: #333399;">让其 BIOS 芯片有供电</span><br>4、再次检测，接触不良的针脚减少了，确认触电接触良好后，也只能先不管，让他<span style="color: #333399;">读两遍芯片</span>，校验正确后，说明连接是稳定的<br>5、观察读出固件的头部，对比官方的 BIOS，相同，由此推断是可以刷入的（<span style="color: #333399;">这里注意了，主板商提供的 升级BIOS，与编程器刷的 BIOS 是不同的，一般来说 升级BIOS 是不会替换原有 MAC SN 之类信息的，用编程器强制刷入，会造成清空，MAC 变为 88:88:88:88:87:88 之类</span>）<br>6、<span style="color: #333399;">备份好原厂 BIOS</span>，刷入 升级BIOS，然后。。<br><img src="https://www.meanevo.com/wp-content/uploads/2016/08/IMG_3454-1024x738.jpg" alt="IMG_3454"><br>7、Boot！出乎意料的点亮了！<br>8、由于 强刷了 BIOS，步骤5 中提到的问题出现，接着解决这个问题<br>8.1、先用技嘉的 @BIOS 尝试刷回 步骤6 中备份的 BIOS，提示无法降回老版本<br>8.2、尝试使用 Flashrom 强刷，由于是强刷非官方的升级，预测原来的 MAC 等信息应该会一同刷回<br>8.3、强刷完成，<span style="color: #333399;">千万不要重启</span>，否则又回到原点了，紧接着再次使用 步骤8.1 中的 @BIOS，升级 F22 BIOS，此时由于是官方升级 应该会保留信息<br>8.4、完成重启，进 BIOS 查看 MAC 发现已恢复出厂！</p>
-<p>至此，CPU 兼容问题解决，谨以此记录。</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/IMG_3455-769x1024.jpg" alt="IMG_3455"><img src="https://www.meanevo.com/wp-content/uploads/2016/07/IMG_3461-e1471591723792-768x1024.jpg" alt=""></p>
-
-          
+          <p>整个六月，闲来无事逛逛张大妈，突然发现了这么一记剁手贴：<a href="http://www.smzdm.com/p/6201344/">Prime会员专享： GIGABYTE 技嘉 GA-X99P-SLI 主板 $182.74（约1300）</a></p>
+<p>想来亚马逊间隔了几年又给了一次 Prime 的体验机会，于是就剁剁剁，但是就此产生的问题真是不少。首先是价格，虽然 x99 便宜了，但是其对应的 CPU 一直居高不下，毕竟5、6代还算是比较新出的，还有搭配的 DDR4 内存高频的价格简直不敢恭维。还有就是我根本没有考虑到 x 系列是不带核显的，这个在黑苹果时候再说。<br>其次是购买时候，此主板的 BIOS 还未更新支持 6 代的 CPU，由此到手后真是折腾了一番，以下主要记录此次折腾。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/07/28/x99-bios-update-slove-cpu-compatibility/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -593,9 +560,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
+    <meta itemprop="name" content="MeanEVO's">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO's" src="/images/logo.png">
     </span>
   </span>
 
@@ -604,7 +571,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
             
             
               
@@ -614,7 +581,7 @@
                 </a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -695,49 +662,15 @@
 
       
         
-          
-            <p>不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。<br>好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。</p>
-<p>众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想法，自己搭建一个吧。</p>
-<p>ngrok是这类工具中比较出名的一个了，可惜的是官方已经放弃了开源的1.x版本，2.x版本是官方提供做商业用。关于2.x版本的使用，可以参照这篇文章：<a href="http://www.jianshu.com/p/a0a34f770837（PS：简书不错，不像很多网站到处粘贴格式都看不舒服）。" target="_blank" rel="external">http://www.jianshu.com/p/a0a34f770837（PS：简书不错，不像很多网站到处粘贴格式都看不舒服）。</a></p>
-<p>1、下载ngrok 1.x源码：</p>
-<p>[bash]git clone <a href="https://github.com/inconshreveable/ngrok.git[/bash" target="_blank" rel="external">https://github.com/inconshreveable/ngrok.git[/bash</a>]</p>
-<p>2、生成证书，比如要使用xxx.tunnel.meanevo.com，则此处域名填写tunnel.meanevo.com</p>
-<p>[bash]openssl genrsa -out rootCA.key 2048<br>openssl req -x509 -new -nodes -key rootCA.key -subj &quot;/CN=填写域名&quot; -days 5000 -out rootCA.pem<br>openssl genrsa -out server.key 2048<br>openssl req -new -key server.key -subj &quot;/CN=填写域名&quot; -out server.csr<br>openssl x509 -req -in server.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out server.crt -days 3650[/bash]</p>
-<p>3、替换掉原来的cert</p>
-<p>[bash]cp rootCA.pem assets/client/tls/ngrokroot.crt<br>cp server.crt assets/server/tls/snakeoil.crt<br>cp server.key assets/server/tls/snakeoil.key[/bash]</p>
-<p>4、配置Go语言环境，编译参数：<br>4.1、安装Go：</p>
-<p>[bash]yum install go[/bash]</p>
-<p><del datetime="2016-08-08T10:21:23+00:00"><br>4.2、这里可以两种方式：<br>4.2.1、软连接<br>ln -s /usr/local/go/bin/* /usr/bin/<br>4.2.2、<br>export GOROOT=/usr/local/go<br>export PATH=$PATH:$GOROOT/bin<br>4.3、<br>export GOPATH=/usr/local/ngrok/<br></del></p>
-<p>4.4、设置编译参数：<br>服务端32位：</p>
-<p>[bash]GOOS=linux GOARCH=386[/bash]</p>
-<p>服务端64位：</p>
-<p>[bash]GOOS=linux GOARCH=amd64[/bash]</p>
-<p>MacOS：</p>
-<p>[bash]GOOS=darwin GOARCH=amd64[/bash]</p>
-<p>Windows：</p>
-<p>[bash]GOOS=windows GOARCH=amd64[/bash]</p>
-<p>5、编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因：</p>
-<p>[bash]make release-client<br>make release-server<br>make release-all[/bash]</p>
-<p>不同平台：</p>
-<p>[bash]GOOS=darwin GOARCH=amd64 make release-client<br>GOOS=linux GOARCH=amd64 make release-server<br>[/bash]</p>
-<p>6、运行：<br>6.1、服务端：</p>
-<p>[bash]./bin/ngrokd -domain=&quot;tunnel.meanevo.com&quot; -httpAddr=&quot;:8080&quot; -httpsAddr=&quot;:8081&quot; -tunnelAddr=&quot;:4443&quot;[/bash]</p>
-<p>第一个是服务器端的http映射地址，第二个是https，第三个是控制端口。若需直接访问请配通firewall。<br>6.2、客户端：<br>6.2.1、创建一个ngrok.cfg，内容：</p>
-<p>[code]server_addr: &quot;tunnel.meanevo.com:4443&quot;<br>trust_host_root_certs: false[/code]</p>
-<p>6.2.2、启动：</p>
-<p>[bash]ngrok -subdomain 相对二级域名地址 -config=ngrok.cfg 80[/bash]</p>
-<p>这里的相对二级域名就是xxx.tunnel.meanevo.com的xxx</p>
-<p>7、其他及优化：<br>7.1、域名DNS：将*.tunnel.meaneovo.com改A记录至服务器IP<br>7.2、个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok<br>7.3、ngrok说白了是个被抛弃的项目，官方也说了，存在很大的性能以及内存泄漏问题，并且不会被（官方）修复，可以试试寻找github上修改好的的开源项目<br>7.4、可用于路由ngrok连接（需修改源码，附）<br>7.5、分享一个启动脚本，可添加此脚本至rc.local实现开机启动</p>
-<p>用于Koolshare固件连接，修改源码（<a href="https://github.com/koolshare/ngrok-1.7/blob/master/src/ngrok/server/tls.go#L41" target="_blank" rel="external">https://github.com/koolshare/ngrok-1.7/blob/master/src/ngrok/server/tls.go#L41</a>）：<br>1、修改src/ngrok/server/tls.go，第41行添加:</p>
-<p>[bash]vi src/ngrok/server/tls.go[/bash]</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-16.png" alt="QQ20160808-16"><br>2、重新编译。<br>3、启动：<br><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-18.png" alt=""><br><img src="https://www.meanevo.com/wp-content/uploads/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg" alt="38839900-DD59-45C4-AEA0-0471FB6BFE0B"></p>
-<p>启动脚本（注意修改path、证书位置）：</p>
-<p>[bash]domain=&quot;tunnel.meanevo.com&quot;<br>http_port=8080<br>https_port=8081<br>remote_port=4443<br>path=/usr/share/ngrok<br>cert_path=$path/assets/server/tls</p>
-<p>NPID=<code>ps -ef|grep ngrokd|grep -v grep|awk &#39;{print $2}&#39;</code><br>if [ -z &quot;$NPID&quot; ]; then<br>echo &quot;Not running, starting…&quot;<br>else<br>echo &quot;Already running, restarting…&quot;<br>kill $NPID<br>fi</p>
-<p>nohup $path/bin/ngrokd -domain=&quot;$domain&quot; -httpAddr=&quot;:$http_port&quot; -httpsAddr=&quot;:$https_port&quot; -tlsCrt=$cert_path/snakeoil.crt -tlsKey=$cert_path/snakeoil.key -tunnelAddr=&quot;:$remote_port&quot; &gt; /var/log/ngrok.log 2&gt;&amp;1 &amp;<br>sleep 1<br>head /var/log/ngrok.log<br>[/bash]</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-12-1024x224.png" alt="QQ20160808-12"></p>
-
-          
+          <p>不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。<br>好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。</p>
+<p>众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想法，自己搭建一个吧。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/07/02/ngrok-tunnel/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -783,9 +716,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
+    <meta itemprop="name" content="MeanEVO's">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO's" src="/images/logo.png">
     </span>
   </span>
 
@@ -794,17 +727,17 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
             
             
               
                 
                 <a class="post-title-link" href="/2015/08/21/shadowsocks-on-centos7/" itemprop="url">
-                  关于CentOS爬墙那点事，CentOS7 VPN－ShadowSocks
+                  关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks
                 </a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -885,59 +818,15 @@
 
       
         
-          
-            <p>接上文。接着来实现第二种方式：ShadowSocks。</p>
-<p>今天听说软件作者被请去喝茶了，不过这种思路估计不容易被封锁吧。</p>
-<p>项目首页（<a href="https://github.com/shadowsocks/shadowsocks" target="_blank" rel="external">https://github.com/shadowsocks/shadowsocks</a>）</p>
-<p>如今SS安装使用已经很简单，几句命令而已，轻量级的优点吸引了不少人。</p>
-<p>1、安装：</p>
-<p>[bash]yum install python-setuptools &amp;&amp; easy_install pip[/bash]</p>
-<p>[bash]pip install shadowsocks[/bash]</p>
-<p>2、启动：</p>
-<p>[bash]sudo ssserver -p 443（端口） -k test!ss（密码） -m aes-256-cfb（加密方式） –user nobody（运行用户）-d start[/bash]</p>
-<p>3、添加防火墙规则：</p>
-<p>[bash]vi /etc/sysconfig/iptables[/bash]</p>
-<p>[bash]-A INPUT -p tcp -m state –state NEW -m tcp –dport 443 -j ACCEPT[/bash]</p>
-<p>4、测试，添加至启动项：</p>
-<p>[bash]echo &quot;ssserver -p 443（端口） -k test!ss（密码） -m aes-256-cfb（加密方式） –user nobody（运行用户）-d start&quot; &gt;&gt; /etc/rc.local[/bash]</p>
-<p>[bash]chmod +x /etc/rc.d/rc.local[/bash]</p>
-<p>5、各个平台也几乎都有了SS客户端，输入服务器地址，密码， ENJOY!</p>
-<blockquote>
-<p><strong>其他几点以及一些实用的优化：</strong></p>
-<p>1、关于SS的管理平台</p>
-<ul>
-<li>用的比较多的就是ss-panel以及whmcs，个人使用没必要安装。</li>
-</ul>
-<p>2、放一个查看当前连接的脚本，因为是按需连接，所以只能看到当前连接在用的用户：</p>
-<p>[bash]netstat -tun|grep 端口号|sort|awk ‘{print $5}’|cut -d : -f 1|uniq[/bash]</p>
-<p>放到PHP里就是:</p>
-<p>[php]&lt;?php exec(&quot;netstat -tun|grep 端口号|sort|awk ‘{print $5}’|cut -d : -f 1|uniq&quot;, $ips); var_dump($ips); ?&gt;[/php]</p>
-<p>3、对于linux3.0以上内核，可以开启fast-open，启动命令中添加:</p>
-<p>[bash]sudo ssserver -p 443（端口） -k test!ss（密码） -m aes-256-cfb（加密方式）–fast-open –user nobody（运行用户）-d start[/bash]</p>
-<p>当然客户端也要开启，添加到客户端配置json文件：</p>
-<p>[bash]&quot;fast_open&quot;: true,[/bash]</p>
-<p>4、关于TCP优化，开启Hybla算法，聊胜于无，按照网上配置吧，<span style="color: #ff0000;"><strong>实测Vultr还是不优化快一点，根据使用环境按需使用</strong></span>：</p>
-<p>[bash]vi /etc/sysctl.conf[/bash]</p>
-<p>[bash]net.ipv4.tcp_syncookies = 1</p>
-<p>net.ipv4.tcp_tw_reuse = 1</p>
-<p>net.ipv4.tcp_tw_recycle = 0</p>
-<p>net.ipv4.tcp_fin_timeout = 30</p>
-<p>net.ipv4.tcp_keepalive_time = 1200</p>
-<p>net.ipv4.tcp_max_syn_backlog = 8192</p>
-<p>net.ipv4.tcp_max_tw_buckets = 5000</p>
-<p>net.ipv4.tcp_fastopen = 3</p>
-<p>net.ipv4.tcp_rmem = 4096 87380 67108864</p>
-<p>net.ipv4.tcp_wmem = 4096 65536 67108864</p>
-<p>net.ipv4.tcp_mtu_probing = 1</p>
-<p>net.ipv4.tcp_congestion_control = hybla</p>
-<p>[/bash]</p>
-<p>启用Hybla模块:</p>
-<p>[bash]/sbin/modprobe tcp_hybla[/bash]</p>
-<p>应用更改:</p>
-<p>[bash]sysctl -p[/bash]</p>
-</blockquote>
-
-          
+          <p>接上文。接着来实现第二种方式：Shadowsocks。</p>
+<p>今天听说软件作者被请去喝茶了，不过这种思路估计不容易被封锁吧。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/08/21/shadowsocks-on-centos7/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -983,9 +872,9 @@
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
+    <meta itemprop="name" content="MeanEVO's">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO's" src="/images/logo.png">
     </span>
   </span>
 
@@ -994,7 +883,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">
+          <h1 class="post-title" itemprop="name headline">
             
             
               
@@ -1004,7 +893,7 @@
                 </a>
               
             
-          </h2>
+          </h1>
         
 
         <div class="post-meta">
@@ -1085,65 +974,15 @@
 
       
         
-          
-            <p>虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。</p>
-<p>重新找了家Vultr搭，速度还不错，分享下。</p>
-<p>首先，要使用上真正的Internet，现在比较流行的就是两种方式了</p>
-<ul>
-<li>自己搭建传统VPN，即通过PPTP、L2TP、SSTP、OpenVPN甚至使用IPSec来实现流量转发；</li>
-<li>使用Shadowsocks等Socks5代理。<br>先说传统VPN吧，这种方式用得最多，设备支持也比较好，撇开PPTP这种现在看起来加密不太好的，L2TP、SSTP还是比较坚挺，</li>
-</ul>
-<p>为了方便，就不再细说搭建PPTP服务器了，网上资料也很多，搭建也不难。</p>
-<p>本文第一部分就先介绍下SoftEther这个东西（以下简称SE）。在没有这个软件的时候，L2TP搭建还是比较麻烦的事情，更不用提OVPN了。</p>
-<p>官方网址：<a href="http://www.softether.org" target="_blank" rel="external">http://www.softether.org</a>（可能需要爬墙）</p>
-<p>SE是由日本筑波大学（University of Tsukuba）开发的免费软件，集成了L2TP、L2TP over IPSec、SSTP、OVPN服务端，并且管理工具的存在（SoftEther VPN Server Manager），使得设置变的非常简单，添加帐号、限速、NAT设置都有图形化界面。</p>
-<p>下面说下安装。</p>
-<p>1、先进入官方的下载页面（<a href="http://www.softether-download.com/en.aspx" target="_blank" rel="external">http://www.softether-download.com/en.aspx</a>，可能需要爬墙），软件选择VPN Server，目标平台，CPU类型，然后复制最新版本的下载连接。如图所示：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-21.58.51.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png" alt="Screen Shot 2015-08-21 at 21.58.51"></a></p>
-<p>2、切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧：</p>
-<p>[bash]mkdir -p /usr/SoftEther &amp;amp;amp;&amp;amp;amp; cd /usr/SoftEther[/bash]</p>
-<p>3、直接从官方下载tar.gz包并解压：</p>
-<p>[bash]wget&amp;amp;nbsp;<a href="http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz[/bash" target="_blank" rel="external">http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz[/bash</a>]</p>
-<p>[bash]tar -zxvf&amp;amp;nbsp;softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz[/bash]</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.31.39.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png" alt="Screen Shot 2015-08-21 at 22.31.39"></a></p>
-<p>4、ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）：</p>
-<p>[bash]yum install gcc[/bash]</p>
-<p>[bash]make[/bash]</p>
-<p>失败请确认Root权限！</p>
-<p>5、在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动：</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png" alt="Screen Shot 2015-08-21 at 22.33.08"></p>
-<p>6、启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等：</p>
-<p>[bash]vi /etc/sysconfig/iptables[/bash]</p>
-<p>添加：</p>
-<p>[code]<br>-A INPUT -p tcp -m state –state NEW -m tcp –dport 443 -j ACCEPT<br>-A INPUT -p udp -m state –state NEW -m udp –dport 500 -j ACCEPT<br>-A INPUT -p tcp -m state –state NEW -m tcp –dport 992 -j ACCEPT<br>-A INPUT -p tcp -m state –state NEW -m tcp –dport 1194 -j ACCEPT<br>-A INPUT -p udp -m state –state NEW -m udp –dport 4500 -j ACCEPT<br>-A INPUT -p tcp -m state –state NEW -m tcp –dport 5555 -j ACCEPT<br>[/code]</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png" alt="Screen Shot 2015-08-21 at 22.37.05"></a></p>
-<p>7、OK，在防火墙重新启动之后，我们开启vpnserver服务：</p>
-<p>[bash]systemctl restart iptables.service[/bash]</p>
-<p>[bash]/usr/SoftEther/vpnserver/vpnserver start[/bash]</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png" alt="Screen Shot 2015-08-21 at 22.38.43"></a></p>
-<p>8、下载、使用管理工具<del datetime="2016-08-10T16:17:38+00:00">（现在只有Win端，安装选择带有管理工具的）</del>（2016.08更新，MacOS也有了）：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png" alt="Screen Shot 2015-08-21 at 21.54.22"></a></p>
-<p>点击建立新设置 New Setting：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png" alt="Screen Shot 2015-08-21 at 22.15.11"></a><br><a href="http://www.meanevo.com/wp-content/uploads/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg" alt="FE203E14-8098-40CA-B190-3B1B266AB290"></a></p>
-<p>第一次连接会让你设置密码：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png" alt="Screen Shot 2015-08-21 at 22.39.38"></a></p>
-<p>9、初始设置，选择最后一项跳过后点确定设置L2TP：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg" alt="CAD85159-0FBD-46BC-BE55-210F53869A2E"></a><a href="http://www.meanevo.com/wp-content/uploads/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg" alt="BB4F5C41-E714-4211-B441-AB28365A968D"></a></p>
-<p>10、添加用户，设置SecureNAT或者直接桥接网卡：</p>
-<ol>
-<li>一般使用SecureNAT，也就是接入后，分配设置地址池地址，然后NAT出到公网；</li>
-<li>桥接的话，用途比较特殊，一般用于内网机器，并且需要局域网开启混杂模式，每次接入都由桥接网卡上游DHCP分配地址。<br><a href="http://www.meanevo.com/wp-content/uploads/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE.jpg" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE-1024x712.jpg" alt="A76580D2-8CD5-4967-B75C-E8AB7AB678CE"></a></li>
-</ol>
-<p>打开NAT，默认的是192.168.30.0/24网段，可以自行更改：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg" alt="FE5BB991-1FA8-4FBC-9D66-73C99A244EFC"></a></p>
-<p>11、测试连接。</p>
-<p>12、测试无误后，设置开机启动：</p>
-<p><a href="http://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png" target="_blank" rel="external"><img src="https://www.meanevo.com/wp-content/uploads/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png" alt="Screen Shot 2015-08-21 at 22.51.45"></a></p>
-<p>[bash]echo &quot;/usr/SoftEther/vpnserver/vpnserver start&quot; &gt;&gt; /etc/rc.d/rc.local[/bash]</p>
-<p>[bash]chmod +x /etc/rc.d/rc.local[/bash]</p>
-<p>至此SoftEther搭建完成。</p>
-
-          
+          <p>虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。</p>
+<p>重新找了家Vultr搭，速度还不错，分享下。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/08/21/softether-on-centos7/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1227,7 +1066,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -1239,7 +1078,7 @@
 
         
           <div class="feed-link motion-element">
-            <a href="/atom.xml" rel="alternate">
+            <a href="/rss.xml" rel="alternate">
               <i class="fa fa-rss"></i>
               RSS
             </a>
