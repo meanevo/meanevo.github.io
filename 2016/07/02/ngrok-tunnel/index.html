@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -94,16 +96,16 @@
 <meta property="og:site_name" content="MeanEVO!">
 <meta property="og:description" content="不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。
 众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-16.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-18.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-12-1024x224.png">
-<meta property="og:updated_time" content="2017-01-24T18:51:28.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/07/QQ20160808-16.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/07/QQ20160808-18.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/07/QQ20160808-12-1024x224.png">
+<meta property="og:updated_time" content="2017-01-25T11:25:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="搭建私人 Ngrok 转发通道">
 <meta name="twitter:description" content="不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。
 众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-16.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/07/QQ20160808-16.png">
 
 
 
@@ -255,13 +257,13 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -397,10 +399,10 @@
 <li>修改src/ngrok/server/tls.go，第41行添加:<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi src/ngrok/server/tls.go</div></pre></td></tr></table></figure>
 </li>
 </ol>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-16.png" alt="QQ20160808-16"></p>
+<p><img src="/images/posts/2016/07/QQ20160808-16.png" alt="QQ20160808-16"></p>
 <ol>
 <li>重新编译。</li>
-<li>启动：<br><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-18.png" alt=""><br><img src="https://www.meanevo.com/wp-content/uploads/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg" alt="38839900-DD59-45C4-AEA0-0471FB6BFE0B"></li>
+<li>启动：<br><img src="/images/posts/2016/07/QQ20160808-18.png" alt=""><br><img src="/images/posts/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg" alt="38839900-DD59-45C4-AEA0-0471FB6BFE0B"></li>
 </ol>
 </blockquote>
 </blockquote>
@@ -408,7 +410,7 @@
 <p>启动脚本（注意修改path、证书位置）：</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">domain=<span class="string">"tunnel.meanevo.com"</span></div><div class="line">http_port=8080</div><div class="line">https_port=8081</div><div class="line">remote_port=4443</div><div class="line">path=/usr/share/ngrok</div><div class="line">cert_path=<span class="variable">$path</span>/assets/server/tls</div><div class="line"></div><div class="line">NPID=`ps -ef|grep ngrokd|grep -v grep|awk <span class="string">'&#123;print $2&#125;'</span>`</div><div class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$NPID</span>"</span> ]; <span class="keyword">then</span></div><div class="line"><span class="built_in">echo</span> <span class="string">"Not running, starting..."</span></div><div class="line"><span class="keyword">else</span></div><div class="line"><span class="built_in">echo</span> <span class="string">"Already running, restarting..."</span></div><div class="line"><span class="built_in">kill</span> <span class="variable">$NPID</span></div><div class="line"><span class="keyword">fi</span></div><div class="line"></div><div class="line">nohup <span class="variable">$path</span>/bin/ngrokd -domain=<span class="string">"<span class="variable">$domain</span>"</span> -httpAddr=<span class="string">":<span class="variable">$http_port</span>"</span> -httpsAddr=<span class="string">":<span class="variable">$https_port</span>"</span> -tlsCrt=<span class="variable">$cert_path</span>/snakeoil.crt -tlsKey=<span class="variable">$cert_path</span>/snakeoil.key -tunnelAddr=<span class="string">":<span class="variable">$remote_port</span>"</span> &gt; /var/<span class="built_in">log</span>/ngrok.log 2&gt;&amp;1 &amp;</div><div class="line">sleep 1</div><div class="line">head /var/<span class="built_in">log</span>/ngrok.log</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/07/QQ20160808-12-1024x224.png" alt="QQ20160808-12"></p>
+<p><img src="/images/posts/2016/07/QQ20160808-12-1024x224.png" alt="QQ20160808-12"></p>
 
       
     </div>
@@ -514,7 +516,7 @@
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -790,6 +792,21 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -92,18 +94,18 @@
 <meta property="og:url" content="https://www.wanna.one/2016/12/25/using-point-dev-domain-for-development/index.html">
 <meta property="og:site_name" content="MeanEVO!">
 <meta property="og:description" content="前些日子为了毕设，在 Laracasts 上浏览教程时发现，他们用做开发的域名，就是简单的 .dev 结尾。虽然平时使用 localhost 也无大碍，可是 dev 看着舒服啊，遂找了个时间研究。">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-3.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-1.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-4.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-3.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-0-1-981x1024.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-5-1024x413.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-0-1024x340.png">
-<meta property="og:updated_time" content="2017-01-24T18:48:24.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161224-3.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161225-1.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161224-4.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161225-3.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161225-0-1-981x1024.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161224-5-1024x413.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161225-0-1024x340.png">
+<meta property="og:updated_time" content="2017-01-25T11:27:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用无需后期配置的 .dev 域名进行开发">
 <meta name="twitter:description" content="前些日子为了毕设，在 Laracasts 上浏览教程时发现，他们用做开发的域名，就是简单的 .dev 结尾。虽然平时使用 localhost 也无大碍，可是 dev 看着舒服啊，遂找了个时间研究。">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-3.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/12/QQ20161224-3.png">
 
 
 
@@ -255,13 +257,13 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -376,29 +378,29 @@
 </li>
 </ol>
 <h5 id="安装-Dnsmasq"><a href="#安装-Dnsmasq" class="headerlink" title="安装 Dnsmasq"></a>安装 Dnsmasq</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install dnsmasq</div></pre></td></tr></table></figure>
-<h5 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h5><p>这里我还安装了 unbound 作为 Dnsmasq 解析的上层服务，顺便把 tcp 查询 OpenDNS也搭在本地了，具体还可参考<a href="https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/" target="_blank" rel="external">使用 CentOS 实现小型网络路由 – 跨过长城</a><br>跳过前面那个<del datetime="2016-12-24T17:04:52+00:00">多余的动作（忽略自动获取的上游 DNS，改用 unbound</del>，基本上就是使用默认即可，主要是添加以下一行，用于匹配域名</p>
+<h5 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h5><p>这里我还安装了 unbound 作为 Dnsmasq 解析的上层服务，顺便把 tcp 查询 OpenDNS也搭在本地了，具体还可参考<a href="/2016/11/27/centos-based-router-fxxk-gfw/">使用 CentOS 实现小型网络路由 – 跨过长城</a><br>跳过前面那个<del datetime="2016-12-24T17:04:52+00:00">多余的动作（忽略自动获取的上游 DNS，改用 unbound</del>，基本上就是使用默认即可，主要是添加以下一行，用于匹配域名</p>
 <blockquote>
 <p>PS：截图中我配置了从 dnsmasq.d 中加载所有文件（conf 中修改最后一行注释添加 conf-dir=/usr/local/etc/dnsmasq.d/,*.conf ），实际直接添加此行至 dnsmasq.conf 亦可）</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">address=/.dev/127.0.0.1</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-3.png" alt=""></p>
+<p><img src="/images/posts/2016/12/QQ20161224-3.png" alt=""></p>
 <h5 id="启动-Dnsmasq"><a href="#启动-Dnsmasq" class="headerlink" title="启动 Dnsmasq"></a>启动 Dnsmasq</h5><blockquote>
 <p>注意监听端口小于 1024 需要 sudo 权限，这点在 brew 安装时已经说明</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo brew services start dnsmasq</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-1.png" alt=""></p>
+<p><img src="/images/posts/2016/12/QQ20161225-1.png" alt=""></p>
 <h5 id="测试-Dnsmasq"><a href="#测试-Dnsmasq" class="headerlink" title="测试 Dnsmasq"></a>测试 Dnsmasq</h5><blockquote>
 <p>随机.dev 测试，-p参数跟端口</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dig test.dev @127.0.0.1 -p53</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-4.png" alt=""></p>
-<h5 id="修改系统-DNS-至本地"><a href="#修改系统-DNS-至本地" class="headerlink" title="修改系统 DNS 至本地"></a>修改系统 DNS 至本地</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-3.png" alt=""></p>
+<p><img src="/images/posts/2016/12/QQ20161224-4.png" alt=""></p>
+<h5 id="修改系统-DNS-至本地"><a href="#修改系统-DNS-至本地" class="headerlink" title="修改系统 DNS 至本地"></a>修改系统 DNS 至本地</h5><p><img src="/images/posts/2016/12/QQ20161225-3.png" alt=""></p>
 <h4 id="现在访问-dev-即可解析出本机地址，接下来配置-Nginx，让其自动匹配-dev，访问对应文件夹"><a href="#现在访问-dev-即可解析出本机地址，接下来配置-Nginx，让其自动匹配-dev，访问对应文件夹" class="headerlink" title="现在访问 .dev 即可解析出本机地址，接下来配置 Nginx，让其自动匹配 ().dev，访问对应文件夹"></a>现在访问 <em>.dev 即可解析出本机地址，接下来配置 Nginx，让其自动匹配 (</em>).dev，访问对应文件夹</h4><h5 id="安装-nginx-就不细说了，同样是-brew-就行"><a href="#安装-nginx-就不细说了，同样是-brew-就行" class="headerlink" title="安装 nginx 就不细说了，同样是 brew 就行"></a>安装 nginx 就不细说了，同样是 brew 就行</h5><h5 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h5><p>brew 安装后的info 指出，nginx 会加载（/usr/local/etc/nginx/servers/）内的所有文件，那么我们就在这里新建配置文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /usr/<span class="built_in">local</span>/etc/nginx/servers/http-dev.conf</div></pre></td></tr></table></figure>
 <blockquote>
 <p>配置文件已上传至 Gist，<a href="https://gist.github.com/meanevo/0453bedc10de0f106bbad36ec67a6fbd" target="_blank" rel="external">点击查看</a><br>PS：这里使用了 5002 端口，因为上层通过 HAProxy 进行转发，按实际需求修改 80 等</p>
 </blockquote>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-0-1-981x1024.png" alt=""></p>
+<p><img src="/images/posts/2016/12/QQ20161225-0-1-981x1024.png" alt=""></p>
 <h5 id="验证配置"><a href="#验证配置" class="headerlink" title="验证配置"></a>验证配置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nginx -t</div></pre></td></tr></table></figure>
 <h5 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo brew services start nginx</div></pre></td></tr></table></figure>
 <h5 id="一些命令，方便调试定位错误"><a href="#一些命令，方便调试定位错误" class="headerlink" title="一些命令，方便调试定位错误"></a>一些命令，方便调试定位错误</h5><ul>
@@ -412,8 +414,8 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo lsof -i tcp:5003</div></pre></td></tr></table></figure>
 </li>
 </ul>
-<h5 id="完成！实际效果如图"><a href="#完成！实际效果如图" class="headerlink" title="完成！实际效果如图"></a>完成！实际效果如图</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161224-5-1024x413.png" alt=""></p>
-<p>Rewrite 工作正常<br><img src="https://www.meanevo.com/wp-content/uploads/2016/12/QQ20161225-0-1024x340.png" alt=""></p>
+<h5 id="完成！实际效果如图"><a href="#完成！实际效果如图" class="headerlink" title="完成！实际效果如图"></a>完成！实际效果如图</h5><p><img src="/images/posts/2016/12/QQ20161224-5-1024x413.png" alt=""></p>
+<p>Rewrite 工作正常<br><img src="/images/posts/2016/12/QQ20161225-0-1024x340.png" alt=""></p>
 
       
     </div>
@@ -515,7 +517,7 @@
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -791,6 +793,21 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

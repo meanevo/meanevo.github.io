@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -96,21 +98,21 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
 <meta property="og:description" content="跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。
 
 PS：由于本人发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161126232539.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205634-1024x229.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204706.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205514-1024x643.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205258.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204739-1-1024x486.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204536-1024x655.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204640-1024x655.png">
-<meta property="og:updated_time" content="2017-01-24T18:11:50.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161126232539.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124205634-1024x229.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204706.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124205514-1024x643.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124205258.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204739-1-1024x486.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204536-1024x655.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204640-1024x655.png">
+<meta property="og:updated_time" content="2017-01-25T11:27:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 CentOS 实现小型网络路由 – 跨过长城">
 <meta name="twitter:description" content="跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。
 
 PS：由于本人发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161126232539.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161126232539.png">
 
 
 
@@ -262,13 +264,13 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -382,7 +384,7 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
 <h5 id="参考配置"><a href="#参考配置" class="headerlink" title="参考配置"></a>参考配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">global &#123;</div><div class="line">        perm_cache=0; #关闭 pdnsd 的缓存</div><div class="line">        cache_dir=&quot;/var/cache/pdnsd&quot;;</div><div class="line">        run_as=&quot;pdnsd&quot;;</div><div class="line">        server_ip = 127.0.0.1; #监听本地</div><div class="line">        server_port = 53535; #监听本地 53535 端口，注意错开 Dnsmasq, ChinaDNS 的端口</div><div class="line">        status_ctl = on;</div><div class="line">        query_method=tcp_only; #修改为仅通过 TCP 查询</div><div class="line">        min_ttl=15m;       # Retain cached entries at least 15 minutes.</div><div class="line">        max_ttl=1w;        # One week.</div><div class="line">        timeout=10;        # Global timeout option (10 seconds).</div><div class="line">        neg_domain_pol=on;</div><div class="line">        udpbufsize=1024;   # Upper limit on the size of UDP messages.</div><div class="line">&#125;</div><div class="line">server &#123;</div><div class="line">        label= &quot;opendns&quot;;</div><div class="line">        ip = 208.67.220.220, 208.67.222.222;  #上级 DNS 地址，需为国外支持 TCP 查询且无污染投毒的 DNS</div><div class="line">        reject = 208.69.32.0/24,  # You may need to add additional address ranges</div><div class="line">                208.69.34.0/24,  # here if the addresses of their search engines</div><div class="line">                208.67.219.0/24, # change.</div><div class="line">                208.67.217.0/24,</div><div class="line">                208.67.216.0/24;</div><div class="line">        reject_policy = fail;</div><div class="line">        port = 443; #上级 DNS 端口，这里使用 tcp 查询配合 443 端口</div><div class="line">        timeout=4; #查询超时</div><div class="line">        uptest=ping;</div><div class="line">        interval=10m;</div><div class="line">        purge_cache=off;</div><div class="line">        edns_query=yes;</div><div class="line">&#125;</div><div class="line">server &#123;</div><div class="line">        label= &quot;v2ex&quot;;</div><div class="line">        ip = 199.91.73.222; #V2EX 只有這個地址有非標準端口所以單獨放出來</div><div class="line">        port = 3389; #指定支持的非標準端口</div><div class="line">        timeout=4;</div><div class="line">        uptest=ping;</div><div class="line">        ping_timeout = 100;</div><div class="line">        interval=10m;</div><div class="line">        purge_cache=off;</div><div class="line">        edns_query=off;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl start pdnsd</div><div class="line">systemctl <span class="built_in">enable</span> pdnsd</div></pre></td></tr></table></figure>
 <h5 id="验证-pdnsd-正常工作（可查询且无投毒）"><a href="#验证-pdnsd-正常工作（可查询且无投毒）" class="headerlink" title="验证 pdnsd 正常工作（可查询且无投毒）"></a>验证 pdnsd 正常工作（可查询且无投毒）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dig @127.0.0.1 google.com -p53535</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161126232539.png" alt="qq%e6%88%aa%e5%9b%be20161126232539"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161126232539.png" alt="qq%e6%88%aa%e5%9b%be20161126232539"></p>
 <h4 id="安装配置-ChinaDNS"><a href="#安装配置-ChinaDNS" class="headerlink" title="安装配置 ChinaDNS"></a>安装配置 ChinaDNS</h4><blockquote>
 <p>本示例中 ChinaDNS 路径: /usr/local/other/chinadns-1.3.2</p>
 <p>参照其<a href="https://github.com/shadowsocks/ChinaDNS#install" target="_blank" rel="external">官方 Github 中 Linux/Unix 的安装方法</a></p>
@@ -397,22 +399,22 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
 <blockquote>
 <p>记得如果时第一次启用 rc.local 先<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod +x /etc/rc.local</div></pre></td></tr></table></figure></p>
 </blockquote>
-<h4 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h4><h5 id="按照上一章配置"><a href="#按照上一章配置" class="headerlink" title="按照上一章配置"></a>按照<a href="https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/" target="_blank" rel="external">上一章</a>配置</h5><h5 id="添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题"><a href="#添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题" class="headerlink" title="添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题"></a>添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf &gt; /etc/dnsmasq.d/accelerated-domains.china.conf</div><div class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/bogus-nxdomain.china.conf &gt; /etc/dnsmasq.d/bogus-nxdomain.china.conf</div></pre></td></tr></table></figure>
+<h4 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h4><h5 id="按照上一章配置"><a href="#按照上一章配置" class="headerlink" title="按照上一章配置"></a>按照<a href="/2016/11/24/centos-based-router-base-configuation/">上一章</a>配置</h5><h5 id="添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题"><a href="#添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题" class="headerlink" title="添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题"></a>添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf &gt; /etc/dnsmasq.d/accelerated-domains.china.conf</div><div class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/bogus-nxdomain.china.conf &gt; /etc/dnsmasq.d/bogus-nxdomain.china.conf</div></pre></td></tr></table></figure>
 <h5 id="重新加载-Dnsmasq"><a href="#重新加载-Dnsmasq" class="headerlink" title="重新加载 Dnsmasq"></a>重新加载 Dnsmasq</h5><blockquote>
 <p>会自动载入 /etc/dnsmasq.d 目录的配置文件</p>
 </blockquote>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205634-1024x229.png" alt="qq%e6%88%aa%e5%9b%be20161124205634"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124205634-1024x229.png" alt="qq%e6%88%aa%e5%9b%be20161124205634"></p>
 <h5 id="测试-Dnsmasq"><a href="#测试-Dnsmasq" class="headerlink" title="测试 Dnsmasq"></a>测试 Dnsmasq</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dig @127.0.0.1 google.com</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204706.png" alt="qq%e6%88%aa%e5%9b%be20161124204706"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124204706.png" alt="qq%e6%88%aa%e5%9b%be20161124204706"></p>
 <h4 id="安装配置-Shadowsocks-libev"><a href="#安装配置-Shadowsocks-libev" class="headerlink" title="安装配置 Shadowsocks-libev"></a>安装配置 Shadowsocks-libev</h4><h5 id="参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现"><a href="#参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现" class="headerlink" title="参考其官方 Github 得知，RHEL/CentOS 安装可通过源实现"></a>参考其官方 Github 得知，RHEL/CentOS 安装可通过<a href="https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/" target="_blank" rel="external">源</a>实现</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">curl https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo &gt; /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo</div><div class="line">yum update</div><div class="line">yum install shadowsocks-libev</div></pre></td></tr></table></figure>
 <h5 id="使用-ss-redir-监听本地端口"><a href="#使用-ss-redir-监听本地端口" class="headerlink" title="使用 ss-redir 监听本地端口"></a>使用 ss-redir 监听本地端口</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup /usr/bin/ss-redir <span class="_">-s</span> &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; <span class="_">-l</span> &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m aes-256-cfb -b 0.0.0.0 -v &gt; /var/<span class="built_in">log</span>/user/ss-redir 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure>
 <h5 id="添加至开机自启"><a href="#添加至开机自启" class="headerlink" title="添加至开机自启"></a>添加至开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">"nohup /usr/bin/ss-redir -s &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; -l &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m &#123;SS加密方式&#125; -b 0.0.0.0 -v &gt; /var/log/user/ss-redir 2&gt;&amp;1 &amp;"</span> &gt; /etc/rc.local</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205514-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124205514"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124205514-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124205514"></p>
 <h4 id="安装-xtables-addons（GeoIP-模块）"><a href="#安装-xtables-addons（GeoIP-模块）" class="headerlink" title="安装 xtables-addons（GeoIP 模块）"></a>安装 xtables-addons（GeoIP 模块）</h4><h5 id="先直接使用-yum-安装必要组件"><a href="#先直接使用-yum-安装必要组件" class="headerlink" title="先直接使用 yum 安装必要组件"></a>先直接使用 yum 安装必要组件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">yum install xtables-addons</div><div class="line">yum install kernel-devel-`uname -r` iptables-devel kernel-headers-`uname -r`</div><div class="line">yum install gcc gcc-c++ make automake unzip zip perl perl-Text-CSV_XS xz</div></pre></td></tr></table></figure>
 <h5 id="下载-addons-源码包并解压"><a href="#下载-addons-源码包并解压" class="headerlink" title="下载 addons 源码包并解压"></a>下载 addons 源码包并解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">curl -O http://downloads.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-2.10.tar.xz</div><div class="line">tar -xvf xtables-addons-2.10.tar.xz</div><div class="line"><span class="built_in">cd</span> xtables-addons-2.10</div></pre></td></tr></table></figure>
 <h5 id="由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行"><a href="#由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行" class="headerlink" title="由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行"></a>由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi mconfig</div></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#build_SYSRQ=m</span></div><div class="line"><span class="comment">#build_length2=m</span></div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205258.png" alt="qq%e6%88%aa%e5%9b%be20161124205258"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124205258.png" alt="qq%e6%88%aa%e5%9b%be20161124205258"></p>
 <h5 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">./configure</div><div class="line">make &amp;&amp; make install</div></pre></td></tr></table></figure>
 <h5 id="完成后，进入源码包下-geoip-目录，下载地理-IP-包"><a href="#完成后，进入源码包下-geoip-目录，下载地理-IP-包" class="headerlink" title="完成后，进入源码包下 geoip 目录，下载地理 IP 包"></a>完成后，进入源码包下 geoip 目录，下载地理 IP 包</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> geoip</div><div class="line">./xt_geoip_dl</div><div class="line">./xt_geoip_build *.csv</div></pre></td></tr></table></figure>
 <h5 id="完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成"><a href="#完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成" class="headerlink" title="完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成"></a>完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir -p /usr/share/xt_geoip/</div><div class="line">cp -r &#123;BE,LE&#125; /usr/share/xt_geoip/</div></pre></td></tr></table></figure>
@@ -420,10 +422,10 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
 <p>若应用 geoip 行时出现找不到 chain 错误，说明 geoip 模块安装不正确</p>
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">iptables -t nat -N SHADOWSOCKS <span class="comment">#新建 iptables NAT链，名为 SHADOWSOCKS</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> &#123;SS服务器IP地址&#125;/32 -j RETURN <span class="comment">#例外 SS 服务器的 IP，不通过代理</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 0.0.0.0/8 -j RETURN <span class="comment">#保留 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 10.0.0.0/8 -p tcp -j RETURN <span class="comment">#A类 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 127.0.0.1/8 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 169.254.0.0/16 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 172.16.0.0/12 -p tcp -j RETURN <span class="comment">#B类 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 192.168.0.0/16 -p tcp -j RETURN <span class="comment">#C类 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 224.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS <span class="_">-d</span> 240.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></div><div class="line">iptables -t nat -A SHADOWSOCKS -p tcp -m geoip ! --dst-cc CN -j REDIRECT --to-ports 1080 <span class="comment">#指定余下并且非CN的流量 重定向至本地 1080 端口（ss-redir 监听端口）</span></div><div class="line">iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS <span class="comment">#应用SHADOWSOCKS链</span></div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204739-1-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
-<h5 id="尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP"><a href="#尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP" class="headerlink" title="尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP"></a>尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204536-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204536"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124204739-1-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<h5 id="尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP"><a href="#尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP" class="headerlink" title="尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP"></a>尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP</h5><p><img src="/images/posts/2016/11/QQ截图20161124204536-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204536"></p>
 <h5 id="保存-iptables-规则"><a href="#保存-iptables-规则" class="headerlink" title="保存 iptables 规则"></a>保存 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables-save &gt; /etc/sysconfig/iptables</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204640-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204640"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124204640-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204640"></p>
 <h4 id="Done！"><a href="#Done！" class="headerlink" title="Done！"></a>Done！</h4>
       
     </div>
@@ -529,7 +531,7 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -805,6 +807,21 @@ PS：由于本人发现访问国外网站速度平均不如使用代理后访问
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

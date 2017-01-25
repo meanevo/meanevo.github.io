@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -94,20 +96,20 @@
 <meta property="og:site_name" content="MeanEVO!">
 <meta property="og:description" content="继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 SyntaxNet。
 简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-2-1024x223.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-0-1024x832.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-1.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-3-1024x616.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-5-1024x622.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-8-1024x86.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-10-1024x527.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-9-1024x591.png">
-<meta property="og:updated_time" content="2017-01-24T18:26:22.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-2-1024x223.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-0-1024x832.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-1.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-3-1024x616.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-5-1024x622.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-8-1024x86.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-10-1024x527.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-9-1024x591.png">
+<meta property="og:updated_time" content="2017-01-25T11:25:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SyntaxNet on MacOS">
 <meta name="twitter:description" content="继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 SyntaxNet。
 简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-2-1024x223.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160813-2-1024x223.png">
 
 
 
@@ -259,13 +261,13 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -364,22 +366,22 @@
         <p>继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 <a href="https://github.com/tensorflow/models/tree/master/syntaxnet" target="_blank" rel="external">SyntaxNet</a>。</p>
 <p>简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。<br><a id="more"></a></p>
 <h4 id="出现无法下载-gmock-的问题"><a href="#出现无法下载-gmock-的问题" class="headerlink" title="出现无法下载 gmock 的问题"></a>出现无法下载 gmock 的问题</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">no such package &apos;@gmock_archive//&apos;: Error downloading from https://archive.openswitch.net/gmock-1.7.0.zip</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-2-1024x223.png" alt="QQ20160813-2"><br>问题：大概是由于国内墙？或者是 Java 的问题，包没有下下来，或者验证不通过。<br>解决：那么手动下载它然后指定路径就行了吧。对于 bazel 一窍不通的我，翻了半天的配置，终于根据路径找到了配置下载地址的地方：</p>
+<p><img src="/images/posts/2016/08/QQ20160813-2-1024x223.png" alt="QQ20160813-2"><br>问题：大概是由于国内墙？或者是 Java 的问题，包没有下下来，或者验证不通过。<br>解决：那么手动下载它然后指定路径就行了吧。对于 bazel 一窍不通的我，翻了半天的配置，终于根据路径找到了配置下载地址的地方：</p>
 <h5 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">models/syntaxnet/tensorflow/tensorflow/workspace.bzl</div></pre></td></tr></table></figure>
 <h5 id="Download-gmock-到本地，我这里将它放到了tmp目录中"><a href="#Download-gmock-到本地，我这里将它放到了tmp目录中" class="headerlink" title="Download gmock 到本地，我这里将它放到了tmp目录中"></a>Download gmock 到本地，我这里将它放到了tmp目录中</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /tmp</div><div class="line">wget https://archive.openswitch.net/gmock-1.7.0.zip</div></pre></td></tr></table></figure>
 <h5 id="开启-python-的简单-http-服务"><a href="#开启-python-的简单-http-服务" class="headerlink" title="开启 python 的简单 http 服务"></a>开启 python 的简单 http 服务</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python -m SimpleHTTPServer <span class="number">8000</span></div></pre></td></tr></table></figure>
 <h5 id="并且修改下载路径为本地"><a href="#并且修改下载路径为本地" class="headerlink" title="并且修改下载路径为本地"></a>并且修改下载路径为本地</h5><p>修改 PATH 中的文件，gmock 的路径位于 79 行，将其从<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url = &quot;https://archive.openswitch.net/gmock-1.7.0.zip&quot;</div></pre></td></tr></table></figure></p>
 <p>修改为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">url = &quot;http://localhost:8000/gmock-1.7.0.zip&quot;</div></pre></td></tr></table></figure></p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-0-1024x832.png" alt="QQ20160813-0"><br><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-1.png" alt="QQ20160813-1"></p>
+<p><img src="/images/posts/2016/08/QQ20160813-0-1024x832.png" alt="QQ20160813-0"><br><img src="/images/posts/2016/08/QQ20160813-1.png" alt="QQ20160813-1"></p>
 <h5 id="重新启动编译"><a href="#重新启动编译" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bazel <span class="built_in">test</span> --linkopt=-headerpad_max_install_names syntaxnet/... util/utf8/...</div></pre></td></tr></table></figure>
 <h4 id="出现无法找到-python-的问题"><a href="#出现无法找到-python-的问题" class="headerlink" title="出现无法找到 python 的问题"></a>出现无法找到 python 的问题</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ERROR: Cannot find &apos;external/org_tensorflow/util/python/python_lib&apos;.  Did you run configure?</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-3-1024x616.png" alt="QQ20160813-3"></p>
+<p><img src="/images/posts/2016/08/QQ20160813-3-1024x616.png" alt="QQ20160813-3"></p>
 <p>问题：之前运行 configure 时配置的为 python_include 的路径，这儿找不到是因为 python_lib 的路径错误，默认路径为 /usr/lib/python2.7/site-packages 而我这儿不存在。</p>
 <p>解决：参考 github issues #2703 中的方案，修改 configure 文件是一种解决方式，不过这儿修改 python_config.sh 更为恰当。</p>
 <h5 id="PATH-1"><a href="#PATH-1" class="headerlink" title="PATH"></a>PATH</h5><p><code>models/syntaxnet/tensorflow/util/python/python_config.sh</code></p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-5-1024x622.png" alt="QQ20160813-5"><br><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-8-1024x86.png" alt="QQ20160813-8"></p>
-<h5 id="使用这个-python-config-sh-替换-PATH-路径中的文件"><a href="#使用这个-python-config-sh-替换-PATH-路径中的文件" class="headerlink" title="使用这个 python_config.sh 替换 PATH 路径中的文件"></a>使用这个 <a href="https://github.com/danmane/tensorflow/commit/4959a1291045674a23793212cfe94d4804760f01" target="_blank" rel="external">python_config.sh</a> 替换 PATH 路径中的文件</h5><h5 id="重新-configure，自动识别的路径应该已经是正确的了"><a href="#重新-configure，自动识别的路径应该已经是正确的了" class="headerlink" title="重新 configure，自动识别的路径应该已经是正确的了"></a>重新 configure，自动识别的路径应该已经是正确的了</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-10-1024x527.png" alt="QQ20160813-10"></p>
-<h5 id="重新启动编译-1"><a href="#重新启动编译-1" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160813-9-1024x591.png" alt="QQ20160813-9"></p>
+<p><img src="/images/posts/2016/08/QQ20160813-5-1024x622.png" alt="QQ20160813-5"><br><img src="/images/posts/2016/08/QQ20160813-8-1024x86.png" alt="QQ20160813-8"></p>
+<h5 id="使用这个-python-config-sh-替换-PATH-路径中的文件"><a href="#使用这个-python-config-sh-替换-PATH-路径中的文件" class="headerlink" title="使用这个 python_config.sh 替换 PATH 路径中的文件"></a>使用这个 <a href="https://github.com/danmane/tensorflow/commit/4959a1291045674a23793212cfe94d4804760f01" target="_blank" rel="external">python_config.sh</a> 替换 PATH 路径中的文件</h5><h5 id="重新-configure，自动识别的路径应该已经是正确的了"><a href="#重新-configure，自动识别的路径应该已经是正确的了" class="headerlink" title="重新 configure，自动识别的路径应该已经是正确的了"></a>重新 configure，自动识别的路径应该已经是正确的了</h5><p><img src="/images/posts/2016/08/QQ20160813-10-1024x527.png" alt="QQ20160813-10"></p>
+<h5 id="重新启动编译-1"><a href="#重新启动编译-1" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><p><img src="/images/posts/2016/08/QQ20160813-9-1024x591.png" alt="QQ20160813-9"></p>
 
       
     </div>
@@ -485,7 +487,7 @@
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -761,6 +763,21 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

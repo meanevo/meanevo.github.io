@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -94,14 +96,14 @@
 <meta property="og:site_name" content="MeanEVO!">
 <meta property="og:description" content="从10.11.4开始，全新安装的OSX在第一次安装完后没有设置使用iCloud登录的话，后续无法通过用户修改密码选择使用iCloud密码登陆，估计是Apple的安全策略吧。
 但是的确很不方便，那么看看怎么将它恢复。">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160809-0.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160809-2.png">
-<meta property="og:updated_time" content="2017-01-24T18:40:58.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160809-0.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160809-2.png">
+<meta property="og:updated_time" content="2017-01-25T11:25:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 iCloud 登陆 MacOS">
 <meta name="twitter:description" content="从10.11.4开始，全新安装的OSX在第一次安装完后没有设置使用iCloud登录的话，后续无法通过用户修改密码选择使用iCloud密码登陆，估计是Apple的安全策略吧。
 但是的确很不方便，那么看看怎么将它恢复。">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160809-0.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/08/QQ20160809-0.png">
 
 
 
@@ -253,13 +255,13 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -358,11 +360,11 @@
         <p>从10.11.4开始，全新安装的OSX在第一次安装完后没有设置使用iCloud登录的话，后续无法通过用户修改密码选择使用iCloud密码登陆，估计是Apple的安全策略吧。</p>
 <p>但是的确很不方便，那么看看怎么将它恢复。<br><a id="more"></a></p>
 <h4 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h4><p>点击用户－修改密码时候，直接弹出密码修改框。</p>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160809-0.png" alt="QQ20160809-0"></p>
+<p><img src="/images/posts/2016/08/QQ20160809-0.png" alt="QQ20160809-0"></p>
 <h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="打开Terminal，输入-sudo-dscl-append-Users-用户目录-AuthenticationAuthority-“-AppleID-用户邮箱”"><a href="#打开Terminal，输入-sudo-dscl-append-Users-用户目录-AuthenticationAuthority-“-AppleID-用户邮箱”" class="headerlink" title="打开Terminal，输入 sudo dscl . append /Users/用户目录 AuthenticationAuthority “;AppleID;用户邮箱”"></a>打开Terminal，输入 sudo dscl . append /Users/用户目录 AuthenticationAuthority “;AppleID;用户邮箱”</h5><ul>
 <li>Eg：<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dscl . append /Users/MeanEVO AuthenticationAuthority <span class="string">";AppleID;admin@meanevo.com"</span></div></pre></td></tr></table></figure></li>
 </ul>
-<h5 id="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"><a href="#执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码" class="headerlink" title="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"></a>执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码</h5><p><img src="https://www.meanevo.com/wp-content/uploads/2016/08/QQ20160809-2.png" alt="QQ20160809-2"></p>
+<h5 id="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"><a href="#执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码" class="headerlink" title="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"></a>执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码</h5><p><img src="/images/posts/2016/08/QQ20160809-2.png" alt="QQ20160809-2"></p>
 <h5 id="待改进"><a href="#待改进" class="headerlink" title="待改进"></a>待改进</h5><p>虽然显示使用了AppleID的密码，但是登陆时候仍旧是老的密码，这里一个笨办法就是通过这里修改iCloud的密码，那么密码就会同步了。</p>
 <blockquote>
 <h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>Keychain弹出的话，需要进入Keychain设置内重置</p>
@@ -472,7 +474,7 @@
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -748,6 +750,21 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

@@ -18,6 +18,8 @@
 
 
 
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE" />
+
 
 
 
@@ -92,20 +94,20 @@
 <meta property="og:url" content="https://www.wanna.one/2016/11/24/centos-based-router-base-configuation/index.html">
 <meta property="og:site_name" content="MeanEVO!">
 <meta property="og:description" content="前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124220734-1024x237.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210139-1024x699.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210042-1024x643.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210054-1024x643.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205854.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124224342.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204739-1024x486.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204955-1024x939.png">
-<meta property="og:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210417.png">
-<meta property="og:updated_time" content="2017-01-24T18:15:33.000Z">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124220734-1024x237.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124210139-1024x699.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124210042-1024x643.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124210054-1024x643.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124205854.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124224342.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204739-1024x486.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124204955-1024x939.png">
+<meta property="og:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124210417.png">
+<meta property="og:updated_time" content="2017-01-25T11:27:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 CentOS 实现小型网络路由 - 基础服务">
 <meta name="twitter:description" content="前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。">
-<meta name="twitter:image" content="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124220734-1024x237.png">
+<meta name="twitter:image" content="https://www.wanna.one/images/posts/2016/11/QQ截图20161124220734-1024x237.png">
 
 
 
@@ -257,13 +259,13 @@
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Mean Machine">
     <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="image" content="/images/site/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="MeanEVO!">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/logo.png">
+      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
     </span>
   </span>
 
@@ -373,7 +375,7 @@
 </blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl stop NetworkManager</div><div class="line">systemctl <span class="built_in">disable</span> NetworkManager</div></pre></td></tr></table></figure>
 <blockquote>
-<p>本示例网卡分配情况：<img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124220734-1024x237.png" alt="qq%e6%88%aa%e5%9b%be20161124220734"></p>
+<p>本示例网卡分配情况：<img src="/images/posts/2016/11/QQ截图20161124220734-1024x237.png" alt="qq%e6%88%aa%e5%9b%be20161124220734"></p>
 </blockquote>
 <h4 id="配置各个网络介面"><a href="#配置各个网络介面" class="headerlink" title="配置各个网络介面"></a>配置各个网络介面</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/network-scripts/ifcfg-br144</div></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/network-scripts/ifcfg-eno50338560</div></pre></td></tr></table></figure>
@@ -384,11 +386,11 @@
 <h6 id="VLAN端口-ifcfg-eno50338560-128"><a href="#VLAN端口-ifcfg-eno50338560-128" class="headerlink" title="VLAN端口 (ifcfg-eno50338560.128)"></a>VLAN端口 (ifcfg-eno50338560.128)</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">DEVICE=eno50338560.128 <span class="comment">#普通端口名.VLAN_ID</span></div><div class="line">BOOTPROTO=none</div><div class="line">ONBOOT=yes</div><div class="line">MTU=8972</div><div class="line">IPADDR=172.16.128.1 <span class="comment">#IP 地址</span></div><div class="line">PREFIX=20 <span class="comment">#网络标识</span></div><div class="line">NETWORK=172.16.128.0 <span class="comment">#所在网络</span></div><div class="line">VLAN=yes <span class="comment">#VLAN口</span></div></pre></td></tr></table></figure>
 </blockquote>
 <h6 id="配置完毕重启网络服务"><a href="#配置完毕重启网络服务" class="headerlink" title="配置完毕重启网络服务"></a>配置完毕重启网络服务</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">systemctl restart network</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210139-1024x699.png" alt="qq%e6%88%aa%e5%9b%be20161124210139"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124210139-1024x699.png" alt="qq%e6%88%aa%e5%9b%be20161124210139"></p>
 <h4 id="DHCPd"><a href="#DHCPd" class="headerlink" title="DHCPd"></a>DHCPd</h4><h5 id="这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装"><a href="#这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装" class="headerlink" title="这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有官方文档），安装"></a>这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有<a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Networking_Guide/sec-dhcp-configuring-server.html" target="_blank" rel="external">官方文档</a>），安装</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">systemctl <span class="built_in">disable</span> NetworkManager</div></pre></td></tr></table></figure>
 <h5 id="安装完毕后会自动生成一个配置示例"><a href="#安装完毕后会自动生成一个配置示例" class="headerlink" title="安装完毕后会自动生成一个配置示例"></a>安装完毕后会自动生成一个配置示例</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/usr/share/doc/dhcp-&#123;version&#125;/dhcpd.conf.example</div></pre></td></tr></table></figure>
 <h5 id="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"><a href="#我们可以复制这个示例，也可以完全自己写，这里按照自己需求写" class="headerlink" title="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"></a>我们可以复制这个示例，也可以完全自己写，这里按照自己需求写</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/dhcp/dhcpd.conf</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210042-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210042"><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210054-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210054"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124210042-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210042"><img src="/images/posts/2016/11/QQ截图20161124210054-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210054"></p>
 <h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl start dhcpd</div><div class="line">systemctl <span class="built_in">enable</span> dhcpd</div></pre></td></tr></table></figure>
 <h5 id="这里如果报错，使用-journalctl-xe-查看"><a href="#这里如果报错，使用-journalctl-xe-查看" class="headerlink" title="这里如果报错，使用 journalctl -xe 查看"></a>这里如果报错，使用 journalctl -xe 查看</h5><blockquote>
 <p>很有可能是 DHCPd 中的设置网段 并没有在当前端口中找到，检查 II 中的配置，并确保端口 UP 状态。</p>
@@ -407,19 +409,19 @@
 <p>注意以下编辑选项，其他选项我这里都是被注释状态：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">domain-needed <span class="comment">#只解析合法域名</span></div><div class="line">bogus-priv</div><div class="line">no-resolv <span class="comment">#不读取 /etc/resolv.conf</span></div><div class="line">no-poll <span class="comment">#不读取 /etc/resolv.conf</span></div><div class="line">server=127.0.0.1<span class="comment">#5353 #上游 DNS 地址，这里设置成本地 5353 口，是因为有 ChinaDNS 监听在此端口，达到不被污染劫持的目的，具体配置在下一篇说</span></div><div class="line">except-interface=eno16780032 <span class="comment">#不监听外网端口，根据需要修改</span></div><div class="line">no-dhcp-interface=br144 <span class="comment">#不监听 DHCP 请求</span></div><div class="line">no-dhcp-interface=eno50338560 <span class="comment">#不监听 DHCP 请求</span></div><div class="line">no-dhcp-interface=eno50338560.12 <span class="comment">#不监听 DHCP 请求</span></div><div class="line">cache-size=2000 <span class="comment">#做 DNS 请求缓存</span></div><div class="line">conf-dir=/etc/dnsmasq.d <span class="comment">#加载额外配置文件的目录，这个后面优化无污染 DNS 时候用到</span></div></pre></td></tr></table></figure>
 </blockquote>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124205854.png" alt="qq%e6%88%aa%e5%9b%be20161124205854"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124205854.png" alt="qq%e6%88%aa%e5%9b%be20161124205854"></p>
 <h5 id="启动-amp-开机自启-1"><a href="#启动-amp-开机自启-1" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl start dnsmasq</div><div class="line">systemctl <span class="built_in">enable</span> dnsmasq</div></pre></td></tr></table></figure>
 <h5 id="添加-iptables-规则"><a href="#添加-iptables-规则" class="headerlink" title="添加 iptables 规则"></a>添加 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">iptables -I INPUT -p udp -m state --state NEW --dport 53 -j ACCEPT</div><div class="line">iptables-save &gt; /etc/sysconfig/iptables</div><div class="line">systemctl restart iptables</div></pre></td></tr></table></figure>
 <h5 id="测试，若失败请确认上游-DNS-可用，监听设置正确"><a href="#测试，若失败请确认上游-DNS-可用，监听设置正确" class="headerlink" title="测试，若失败请确认上游 DNS 可用，监听设置正确"></a>测试，若失败请确认上游 DNS 可用，监听设置正确</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dig @127.0.0.1 google.com -p53</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124224342.png" alt="qq%e6%88%aa%e5%9b%be20161124224342"></p>
-<h4 id="配置-NAT"><a href="#配置-NAT" class="headerlink" title="配置 NAT"></a>配置 NAT</h4><h5 id="这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置"><a href="#这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置" class="headerlink" title="这个核心功能就由 iptables 来完成，安装基础配置请参考 CentOS7 基础配置"></a>这个核心功能就由 iptables 来完成，安装基础配置请参考 <a href="https://www.meanevo.com/2015/06/07/redhat-enterprise-linux-rhel-7-configuration/" target="_blank" rel="external">CentOS7 基础配置</a></h5><h5 id="添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032"><a href="#添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032" class="headerlink" title="添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)"></a>添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -t nat -A POSTROUTING -o eno16780032 -j MASQUERADE</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204739-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<p><img src="/images/posts/2016/11/QQ截图20161124224342.png" alt="qq%e6%88%aa%e5%9b%be20161124224342"></p>
+<h4 id="配置-NAT"><a href="#配置-NAT" class="headerlink" title="配置 NAT"></a>配置 NAT</h4><h5 id="这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置"><a href="#这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置" class="headerlink" title="这个核心功能就由 iptables 来完成，安装基础配置请参考 CentOS7 基础配置"></a>这个核心功能就由 iptables 来完成，安装基础配置请参考 <a href="/2015/06/07/redhat-enterprise-linux-rhel-7-configuration/">CentOS7 基础配置</a></h5><h5 id="添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032"><a href="#添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032" class="headerlink" title="添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)"></a>添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -t nat -A POSTROUTING -o eno16780032 -j MASQUERADE</div></pre></td></tr></table></figure>
+<p><img src="/images/posts/2016/11/QQ截图20161124204739-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
 <h5 id="放行所有内网-INPUT-FORWARD-请求"><a href="#放行所有内网-INPUT-FORWARD-请求" class="headerlink" title="放行所有内网 INPUT FORWARD 请求"></a>放行所有内网 INPUT FORWARD 请求</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">iptables -I INPUT -i br144 -j ACCEPT</div><div class="line">iptables -I INPUT -i eno50338560 -j ACCEPT</div><div class="line">iptables -I INPUT -i eno50338560.128 -j ACCEPT</div><div class="line">iptables -I FORWARD -i br144 -j ACCEPT</div><div class="line">iptables -I FORWARD -o br144 -j ACCEPT</div><div class="line">iptables -I FORWARD -i eno50338560 -j ACCEPT</div><div class="line">iptables -I FORWARD -o eno50338560 -j ACCEPT</div><div class="line">iptables -I FORWARD -i eno50338560.128 -j ACCEPT</div><div class="line">iptables -I FORWARD -o eno50338560.128 -j ACCEPT</div><div class="line">iptables-save &gt; /etc/sysconfig/iptables</div></pre></td></tr></table></figure>
 <h5 id="检查配置，按情况调整-INPUT-FORWARD-链规则位置"><a href="#检查配置，按情况调整-INPUT-FORWARD-链规则位置" class="headerlink" title="检查配置，按情况调整 INPUT/FORWARD 链规则位置"></a>检查配置，按情况调整 INPUT/FORWARD 链规则位置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -L</div></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/iptables</div></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">systemctl restart iptables</div></pre></td></tr></table></figure>
-<p><img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124204955-1024x939.png" alt="qq%e6%88%aa%e5%9b%be20161124204955"></p>
-<h4 id="至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲"><a href="#至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲" class="headerlink" title="至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲"></a>至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲<img src="https://www.meanevo.com/wp-content/uploads/2016/11/QQ截图20161124210417.png" alt="qq%e6%88%aa%e5%9b%be20161124210417"></h4>
+<p><img src="/images/posts/2016/11/QQ截图20161124204955-1024x939.png" alt="qq%e6%88%aa%e5%9b%be20161124204955"></p>
+<h4 id="至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲"><a href="#至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲" class="headerlink" title="至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲"></a>至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲<img src="/images/posts/2016/11/QQ截图20161124210417.png" alt="qq%e6%88%aa%e5%9b%be20161124210417"></h4>
       
     </div>
 
@@ -524,7 +526,7 @@
       <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
+               src="/images/site/avatar.jpg"
                alt="Mean Machine" />
           <p class="site-author-name" itemprop="name">Mean Machine</p>
           <p class="site-description motion-element" itemprop="description"></p>
@@ -800,6 +802,21 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 
