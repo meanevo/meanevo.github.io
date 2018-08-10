@@ -1,4 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9,7 +18,28 @@
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+  <link href="//cdn.bootcss.com/pace/1.0.2/themes/black/pace-theme-big-counter.min.css" rel="stylesheet">
+
+
+
+
 
 
 
@@ -29,35 +59,35 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
 
-  
-  
-  
-  
+
+
 
   
-    
-    
   
-
   
-
-  
-
-  
-
   
 
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -65,37 +95,67 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+  
 
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+<link href="//cdn.bootcss.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 
-
-  <meta name="keywords" content="Personal Blog, Tech, Cloud Tech, Computer Science, Deep Learning, Linux, Networking" />
-
+<link href="/css/main.css?v=6.4.0" rel="stylesheet" type="text/css" />
 
 
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.0">
 
 
-  <link rel="alternate" href="/rss.xml" title="MeanEVO!" type="application/atom+xml" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.0">
 
 
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.0">
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.0" color="#222">
 
 
 
 
-<meta name="description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。
-重新找了家Vultr搭，速度还不错，分享下。">
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.4.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: true,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。 重新找了家Vultr搭，速度还不错，分享下。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server">
 <meta property="og:url" content="https://www.wanna.one/2015/08/21/softether-on-centos7/index.html">
 <meta property="og:site_name" content="MeanEVO!">
-<meta property="og:description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。
-重新找了家Vultr搭，速度还不错，分享下。">
+<meta property="og:description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。 重新找了家Vultr搭，速度还不错，分享下。">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="https://www.wanna.one/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png">
 <meta property="og:image" content="https://www.wanna.one/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png">
 <meta property="og:image" content="https://www.wanna.one/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png">
@@ -113,33 +173,13 @@
 <meta property="og:updated_time" content="2017-01-25T11:25:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server">
-<meta name="twitter:description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。
-重新找了家Vultr搭，速度还不错，分享下。">
+<meta name="twitter:description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。 重新找了家Vultr搭，速度还不错，分享下。">
 <meta name="twitter:image" content="https://www.wanna.one/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png">
 
 
 
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Pisces',
-    sidebar: {"position":"left","display":"post"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'Author'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
+  <link rel="alternate" href="/rss.xml" title="MeanEVO!" type="application/atom+xml" />
+
 
 
 
@@ -147,108 +187,181 @@
 
 
 
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server | MeanEVO!</title>
+  
 
 
-  <title> 关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server | MeanEVO! </title>
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
-
-
-
-
-
-
-
-
-
-
-  
   
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta custom-logo">
-  
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
 
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">MeanEVO!</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MeanEVO!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Inappreciable World</p>
+      
+    
   </div>
-    
-      <p class="site-subtitle">Inappreciable World</p>
-    
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
 </div>
 
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
+
 
 <nav class="site-nav">
-  
-
   
     <ul id="menu" class="menu">
       
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            Home
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            Categories
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            Archives
-          </a>
-        </li>
-      
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
 
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />Search</a>
+        </li>
       
     </ul>
   
 
   
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
 </nav>
 
 
 
- </div>
+  
+
+
+
+</div>
     </header>
+
+    
+
 
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
+          
+            
+
+          
           <div id="content" class="content">
             
 
@@ -261,32 +374,31 @@
   
   
 
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://www.wanna.one/2015/08/21/softether-on-centos7/">
+  
 
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="Mean Machine">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/site/avatar.jpg">
-  </span>
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.wanna.one/2015/08/21/softether-on-centos7/">
 
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="MeanEVO!">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="MeanEVO!" src="/images/site/logo.png">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
     </span>
-  </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
 
     
       <header class="post-header">
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server
+          <h1 class="post-title" itemprop="name headline">关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server
               
             
           </h1>
@@ -294,6 +406,11 @@
 
         <div class="post-meta">
           <span class="post-time">
+
+            
+            
+            
+
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
@@ -301,11 +418,12 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-08-21T22:56:44+08:00">
-                2015-08-21
-              </time>
-            
 
+              
+                
+              
+
+              <time title="Created: 2015-08-21 22:56:44" itemprop="dateCreated datePublished" datetime="2015-08-21T22:56:44+08:00">2015-08-21</time>
             
 
             
@@ -323,11 +441,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/FxxkGFW/" itemprop="url" rel="index">
-                    <span itemprop="name">FxxkGFW</span>
-                  </a>
-                </span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/FxxkGFW/" itemprop="url" rel="index"><span itemprop="name">FxxkGFW</span></a></span>
 
                 
                 
@@ -337,21 +451,11 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/08/21/softether-on-centos7/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/21/softether-on-centos7/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
-
           
+
           
 
           
@@ -362,7 +466,9 @@
       </header>
     
 
-
+    
+    
+    
     <div class="post-body" itemprop="articleBody">
 
       
@@ -378,24 +484,24 @@
 </ul>
 <p>为了方便，就不再细说搭建PPTP服务器了，网上资料也很多，搭建也不难。</p>
 <p>本文第一部分就先介绍下SoftEther这个东西（以下简称SE）。在没有这个软件的时候，L2TP搭建还是比较麻烦的事情，更不用提OVPN了。</p>
-<p>官方网址：<a href="http://www.softether.org" target="_blank" rel="external">http://www.softether.org</a>（可能需要爬墙）</p>
+<p>官方网址：<a href="http://www.softether.org" target="_blank" rel="noopener">http://www.softether.org</a>（可能需要爬墙）</p>
 <p>SE是由日本筑波大学（University of Tsukuba）开发的免费软件，集成了L2TP、L2TP over IPSec、SSTP、OVPN服务端，并且管理工具的存在（SoftEther VPN Server Manager），使得设置变的非常简单，添加帐号、限速、NAT设置都有图形化界面。</p>
 <p>下面说下安装。</p>
 <h5 id="先进入官方的下载页面"><a href="#先进入官方的下载页面" class="headerlink" title="先进入官方的下载页面"></a>先进入官方的下载页面</h5><blockquote>
-<p><a href="http://www.softether-download.com/en.aspx" target="_blank" rel="external">http://www.softether-download.com/en.aspx</a>，可能需要爬墙，软件选择VPN Server，目标平台，CPU类型，然后复制最新版本的下载连接。</p>
+<p><a href="http://www.softether-download.com/en.aspx" target="_blank" rel="noopener">http://www.softether-download.com/en.aspx</a>，可能需要爬墙，软件选择VPN Server，目标平台，CPU类型，然后复制最新版本的下载连接。</p>
 </blockquote>
 <p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png" alt="Screen Shot 2015-08-21 at 21.58.51"></a></p>
-<h5 id="切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧"><a href="#切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧" class="headerlink" title="切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧"></a>切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkdir -p /usr/SoftEther &amp;&amp; <span class="built_in">cd</span> /usr/SoftEther</div></pre></td></tr></table></figure>
-<h5 id="直接从官方下载tar-gz包并解压"><a href="#直接从官方下载tar-gz包并解压" class="headerlink" title="直接从官方下载tar.gz包并解压"></a>直接从官方下载tar.gz包并解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</div><div class="line">tar -zxvf softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</div></pre></td></tr></table></figure>
+<h5 id="切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧"><a href="#切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧" class="headerlink" title="切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧"></a>切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/SoftEther &amp;&amp; <span class="built_in">cd</span> /usr/SoftEther</span><br></pre></td></tr></table></figure>
+<h5 id="直接从官方下载tar-gz包并解压"><a href="#直接从官方下载tar-gz包并解压" class="headerlink" title="直接从官方下载tar.gz包并解压"></a>直接从官方下载tar.gz包并解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br><span class="line">tar -zxvf softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br></pre></td></tr></table></figure>
 <p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png" alt="Screen Shot 2015-08-21 at 22.31.39"></a></p>
-<h5 id="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"><a href="#ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）" class="headerlink" title="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"></a>ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install gcc</div><div class="line">make</div></pre></td></tr></table></figure>
+<h5 id="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"><a href="#ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）" class="headerlink" title="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"></a>ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
 <p>失败请确认Root权限！</p>
 <h5 id="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动"><a href="#在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动" class="headerlink" title="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动"></a>在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动</h5><p><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png" alt="Screen Shot 2015-08-21 at 22.33.08"></p>
-<h5 id="启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"><a href="#启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等" class="headerlink" title="启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"></a>启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/iptables</div></pre></td></tr></table></figure>
+<h5 id="启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"><a href="#启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等" class="headerlink" title="启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"></a>启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
 <p>添加：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT</div><div class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 500 -j ACCEPT</div><div class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 992 -j ACCEPT</div><div class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 1194 -j ACCEPT</div><div class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 4500 -j ACCEPT</div><div class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 5555 -j ACCEPT</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 992 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 1194 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 4500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 5555 -j ACCEPT</span><br></pre></td></tr></table></figure>
 <p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png" alt="Screen Shot 2015-08-21 at 22.37.05"></a></p>
-<h5 id="OK，在防火墙重新启动之后，我们开启vpnserver服务"><a href="#OK，在防火墙重新启动之后，我们开启vpnserver服务" class="headerlink" title="OK，在防火墙重新启动之后，我们开启vpnserver服务"></a>OK，在防火墙重新启动之后，我们开启vpnserver服务</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">systemctl restart iptables.service</div><div class="line">/usr/SoftEther/vpnserver/vpnserver start</div></pre></td></tr></table></figure>
+<h5 id="OK，在防火墙重新启动之后，我们开启vpnserver服务"><a href="#OK，在防火墙重新启动之后，我们开启vpnserver服务" class="headerlink" title="OK，在防火墙重新启动之后，我们开启vpnserver服务"></a>OK，在防火墙重新启动之后，我们开启vpnserver服务</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart iptables.service</span><br><span class="line">/usr/SoftEther/vpnserver/vpnserver start</span><br></pre></td></tr></table></figure>
 <p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png" alt="Screen Shot 2015-08-21 at 22.38.43"></a></p>
 <h5 id="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）"><a href="#下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）" class="headerlink" title="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016.08更新，MacOS也有了）"></a>下载、使用管理工具<del datetime="2016-08-10T16:17:38+00:00">（现在只有Win端，安装选择带有管理工具的）</del>（2016.08更新，MacOS也有了）</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png" alt="Screen Shot 2015-08-21 at 21.54.22"></a></p>
 <p>点击建立新设置 New Setting：</p>
@@ -410,28 +516,47 @@
 <p>打开NAT，默认的是192.168.30.0/24网段，可以自行更改：</p>
 <p><a href="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg"><img src="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg" alt="FE5BB991-1FA8-4FBC-9D66-73C99A244EFC"></a></p>
 <h5 id="测试连接"><a href="#测试连接" class="headerlink" title="测试连接"></a>测试连接</h5><h5 id="测试无误后，设置开机启动"><a href="#测试无误后，设置开机启动" class="headerlink" title="测试无误后，设置开机启动"></a>测试无误后，设置开机启动</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png"><img src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png" alt="Screen Shot 2015-08-21 at 22.51.45"></a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">"/usr/SoftEther/vpnserver/vpnserver start"</span> &gt;&gt; /etc/rc.d/rc.local</div><div class="line">chmod +x /etc/rc.d/rc.local</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/usr/SoftEther/vpnserver/vpnserver start"</span> &gt;&gt; /etc/rc.d/rc.local</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br></pre></td></tr></table></figure>
 <p>至此SoftEther搭建完成。</p>
 
       
     </div>
 
-    <div>
+    
       
-        
 
-      
-    </div>
 
-    <div>
-      
-        
+    
 
-      
-    </div>
+    
+    
+    
 
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Mean Machine</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://www.wanna.one/2015/08/21/softether-on-centos7/" title="关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server">https://www.wanna.one/2015/08/21/softether-on-centos7/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 4.0</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
+      
+
+      
+      
       
 
       
@@ -459,31 +584,21 @@
       
       
     </footer>
+  </div>
+  
+  
+  
   </article>
 
 
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
-          
+
           </div>
           
 
+  
 
-          
-  <div class="comments" id="comments">
-    
-      <div id="disqus_thread">
-        <noscript>
-          Please enable JavaScript to view the
-          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
-        </noscript>
-      </div>
-    
-  </div>
 
 
         </div>
@@ -499,113 +614,129 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
+    
     <div class="sidebar-inner">
 
       
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             Table of Contents
           </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
             Overview
           </li>
         </ul>
       
 
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/site/avatar.jpg"
-               alt="Mean Machine" />
-          <p class="site-author-name" itemprop="name">Mean Machine</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-        
-          
-            <div class="site-state-item site-state-posts">
-              <a href="/archives">
-                <span class="site-state-item-count">31</span>
-                <span class="site-state-item-name">posts</span>
-              </a>
-            </div>
-          
-
-          
-            <div class="site-state-item site-state-categories">
-              <a href="/categories">
-                <span class="site-state-item-count">9</span>
-                <span class="site-state-item-name">categories</span>
-              </a>
-            </div>
-          
-
-          
-
-        </nav>
-
-        
-          <div class="feed-link motion-element">
-            <a href="/rss.xml" rel="alternate">
-              <i class="fa fa-rss"></i>
-              RSS
-            </a>
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/site/avatar.jpg"
+                alt="Mean Machine" />
+            
+              <p class="site-author-name" itemprop="name">Mean Machine</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
-        
 
-        <div class="links-of-author motion-element">
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/rss.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/meanevo" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/meanevo" target="_blank" title="Twitter"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://t.me/meanevo" target="_blank" title="Telegram"><i class="fa fa-fw fa-telegram"></i>Telegram</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/2820052877" target="_blank" title="Weibo"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
           
             
-              <span class="links-of-author-item">
-                <a href="https://github.com/meanevo" target="_blank" title="GitHub">
-                  
-                    <i class="fa fa-fw fa-github"></i>
-                  
-                  GitHub
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://weibo.com/2820052877" target="_blank" title="Weibo">
-                  
-                    <i class="fa fa-fw fa-weibo"></i>
-                  
-                  Weibo
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://ss.proxy.meanevo.com" target="_blank" title="Shadow">
-                  
-                    <i class="fa fa-fw fa-paper-plane"></i>
-                  
-                  Shadow
-                </a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="https://twitter.com/meanevo" target="_blank" title="Twitter">
-                  
-                    <i class="fa fa-fw fa-twitter"></i>
-                  
-                  Twitter
-                </a>
-              </span>
-            
           
+          
+
         </div>
-
-        
-        
-
-        
-        
-
-        
-
-
       </section>
 
       
@@ -626,6 +757,15 @@
       <!--/noindex-->
       
 
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
     </div>
   </aside>
 
@@ -636,38 +776,53 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy;  2010 - 
-  <span itemprop="copyrightYear">2017</span>
-  <span class="with-love">
+        <div class="copyright">&copy; 2010 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+
+  
+
+  
 </div>
 
 
-<div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
-</div>
 
-<div class="theme-info">
-  Theme -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Pisces
-  </a>
-</div>
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a></div>
+
+
 
 
         
+
+
+
+
+
+
+
 
         
       </div>
     </footer>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
-    </div>
+    
+
+    
+	
+    
+
+    
   </div>
 
   
@@ -682,7 +837,90 @@
 
 
 
+  
 
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/2.1.3/jquery.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery_lazyload/1.9.7/jquery.lazyload.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/velocity/1.2.1/velocity.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.bootcss.com/velocity/1.2.1/velocity.ui.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.0"></script>
+
+
+
+  
 
 
 
@@ -691,102 +929,337 @@
 
 
 
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
 
 
 
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
 
 
 
   
 
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
 
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
 
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
 
-  
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
 
+      
 
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
 
-  
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
 
-    <script type="text/javascript">
-      var disqus_shortname = 'meanevo';
-      var disqus_identifier = '2015/08/21/softether-on-centos7/';
+                // show search results
 
-      var disqus_title = "关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server";
+                if (isMatch) {
+                  // sort index by position of keyword
 
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
 
-      function run_disqus_script(disqus_script) {
-        var dsq = document.createElement('script');
-        dsq.type = 'text/javascript';
-        dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
       }
-
-      run_disqus_script('count.js');
-
-      
-        var disqus_config = function () {
-            this.page.url = disqus_url;
-            this.page.identifier = disqus_identifier;
-            this.page.title = disqus_title;
-        };
-        run_disqus_script('embed.js');
-      
-
-    </script>
-  
+    });
+  </script>
 
 
 
 
-
-
-
-
-
-  
-  
 
   
 
@@ -810,6 +1283,94 @@
 
 
   
+
+  
+  
+
+  
+  
+  
+    
+  
+  <script src="//cdn.bootcss.com/pangu/3.3.0/pangu.min.js"></script>
+  <script type="text/javascript">pangu.spacingPage();</script>
+
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
 
 
 </body>
