@@ -51,13 +51,6 @@
   </url>
   
   <url>
-    <loc>https://www.wanna.one/2016/08/10/tensorflow-on-macos/</loc>
-    
-    <lastmod>2017-01-25T11:25:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://www.wanna.one/2016/08/13/syntaxnet-on-macos/</loc>
     
     <lastmod>2017-01-25T11:25:59.000Z</lastmod>
@@ -65,9 +58,9 @@
   </url>
   
   <url>
-    <loc>https://www.wanna.one/2015/08/21/softether-on-centos7/</loc>
+    <loc>https://www.wanna.one/2016/08/10/tensorflow-on-macos/</loc>
     
-    <lastmod>2017-01-25T11:25:58.000Z</lastmod>
+    <lastmod>2017-01-25T11:25:59.000Z</lastmod>
     
   </url>
   
@@ -86,16 +79,16 @@
   </url>
   
   <url>
-    <loc>https://www.wanna.one/2016/08/08/permissions-in-wordpress-on-webserver/</loc>
+    <loc>https://www.wanna.one/2015/08/21/softether-on-centos7/</loc>
     
     <lastmod>2017-01-25T11:25:58.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wanna.one/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/</loc>
+    <loc>https://www.wanna.one/2016/08/08/permissions-in-wordpress-on-webserver/</loc>
     
-    <lastmod>2017-01-25T11:25:57.000Z</lastmod>
+    <lastmod>2017-01-25T11:25:58.000Z</lastmod>
     
   </url>
   
@@ -108,6 +101,13 @@
   
   <url>
     <loc>https://www.wanna.one/2016/08/04/centos7-modify-dns-and-centos-native-base-repo/</loc>
+    
+    <lastmod>2017-01-25T11:25:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wanna.one/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/</loc>
     
     <lastmod>2017-01-25T11:25:57.000Z</lastmod>
     
