@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 SyntaxNet。 简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SyntaxNet on MacOS">
+<meta property="og:url" content="https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 SyntaxNet。 简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-2-1024x223.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-0-1024x832.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-1.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-3-1024x616.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-5-1024x622.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-8-1024x86.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-10-1024x527.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-9-1024x591.png">
+<meta property="article:published_time" content="2016-08-13T08:55:45.000Z">
+<meta property="article:modified_time" content="2016-08-13T08:55:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160813-2-1024x223.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/","path":"2016/08/13/syntaxnet-on-macos/","title":"SyntaxNet on MacOS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SyntaxNet on MacOS | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BA%E7%8E%B0%E6%97%A0%E6%B3%95%E4%B8%8B%E8%BD%BD-gmock-%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">出现无法下载 gmock 的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#PATH"><span class="nav-number">1.1.</span> <span class="nav-text">PATH</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Download-gmock-%E5%88%B0%E6%9C%AC%E5%9C%B0%EF%BC%8C%E6%88%91%E8%BF%99%E9%87%8C%E5%B0%86%E5%AE%83%E6%94%BE%E5%88%B0%E4%BA%86tmp%E7%9B%AE%E5%BD%95%E4%B8%AD"><span class="nav-number">1.2.</span> <span class="nav-text">Download gmock 到本地，我这里将它放到了tmp目录中</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-python-%E7%9A%84%E7%AE%80%E5%8D%95-http-%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.3.</span> <span class="nav-text">开启 python 的简单 http 服务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B9%B6%E4%B8%94%E4%BF%AE%E6%94%B9%E4%B8%8B%E8%BD%BD%E8%B7%AF%E5%BE%84%E4%B8%BA%E6%9C%AC%E5%9C%B0"><span class="nav-number">1.4.</span> <span class="nav-text">并且修改下载路径为本地</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E5%90%AF%E5%8A%A8%E7%BC%96%E8%AF%91"><span class="nav-number">1.5.</span> <span class="nav-text">重新启动编译</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BA%E7%8E%B0%E6%97%A0%E6%B3%95%E6%89%BE%E5%88%B0-python-%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">出现无法找到 python 的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#PATH-1"><span class="nav-number">2.1.</span> <span class="nav-text">PATH</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%BF%99%E4%B8%AA-python-config-sh-%E6%9B%BF%E6%8D%A2-PATH-%E8%B7%AF%E5%BE%84%E4%B8%AD%E7%9A%84%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">使用这个 python_config.sh 替换 PATH 路径中的文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E6%96%B0-configure%EF%BC%8C%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB%E7%9A%84%E8%B7%AF%E5%BE%84%E5%BA%94%E8%AF%A5%E5%B7%B2%E7%BB%8F%E6%98%AF%E6%AD%A3%E7%A1%AE%E7%9A%84%E4%BA%86"><span class="nav-number">2.3.</span> <span class="nav-text">重新 configure，自动识别的路径应该已经是正确的了</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E5%90%AF%E5%8A%A8%E7%BC%96%E8%AF%91-1"><span class="nav-number">2.4.</span> <span class="nav-text">重新启动编译</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SyntaxNet on MacOS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2016-08-13 16:55:45 / Modified: 16:55:00" itemprop="dateCreated datePublished" datetime="2016-08-13T16:55:45+08:00">2016-08-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Deep-Learning/" itemprop="url" rel="index"><span itemprop="name">Deep Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RlbnNvcmZsb3cvbW9kZWxzL3RyZWUvbWFzdGVyL3N5bnRheG5ldA==">SyntaxNet<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。</p>
+<span id="more"></span>
+
+<h4 id="出现无法下载-gmock-的问题"><a href="#出现无法下载-gmock-的问题" class="headerlink" title="出现无法下载 gmock 的问题"></a>出现无法下载 gmock 的问题</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">no such package &#x27;@gmock_archive//&#x27;: Error downloading from https://archive.openswitch.net/gmock-1.7.0.zip</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-2-1024x223.png" alt="QQ20160813-2"><br>问题：大概是由于国内墙？或者是 Java 的问题，包没有下下来，或者验证不通过。<br>解决：那么手动下载它然后指定路径就行了吧。对于 bazel 一窍不通的我，翻了半天的配置，终于根据路径找到了配置下载地址的地方：</p>
+<h5 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">models/syntaxnet/tensorflow/tensorflow/workspace.bzl</span><br></pre></td></tr></table></figure>
+
+<h5 id="Download-gmock-到本地，我这里将它放到了tmp目录中"><a href="#Download-gmock-到本地，我这里将它放到了tmp目录中" class="headerlink" title="Download gmock 到本地，我这里将它放到了tmp目录中"></a>Download gmock 到本地，我这里将它放到了tmp目录中</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line">wget https://archive.openswitch.net/gmock-1.7.0.zip</span><br></pre></td></tr></table></figure>
+
+<h5 id="开启-python-的简单-http-服务"><a href="#开启-python-的简单-http-服务" class="headerlink" title="开启 python 的简单 http 服务"></a>开启 python 的简单 http 服务</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer <span class="number">8000</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="并且修改下载路径为本地"><a href="#并且修改下载路径为本地" class="headerlink" title="并且修改下载路径为本地"></a>并且修改下载路径为本地</h5><p>修改 PATH 中的文件，gmock 的路径位于 79 行，将其从</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url = &quot;https://archive.openswitch.net/gmock-1.7.0.zip&quot;</span><br></pre></td></tr></table></figure>
+<p>修改为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url = &quot;http://localhost:8000/gmock-1.7.0.zip&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-0-1024x832.png" alt="QQ20160813-0"><br><img data-src="/images/posts/2016/08/QQ20160813-1.png" alt="QQ20160813-1"></p>
+<h5 id="重新启动编译"><a href="#重新启动编译" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bazel <span class="built_in">test</span> --linkopt=-headerpad_max_install_names syntaxnet/... util/utf8/...</span><br></pre></td></tr></table></figure>
+
+<h4 id="出现无法找到-python-的问题"><a href="#出现无法找到-python-的问题" class="headerlink" title="出现无法找到 python 的问题"></a>出现无法找到 python 的问题</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR: Cannot find &#x27;external/org_tensorflow/util/python/python_lib&#x27;.  Did you run configure?</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-3-1024x616.png" alt="QQ20160813-3"></p>
+<p>问题：之前运行 configure 时配置的为 python_include 的路径，这儿找不到是因为 python_lib 的路径错误，默认路径为 /usr/lib/python2.7/site-packages 而我这儿不存在。</p>
+<p>解决：参考 github issues #2703 中的方案，修改 configure 文件是一种解决方式，不过这儿修改 python_config.sh 更为恰当。</p>
+<h5 id="PATH-1"><a href="#PATH-1" class="headerlink" title="PATH"></a>PATH</h5><p><code>models/syntaxnet/tensorflow/util/python/python_config.sh</code></p>
+<p><img data-src="/images/posts/2016/08/QQ20160813-5-1024x622.png" alt="QQ20160813-5"><br><img data-src="/images/posts/2016/08/QQ20160813-8-1024x86.png" alt="QQ20160813-8"></p>
+<h5 id="使用这个-python-config-sh-替换-PATH-路径中的文件"><a href="#使用这个-python-config-sh-替换-PATH-路径中的文件" class="headerlink" title="使用这个 python_config.sh 替换 PATH 路径中的文件"></a>使用这个 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Rhbm1hbmUvdGVuc29yZmxvdy9jb21taXQvNDk1OWExMjkxMDQ1Njc0YTIzNzkzMjEyY2ZlOTRkNDgwNDc2MGYwMQ==">python_config.sh<i class="fa fa-external-link-alt"></i></span> 替换 PATH 路径中的文件</h5><h5 id="重新-configure，自动识别的路径应该已经是正确的了"><a href="#重新-configure，自动识别的路径应该已经是正确的了" class="headerlink" title="重新 configure，自动识别的路径应该已经是正确的了"></a>重新 configure，自动识别的路径应该已经是正确的了</h5><p><img data-src="/images/posts/2016/08/QQ20160813-10-1024x527.png" alt="QQ20160813-10"></p>
+<h5 id="重新启动编译-1"><a href="#重新启动编译-1" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><p><img data-src="/images/posts/2016/08/QQ20160813-9-1024x591.png" alt="QQ20160813-9"></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/" title="SyntaxNet on MacOS">https://www.meanevo.com/2016/08/13/syntaxnet-on-macos/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/11/aliyun-pptp-writeup-and-iptables-using-logs/" rel="prev" title="记一次阿里云配置 PPTPd，及 IPTables Log 调试">
+                  <i class="fa fa-chevron-left"></i> 记一次阿里云配置 PPTPd，及 IPTables Log 调试
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/11/24/centos-based-router-base-configuation/" rel="next" title="使用 CentOS 实现小型网络路由 - 基础服务">
+                  使用 CentOS 实现小型网络路由 - 基础服务 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

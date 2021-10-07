@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="一直在Mac上用着自带的zsh，配合oh-my-zsh使用体验还算不错，主题也能定制很强大， 但是近日一个大牛给我推荐fish，也厌倦了bash的繁琐，于是乎。。手痒了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Mac上安装Fish">
+<meta property="og:url" content="https://www.meanevo.com/2015/07/31/fish-on-macos/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="一直在Mac上用着自带的zsh，配合oh-my-zsh使用体验还算不错，主题也能定制很强大， 但是近日一个大牛给我推荐fish，也厌倦了bash的繁琐，于是乎。。手痒了">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.03.06.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.06.50.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.09.37-1024x801.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.12.24-1.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.15.37.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.31.53-1024x267.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.47.53-1024x626.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.48.26-1024x626.png">
+<meta property="article:published_time" content="2015-07-31T09:05:50.000Z">
+<meta property="article:modified_time" content="2015-07-31T09:05:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2015/07/31/fish-on-macos/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2015/07/31/fish-on-macos/","path":"2015/07/31/fish-on-macos/","title":"在Mac上安装Fish"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>在Mac上安装Fish | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%BE%91-etc-shells%E6%96%87%E4%BB%B6%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E8%87%AA%E5%B8%A6%E7%9A%84%E4%B8%8D%E5%B0%91shell"><span class="nav-number">2.</span> <span class="nav-text">编辑&#x2F;etc&#x2F;shells文件，可以看到自带的不少shell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E4%B8%BA%E9%BB%98%E8%AE%A4shell%EF%BC%8C%E5%86%8D%E8%A7%81zsh"><span class="nav-number">3.</span> <span class="nav-text">设置为默认shell，再见zsh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E4%B8%8B%E6%9D%A5%EF%BC%8C%E6%8C%89%E7%85%A7oh-my-fish%E7%9A%84readme-https-github-com-oh-my-fish-oh-my-fish-%E4%B8%AD%E7%9A%84%E5%AE%89%E8%A3%85%E6%96%B9%E5%BC%8F%EF%BC%8C%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">接下来，按照oh-my-fish的readme(https:&#x2F;&#x2F;github.com&#x2F;oh-my-fish&#x2F;oh-my-fish)中的安装方式，执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E5%90%AFterminal%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%98%AF%E6%B2%A1%E6%9C%89%E5%88%A0%E9%99%A4zsh%E4%B8%BB%E9%A2%98%E7%9A%84%E5%8E%9F%E5%9B%A0%EF%BC%8C%E6%8F%90%E7%A4%BA%E4%B8%BB%E9%A2%98%E6%9C%AA%E6%89%BE%E5%88%B0%EF%BC%8C%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%8B"><span class="nav-number">5.</span> <span class="nav-text">重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%8D%E6%AC%A1%E9%87%8D%E5%90%AF%EF%BC%8C%E5%AE%8C%E7%BE%8E%EF%BC%8C%E4%B8%8D%E5%BE%97%E4%B8%8D%E8%AF%B4%E8%BF%98%E6%98%AF%E6%AF%94%E8%BE%83friendly%E7%9A%84"><span class="nav-number">6.</span> <span class="nav-text">再次重启，完美，不得不说还是比较friendly的 :-)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E4%B8%8B%E6%9D%A5%E6%98%AFautojump"><span class="nav-number">7.</span> <span class="nav-text">接下来是autojump</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E6%8F%90%E7%A4%BA%E5%86%85%E5%AE%B9%E6%94%BE%E5%85%A5fish%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-config-fish-config-fish"><span class="nav-number">8.</span> <span class="nav-text">将提示内容放入fish配置文件(~&#x2F;.config&#x2F;fish&#x2F;config.fish)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E5%B7%A5"><span class="nav-number">9.</span> <span class="nav-text">完工</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2015/07/31/fish-on-macos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在Mac上安装Fish
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2015-07-31 17:05:50 / Modified: 17:05:00" itemprop="dateCreated datePublished" datetime="2015-07-31T17:05:50+08:00">2015-07-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/OSX/" itemprop="url" rel="index"><span itemprop="name">OSX</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>一直在Mac上用着自带的zsh，配合oh-my-zsh使用体验还算不错，主题也能定制很强大，</p>
+<p>但是近日一个大牛给我推荐fish，也厌倦了bash的繁琐，于是乎。。手痒了</p>
+<span id="more"></span>
+
+<p>首先得说，有了brew这个神器，Mac真的是Shell和GUI的完美结合。</p>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg"><img data-src="/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg" alt="48C7EFF5-CD87-43E1-8068-852A0F984536"></a></p>
+<p>这时已经可以直接输入/usr/local/bin/fish体验了</p>
+<h4 id="编辑-etc-shells文件，可以看到自带的不少shell"><a href="#编辑-etc-shells文件，可以看到自带的不少shell" class="headerlink" title="编辑/etc/shells文件，可以看到自带的不少shell"></a>编辑/etc/shells文件，可以看到自带的不少shell</h4><p><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.03.06.png" alt="Screen Shot 2015-07-31 at 17.03.06"></p>
+<p>我们添加一行/usr/local/bin/fish</p>
+<h4 id="设置为默认shell，再见zsh"><a href="#设置为默认shell，再见zsh" class="headerlink" title="设置为默认shell，再见zsh"></a>设置为默认shell，再见zsh</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chsh -s /usr/<span class="built_in">local</span>/bin/fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.06.50.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.06.50.png" alt="Screen Shot 2015-07-31 at 17.06.50"></a></p>
+<h4 id="接下来，按照oh-my-fish的readme-https-github-com-oh-my-fish-oh-my-fish-中的安装方式，执行"><a href="#接下来，按照oh-my-fish的readme-https-github-com-oh-my-fish-oh-my-fish-中的安装方式，执行" class="headerlink" title="接下来，按照oh-my-fish的readme(https://github.com/oh-my-fish/oh-my-fish)中的安装方式，执行"></a>接下来，按照oh-my-fish的readme(<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29oLW15LWZpc2gvb2gtbXktZmlzaCklRTQlQjglQUQlRTclOUElODQlRTUlQUUlODklRTglQTMlODUlRTYlOTYlQjklRTUlQkMlOEYlRUYlQkMlOEMlRTYlODklQTclRTglQTElOEM=">https://github.com/oh-my-fish/oh-my-fish)中的安装方式，执行<i class="fa fa-external-link-alt"></i></span></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://github.com/oh-my-fish/oh-my-fish/raw/master/tools/install.fish | fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.09.37.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.09.37-1024x801.png" alt="Screen Shot 2015-07-31 at 17.09.37"></a></p>
+<h4 id="重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下"><a href="#重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下" class="headerlink" title="重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下"></a>重启terminal，<del>可能是没有删除zsh主题的原因，提示主题未找到，</del>安装一下</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.12.24-1.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.12.24-1.png" alt="Screen Shot 2015-07-31 at 17.12.24 1"></a></p>
+<h4 id="再次重启，完美，不得不说还是比较friendly的"><a href="#再次重启，完美，不得不说还是比较friendly的" class="headerlink" title="再次重启，完美，不得不说还是比较friendly的 :-)"></a>再次重启，完美，不得不说还是比较friendly的 :-)</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.15.37.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.15.37.png" alt="Screen Shot 2015-07-31 at 17.15.37"></a></p>
+<h4 id="接下来是autojump"><a href="#接下来是autojump" class="headerlink" title="接下来是autojump"></a>接下来是autojump</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install autojump</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.31.53.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.31.53-1024x267.png" alt="Screen Shot 2015-07-31 at 17.31.53"></a></p>
+<h4 id="将提示内容放入fish配置文件-config-fish-config-fish"><a href="#将提示内容放入fish配置文件-config-fish-config-fish" class="headerlink" title="将提示内容放入fish配置文件(~/.config/fish/config.fish)"></a>将提示内容放入fish配置文件(~/.config/fish/config.fish)</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ -f /usr/<span class="built_in">local</span>/share/autojump/autojump.fish ]; and . /usr/<span class="built_in">local</span>/share/autojump/autojump.fish</span><br></pre></td></tr></table></figure>
+
+<h4 id="完工"><a href="#完工" class="headerlink" title="完工"></a>完工</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.47.53.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.47.53-1024x626.png" alt="Screen Shot 2015-07-31 at 23.47.53"></a><br><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.48.26.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.48.26-1024x626.png" alt="Screen Shot 2015-07-31 at 23.48.26"></a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2015/07/31/fish-on-macos/" title="在Mac上安装Fish">https://www.meanevo.com/2015/07/31/fish-on-macos/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/07/30/zsh-numpad-issue/" rel="prev" title="关于zsh小键盘映射的问题">
+                  <i class="fa fa-chevron-left"></i> 关于zsh小键盘映射的问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/08/20/mirrors-google-on-nginx/" rel="next" title="利用Nginx反向代理，建立Google镜像站">
+                  利用Nginx反向代理，建立Google镜像站 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

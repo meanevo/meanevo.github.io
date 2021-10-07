@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 CentOS 实现小型网络路由 - 基础服务">
+<meta property="og:url" content="https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124220734-1024x237.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210139-1024x699.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210042-1024x643.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210054-1024x643.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205854.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124224342.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1024x486.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204955-1024x939.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210417.png">
+<meta property="article:published_time" content="2016-11-24T14:40:28.000Z">
+<meta property="article:modified_time" content="2016-11-24T14:40:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124220734-1024x237.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/","path":"2016/11/24/centos-based-router-base-configuation/","title":"使用 CentOS 实现小型网络路由 - 基础服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用 CentOS 实现小型网络路由 - 基础服务 | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%B7%A5%E4%B9%8B%E5%89%8D%E9%A6%96%E5%85%88%E5%85%88%E5%9B%9E%E6%83%B3%E4%B8%80%E4%B8%8B%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%B7%AF%E7%94%B1%E9%9C%80%E8%A6%81%E5%93%AA%E4%BA%9B%E6%9C%8D%E5%8A%A1%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">开工之前首先先回想一下实现一个简单的路由需要哪些服务。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E9%80%9A%E6%9C%AC%E6%9C%BA%E7%BD%91%E7%BB%9C"><span class="nav-number">2.</span> <span class="nav-text">配通本机网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%90%84%E4%B8%AA%E7%BD%91%E7%BB%9C%E4%BB%8B%E9%9D%A2"><span class="nav-number">3.</span> <span class="nav-text">配置各个网络介面</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.</span> <span class="nav-text">参考配置</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%BD%91%E6%A1%A5-ifcfg-br144"><span class="nav-number">3.1.1.</span> <span class="nav-text">网桥 (ifcfg-br144)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E7%AB%AF%E5%8F%A3-ifcfg-eno33559296"><span class="nav-number">3.1.2.</span> <span class="nav-text">普通端口 (ifcfg-eno33559296)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#VLAN%E7%AB%AF%E5%8F%A3-ifcfg-eno50338560-128"><span class="nav-number">3.1.3.</span> <span class="nav-text">VLAN端口 (ifcfg-eno50338560.128)</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%AE%8C%E6%AF%95%E9%87%8D%E5%90%AF%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.1.4.</span> <span class="nav-text">配置完毕重启网络服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DHCPd"><span class="nav-number">4.</span> <span class="nav-text">DHCPd</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%99%E9%87%8C%E4%B8%8D%E4%BD%BF%E7%94%A8-Dnsmasq-%E8%87%AA%E5%B8%A6%E7%9A%84-DHCP-Server%EF%BC%8C%E8%80%8C%E6%98%AF%E7%94%A8-DHCPd-%E6%9D%A5%E5%AE%9E%E7%8E%B0%EF%BC%88%E5%9B%A0%E4%B8%BA%E7%9B%B4%E6%8E%A5%E6%9C%89%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%EF%BC%89%EF%BC%8C%E5%AE%89%E8%A3%85"><span class="nav-number">4.1.</span> <span class="nav-text">这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有官方文档），安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%AE%8C%E6%AF%95%E5%90%8E%E4%BC%9A%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.2.</span> <span class="nav-text">安装完毕后会自动生成一个配置示例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E5%A4%8D%E5%88%B6%E8%BF%99%E4%B8%AA%E7%A4%BA%E4%BE%8B%EF%BC%8C%E4%B9%9F%E5%8F%AF%E4%BB%A5%E5%AE%8C%E5%85%A8%E8%87%AA%E5%B7%B1%E5%86%99%EF%BC%8C%E8%BF%99%E9%87%8C%E6%8C%89%E7%85%A7%E8%87%AA%E5%B7%B1%E9%9C%80%E6%B1%82%E5%86%99"><span class="nav-number">4.3.</span> <span class="nav-text">我们可以复制这个示例，也可以完全自己写，这里按照自己需求写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-amp-%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-number">4.4.</span> <span class="nav-text">启动&amp;开机自启</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%99%E9%87%8C%E5%A6%82%E6%9E%9C%E6%8A%A5%E9%94%99%EF%BC%8C%E4%BD%BF%E7%94%A8-journalctl-xe-%E6%9F%A5%E7%9C%8B"><span class="nav-number">4.5.</span> <span class="nav-text">这里如果报错，使用 journalctl -xe 查看</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dnsmasq"><span class="nav-number">5.</span> <span class="nav-text">Dnsmasq</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%B8%A6%E4%BA%86-Dnsmasq%EF%BC%8C%E6%88%91%E4%BB%AC%E5%8F%AA%E9%9C%80%E8%A6%81%E9%85%8D%E7%BD%AE%E5%A5%BD%EF%BC%8C%E8%AE%BE%E7%BD%AE%E5%90%AF%E5%8A%A8%E5%B0%B1%E5%8F%AF%E4%BB%A5"><span class="nav-number">5.1.</span> <span class="nav-text">系统自带了 Dnsmasq，我们只需要配置好，设置启动就可以</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">5.2.</span> <span class="nav-text">编辑配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-amp-%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF-1"><span class="nav-number">5.3.</span> <span class="nav-text">启动&amp;开机自启</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0-iptables-%E8%A7%84%E5%88%99"><span class="nav-number">5.4.</span> <span class="nav-text">添加 iptables 规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%EF%BC%8C%E8%8B%A5%E5%A4%B1%E8%B4%A5%E8%AF%B7%E7%A1%AE%E8%AE%A4%E4%B8%8A%E6%B8%B8-DNS-%E5%8F%AF%E7%94%A8%EF%BC%8C%E7%9B%91%E5%90%AC%E8%AE%BE%E7%BD%AE%E6%AD%A3%E7%A1%AE"><span class="nav-number">5.5.</span> <span class="nav-text">测试，若失败请确认上游 DNS 可用，监听设置正确</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-NAT"><span class="nav-number">6.</span> <span class="nav-text">配置 NAT</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%99%E4%B8%AA%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E5%B0%B1%E7%94%B1-iptables-%E6%9D%A5%E5%AE%8C%E6%88%90%EF%BC%8C%E5%AE%89%E8%A3%85%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE%E8%AF%B7%E5%8F%82%E8%80%83-CentOS7-%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">这个核心功能就由 iptables 来完成，安装基础配置请参考 CentOS7 基础配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0-Masquerade-%E8%A7%84%E5%88%99%EF%BC%8C%E5%B0%86%E5%86%85%E7%BD%91%E6%B5%81%E9%87%8F%E4%BC%AA%E8%A3%85%E5%8F%91%E9%80%81%E8%87%B3%E5%87%BA%E5%8F%A3%E7%AB%AF%E5%8F%A3-eno16780032"><span class="nav-number">6.2.</span> <span class="nav-text">添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%94%BE%E8%A1%8C%E6%89%80%E6%9C%89%E5%86%85%E7%BD%91-INPUT-FORWARD-%E8%AF%B7%E6%B1%82"><span class="nav-number">6.3.</span> <span class="nav-text">放行所有内网 INPUT FORWARD 请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE%EF%BC%8C%E6%8C%89%E6%83%85%E5%86%B5%E8%B0%83%E6%95%B4-INPUT-FORWARD-%E9%93%BE%E8%A7%84%E5%88%99%E4%BD%8D%E7%BD%AE"><span class="nav-number">6.4.</span> <span class="nav-text">检查配置，按情况调整 INPUT&#x2F;FORWARD 链规则位置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%B3%E6%AD%A4%E5%9F%BA%E6%9C%AC%E8%B7%AF%E7%94%B1%E5%8A%9F%E8%83%BD%E9%85%8D%E7%BD%AE%E5%AE%8C%E6%AF%95%EF%BC%8C%E8%BF%98%E6%98%AF%E6%8C%BA%E7%9C%81%E8%B5%84%E6%BA%90%E7%9A%84%E3%80%82%E9%85%8D%E5%90%88-ss-redir-%E5%AE%9E%E7%8E%B0-FxxkGFW-%E5%9C%A8%E4%B8%8B%E4%B8%80%E7%AB%A0%E8%AE%B2"><span class="nav-number">7.</span> <span class="nav-text">至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 CentOS 实现小型网络路由 - 基础服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2016-11-24 22:40:28 / Modified: 22:40:00" itemprop="dateCreated datePublished" datetime="2016-11-24T22:40:28+08:00">2016-11-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Routing/" itemprop="url" rel="index"><span itemprop="name">Routing</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。</p>
+<span id="more"></span>
+
+<p>关于软路由系统的选择，参考了<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTGlzdF9vZl9yb3V0ZXJfYW5kX2ZpcmV3YWxsX2Rpc3RyaWJ1dGlvbnM=">这篇 WIKI<i class="fa fa-external-link-alt"></i></span>。<br>首先并不是很喜欢使用普遍路由中使用的 DD-WRT or OpenWrt，DD 是因为功能不满足需求，而 OpenWrt 直到 15.05 才有官方的 x86-64，暂且不论兼容性，有许多包在 64 位需要自己编译，并且最新版的 OpenWrt 移除了 14.x 中的 oldpackages，导致 pdnsd 也没了。一直在使用的 RouterOS 配置简明，但是在 x86 上表现一般，且没有第三方的包（没有 VMXNET3 驱动），后来选择了 VyOS（前身Vyatta），看中的就是这玩意带一个类似硬路由的 shell，可惜使用时由于其官方 community 源 404，还是 pass 了。</p>
+<p>想来 Linux 用起比较顺手，就干脆用它来用作路由。看了一圈最后还是选了 CentOS，虽然其官方文档惨不忍睹，但是有 RHEL 这个老爹在，光是网络部分的文档就有 12 章之多，<span class="exturl" data-url="aHR0cHM6Ly9hY2Nlc3MucmVkaGF0LmNvbS9kb2N1bWVudGF0aW9uL2VuLVVTL1JlZF9IYXRfRW50ZXJwcmlzZV9MaW51eC83L2h0bWwvTmV0d29ya2luZ19HdWlkZS9jaC1JbnRyb2R1Y3Rpb25fdG9fUkhFTF9OZXR3b3JraW5nLmh0bWw=">RHEL 文档地址<i class="fa fa-external-link-alt"></i></span>。</p>
+<h4 id="开工之前首先先回想一下实现一个简单的路由需要哪些服务。"><a href="#开工之前首先先回想一下实现一个简单的路由需要哪些服务。" class="headerlink" title="开工之前首先先回想一下实现一个简单的路由需要哪些服务。"></a>开工之前首先先回想一下实现一个简单的路由需要哪些服务。</h4><ul>
+<li>NAT: Masquerade、转发流量就靠它了</li>
+<li>DHCP Server: 用来分配内网机器地址</li>
+<li>DNS Server: 域名 IP 映射，这里目标是配一个无劫持的 DNS<br>接着就是开工了：</li>
+</ul>
+<h4 id="配通本机网络"><a href="#配通本机网络" class="headerlink" title="配通本机网络"></a>配通本机网络</h4><p>确保本机 route 正确，能正常 ping 通外网 IP，这个就不多介绍了。</p>
+<blockquote>
+<p>提醒一下 CentOS7 自带的 nmcli 似乎有问题，于是下篇绕过这个管理器直接使用 CLI 来配置网络</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop NetworkManager</span><br><span class="line">systemctl <span class="built_in">disable</span> NetworkManager</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>本示例网卡分配情况：<img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124220734-1024x237.png" alt="qq%e6%88%aa%e5%9b%be20161124220734"></p>
+</blockquote>
+<h4 id="配置各个网络介面"><a href="#配置各个网络介面" class="headerlink" title="配置各个网络介面"></a>配置各个网络介面</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-br144</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-eno50338560</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-eno50338560.128</span><br></pre></td></tr></table></figure>
+
+<h5 id="参考配置"><a href="#参考配置" class="headerlink" title="参考配置"></a>参考配置</h5><blockquote>
+<h6 id="网桥-ifcfg-br144"><a href="#网桥-ifcfg-br144" class="headerlink" title="网桥 (ifcfg-br144)"></a>网桥 (ifcfg-br144)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=br144 <span class="comment">#桥接设备名：brX</span></span><br><span class="line">TYPE=Bridge</span><br><span class="line">IPADDR=172.16.144.1 <span class="comment">#IP 地址</span></span><br><span class="line">PREFIX=20 <span class="comment">#网络标识</span></span><br><span class="line">GATEWAY=172.16.144.1 <span class="comment">#网关地址</span></span><br><span class="line">BOOTPROTO=none</span><br><span class="line">ONBOOT=yes</span><br><span class="line">MTU=9000</span><br><span class="line">STP=yes <span class="comment">#启用 STP</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h6 id="普通端口-ifcfg-eno33559296"><a href="#普通端口-ifcfg-eno33559296" class="headerlink" title="普通端口 (ifcfg-eno33559296)"></a>普通端口 (ifcfg-eno33559296)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">BOOTPROTO=none <span class="comment">#静态地址，如若是外网口设为dhcp</span></span><br><span class="line">DEFROUTE=no <span class="comment">#不添加默认路由，如若是外网口设为yes</span></span><br><span class="line">PEERDNS=no <span class="comment">#不添加默认 DNS，如若是外网口设为yes</span></span><br><span class="line">PEERROUTES=no</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=no</span><br><span class="line">IPV6_DEFROUTE=no</span><br><span class="line">IPV6_PEERDNS=no</span><br><span class="line">IPV6_PEERROUTES=no</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">NAME=eno33559296</span><br><span class="line">UUID=cf803907-bfb2-4157-9bee-79050d505cb4</span><br><span class="line">HWADDR=00:0c:29:20:7c:38 <span class="comment">#根据实际 MAC 地址修改</span></span><br><span class="line">DEVICE=eno33559296</span><br><span class="line">ONBOOT=yes <span class="comment">#随开机 UP</span></span><br><span class="line">MTU=9000 <span class="comment">#修改 MTU</span></span><br><span class="line">BRIDGE=br144 <span class="comment">#添加此行将此端口加入桥 br144，不需要添加 IP 设定，改为在桥 br144 中添加</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h6 id="VLAN端口-ifcfg-eno50338560-128"><a href="#VLAN端口-ifcfg-eno50338560-128" class="headerlink" title="VLAN端口 (ifcfg-eno50338560.128)"></a>VLAN端口 (ifcfg-eno50338560.128)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=eno50338560.128 <span class="comment">#普通端口名.VLAN_ID</span></span><br><span class="line">BOOTPROTO=none</span><br><span class="line">ONBOOT=yes</span><br><span class="line">MTU=8972</span><br><span class="line">IPADDR=172.16.128.1 <span class="comment">#IP 地址</span></span><br><span class="line">PREFIX=20 <span class="comment">#网络标识</span></span><br><span class="line">NETWORK=172.16.128.0 <span class="comment">#所在网络</span></span><br><span class="line">VLAN=yes <span class="comment">#VLAN口</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="配置完毕重启网络服务"><a href="#配置完毕重启网络服务" class="headerlink" title="配置完毕重启网络服务"></a>配置完毕重启网络服务</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210139-1024x699.png" alt="qq%e6%88%aa%e5%9b%be20161124210139"></p>
+<h4 id="DHCPd"><a href="#DHCPd" class="headerlink" title="DHCPd"></a>DHCPd</h4><h5 id="这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装"><a href="#这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装" class="headerlink" title="这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有官方文档），安装"></a>这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有<span class="exturl" data-url="aHR0cHM6Ly9hY2Nlc3MucmVkaGF0LmNvbS9kb2N1bWVudGF0aW9uL2VuLVVTL1JlZF9IYXRfRW50ZXJwcmlzZV9MaW51eC83L2h0bWwvTmV0d29ya2luZ19HdWlkZS9zZWMtZGhjcC1jb25maWd1cmluZy1zZXJ2ZXIuaHRtbA==">官方文档<i class="fa fa-external-link-alt"></i></span>），安装</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">disable</span> NetworkManager</span><br></pre></td></tr></table></figure>
+
+<h5 id="安装完毕后会自动生成一个配置示例"><a href="#安装完毕后会自动生成一个配置示例" class="headerlink" title="安装完毕后会自动生成一个配置示例"></a>安装完毕后会自动生成一个配置示例</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/share/doc/dhcp-&#123;version&#125;/dhcpd.conf.example</span><br></pre></td></tr></table></figure>
+
+<h5 id="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"><a href="#我们可以复制这个示例，也可以完全自己写，这里按照自己需求写" class="headerlink" title="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"></a>我们可以复制这个示例，也可以完全自己写，这里按照自己需求写</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/dhcp/dhcpd.conf</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210042-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210042"><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210054-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210054"></p>
+<h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start dhcpd</span><br><span class="line">systemctl <span class="built_in">enable</span> dhcpd</span><br></pre></td></tr></table></figure>
+
+<h5 id="这里如果报错，使用-journalctl-xe-查看"><a href="#这里如果报错，使用-journalctl-xe-查看" class="headerlink" title="这里如果报错，使用 journalctl -xe 查看"></a>这里如果报错，使用 journalctl -xe 查看</h5><blockquote>
+<p>很有可能是 DHCPd 中的设置网段 并没有在当前端口中找到，检查 II 中的配置，并确保端口 UP 状态。<br>    6.  ###### 2016.11.26 补充：此版本（4.2.5-42） DHCPd 有 BUG，会意外退出。<span class="exturl" data-url="aHR0cHM6Ly9idWd6aWxsYS5yZWRoYXQuY29tL3Nob3dfYnVnLmNnaT9pZD0xMzAyMjgy">参考<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<blockquote>
+<ul>
+<li>解决方案：</li>
+</ul>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/NetworkManager/dispatcher.d/12-dhcpd</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p>找到行，添加带有 ‘+’ 的两行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$STATUS</span>&quot;</span> = <span class="string">&quot;up&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="comment"># restart the services</span></span><br><span class="line">+    systemctl reset-failed dhcpd.service</span><br><span class="line">    systemctl -q is-enabled dhcpd.service &amp;&amp; systemctl restart dhcpd.service</span><br><span class="line">+    systemctl reset-failed dhcpd6.service</span><br><span class="line">    systemctl -q is-enabled dhcpd6.service &amp;&amp; systemctl restart dhcpd6.service</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<h4 id="Dnsmasq"><a href="#Dnsmasq" class="headerlink" title="Dnsmasq"></a>Dnsmasq</h4><h5 id="系统自带了-Dnsmasq，我们只需要配置好，设置启动就可以"><a href="#系统自带了-Dnsmasq，我们只需要配置好，设置启动就可以" class="headerlink" title="系统自带了 Dnsmasq，我们只需要配置好，设置启动就可以"></a>系统自带了 Dnsmasq，我们只需要配置好，设置启动就可以</h5><h5 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/dnsmasq.conf</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意以下编辑选项，其他选项我这里都是被注释状态：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">domain-needed <span class="comment">#只解析合法域名</span></span><br><span class="line">bogus-priv</span><br><span class="line">no-resolv <span class="comment">#不读取 /etc/resolv.conf</span></span><br><span class="line">no-poll <span class="comment">#不读取 /etc/resolv.conf</span></span><br><span class="line">server=127.0.0.1<span class="comment">#5353 #上游 DNS 地址，这里设置成本地 5353 口，是因为有 ChinaDNS 监听在此端口，达到不被污染劫持的目的，具体配置在下一篇说</span></span><br><span class="line">except-interface=eno16780032 <span class="comment">#不监听外网端口，根据需要修改</span></span><br><span class="line">no-dhcp-interface=br144 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">no-dhcp-interface=eno50338560 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">no-dhcp-interface=eno50338560.12 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">cache-size=2000 <span class="comment">#做 DNS 请求缓存</span></span><br><span class="line">conf-dir=/etc/dnsmasq.d <span class="comment">#加载额外配置文件的目录，这个后面优化无污染 DNS 时候用到</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205854.png" alt="qq%e6%88%aa%e5%9b%be20161124205854"></p>
+<h5 id="启动-amp-开机自启-1"><a href="#启动-amp-开机自启-1" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start dnsmasq</span><br><span class="line">systemctl <span class="built_in">enable</span> dnsmasq</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加-iptables-规则"><a href="#添加-iptables-规则" class="headerlink" title="添加 iptables 规则"></a>添加 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p udp -m state --state NEW --dport 53 -j ACCEPT</span><br><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br><span class="line">systemctl restart iptables</span><br></pre></td></tr></table></figure>
+
+<h5 id="测试，若失败请确认上游-DNS-可用，监听设置正确"><a href="#测试，若失败请确认上游-DNS-可用，监听设置正确" class="headerlink" title="测试，若失败请确认上游 DNS 可用，监听设置正确"></a>测试，若失败请确认上游 DNS 可用，监听设置正确</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p53</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124224342.png" alt="qq%e6%88%aa%e5%9b%be20161124224342"></p>
+<h4 id="配置-NAT"><a href="#配置-NAT" class="headerlink" title="配置 NAT"></a>配置 NAT</h4><h5 id="这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置"><a href="#这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置" class="headerlink" title="这个核心功能就由 iptables 来完成，安装基础配置请参考 CentOS7 基础配置"></a>这个核心功能就由 iptables 来完成，安装基础配置请参考 <a href="/2015/06/07/redhat-enterprise-linux-rhel-7-configuration/">CentOS7 基础配置</a></h5><h5 id="添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032"><a href="#添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032" class="headerlink" title="添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)"></a>添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -o eno16780032 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<h5 id="放行所有内网-INPUT-FORWARD-请求"><a href="#放行所有内网-INPUT-FORWARD-请求" class="headerlink" title="放行所有内网 INPUT FORWARD 请求"></a>放行所有内网 INPUT FORWARD 请求</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -i br144 -j ACCEPT</span><br><span class="line">iptables -I INPUT -i eno50338560 -j ACCEPT</span><br><span class="line">iptables -I INPUT -i eno50338560.128 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i br144 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o br144 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i eno50338560 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o eno50338560 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i eno50338560.128 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o eno50338560.128 -j ACCEPT</span><br><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<h5 id="检查配置，按情况调整-INPUT-FORWARD-链规则位置"><a href="#检查配置，按情况调整-INPUT-FORWARD-链规则位置" class="headerlink" title="检查配置，按情况调整 INPUT/FORWARD 链规则位置"></a>检查配置，按情况调整 INPUT/FORWARD 链规则位置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart iptables</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204955-1024x939.png" alt="qq%e6%88%aa%e5%9b%be20161124204955"></p>
+<h4 id="至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲"><a href="#至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲" class="headerlink" title="至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲"></a>至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲<img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210417.png" alt="qq%e6%88%aa%e5%9b%be20161124210417"></h4>
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/" title="使用 CentOS 实现小型网络路由 - 基础服务">https://www.meanevo.com/2016/11/24/centos-based-router-base-configuation/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/13/syntaxnet-on-macos/" rel="prev" title="SyntaxNet on MacOS">
+                  <i class="fa fa-chevron-left"></i> SyntaxNet on MacOS
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/11/27/centos-based-router-fxxk-gfw/" rel="next" title="使用 CentOS 实现小型网络路由 – 跨过长城">
+                  使用 CentOS 实现小型网络路由 – 跨过长城 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

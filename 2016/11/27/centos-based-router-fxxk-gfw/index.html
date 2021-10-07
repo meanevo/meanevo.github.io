@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。  PS：由于发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 CentOS 实现小型网络路由 – 跨过长城">
+<meta property="og:url" content="https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。  PS：由于发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161126232539.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205634-1024x229.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204706.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205514-1024x643.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205258.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1-1024x486.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204536-1024x655.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204640-1024x655.png">
+<meta property="article:published_time" content="2016-11-26T16:57:04.000Z">
+<meta property="article:modified_time" content="2016-11-26T16:57:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161126232539.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/","path":"2016/11/27/centos-based-router-fxxk-gfw/","title":"使用 CentOS 实现小型网络路由 – 跨过长城"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用 CentOS 实现小型网络路由 – 跨过长城 | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-pdnsd"><span class="nav-number">1.</span> <span class="nav-text">安装配置 pdnsd</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%8E%E5%85%B6%E5%AE%98%E6%96%B9%E9%A1%B5%E9%9D%A2%E8%8E%B7%E5%BE%97-x86-64%E5%B9%B3%E5%8F%B0%E7%9A%84%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="nav-number">1.1.</span> <span class="nav-text">于其官方页面获得 x86_64平台的下载地址</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-curl-%E4%B8%8B%E8%BD%BD"><span class="nav-number">1.2.</span> <span class="nav-text">使用 curl 下载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#yum-%E6%9C%AC%E5%9C%B0%E5%AE%89%E8%A3%85"><span class="nav-number">1.3.</span> <span class="nav-text">yum 本地安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%96%E8%BE%91%E5%85%B6%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.</span> <span class="nav-text">编辑其配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.</span> <span class="nav-text">参考配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-amp-%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-number">1.6.</span> <span class="nav-text">启动&amp;开机自启</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-pdnsd-%E6%AD%A3%E5%B8%B8%E5%B7%A5%E4%BD%9C%EF%BC%88%E5%8F%AF%E6%9F%A5%E8%AF%A2%E4%B8%94%E6%97%A0%E6%8A%95%E6%AF%92%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">验证 pdnsd 正常工作（可查询且无投毒）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-ChinaDNS"><span class="nav-number">2.</span> <span class="nav-text">安装配置 ChinaDNS</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%BA%90%E7%A0%81%E5%88%B0%E6%9C%AC%E5%9C%B0%EF%BC%8C%E7%BC%96%E8%AF%91"><span class="nav-number">2.1.</span> <span class="nav-text">下载源码到本地，编译</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2-IP-%E9%BB%91%E5%90%8D%E5%8D%95"><span class="nav-number">2.2.</span> <span class="nav-text">替换 IP 黑名单</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E5%90%AF%E5%8A%A8-ChinaDNS"><span class="nav-number">2.3.</span> <span class="nav-text">尝试启动 ChinaDNS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E5%85%B6%E6%AD%A3%E5%B8%B8%E5%B7%A5%E4%BD%9C%EF%BC%88%E6%AD%A3%E5%B8%B8%E8%BF%94%E5%9B%9E-pass-%E7%BB%93%E6%9E%9C%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">验证其正常工作（正常返回 pass 结果）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%93%E6%9D%9F%E8%B0%83%E8%AF%95%E5%B9%B6%E6%B7%BB%E5%8A%A0%E8%87%B3%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-number">2.5.</span> <span class="nav-text">结束调试并添加至开机自启</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Dnsmasq"><span class="nav-number">3.</span> <span class="nav-text">配置 Dnsmasq</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E7%85%A7%E4%B8%8A%E4%B8%80%E7%AB%A0%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.</span> <span class="nav-text">按照上一章配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0-dnsmasq-china-list-%E5%8A%A0%E9%80%9F%E5%9B%BD%E5%86%85%E8%A7%A3%E6%9E%90%EF%BC%8C%E5%B9%B6%E8%A7%A3%E5%86%B3%E9%83%A8%E5%88%86-CDN-%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text">添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E5%8A%A0%E8%BD%BD-Dnsmasq"><span class="nav-number">3.3.</span> <span class="nav-text">重新加载 Dnsmasq</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-Dnsmasq"><span class="nav-number">3.4.</span> <span class="nav-text">测试 Dnsmasq</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE-Shadowsocks-libev"><span class="nav-number">4.</span> <span class="nav-text">安装配置 Shadowsocks-libev</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E5%85%B6%E5%AE%98%E6%96%B9-Github-%E5%BE%97%E7%9F%A5%EF%BC%8CRHEL-CentOS-%E5%AE%89%E8%A3%85%E5%8F%AF%E9%80%9A%E8%BF%87%E6%BA%90%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.1.</span> <span class="nav-text">参考其官方 Github 得知，RHEL&#x2F;CentOS 安装可通过源实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-ss-redir-%E7%9B%91%E5%90%AC%E6%9C%AC%E5%9C%B0%E7%AB%AF%E5%8F%A3"><span class="nav-number">4.2.</span> <span class="nav-text">使用 ss-redir 监听本地端口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%87%B3%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-number">4.3.</span> <span class="nav-text">添加至开机自启</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-xtables-addons%EF%BC%88GeoIP-%E6%A8%A1%E5%9D%97%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">安装 xtables-addons（GeoIP 模块）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%88%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8-yum-%E5%AE%89%E8%A3%85%E5%BF%85%E8%A6%81%E7%BB%84%E4%BB%B6"><span class="nav-number">5.1.</span> <span class="nav-text">先直接使用 yum 安装必要组件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD-addons-%E6%BA%90%E7%A0%81%E5%8C%85%E5%B9%B6%E8%A7%A3%E5%8E%8B"><span class="nav-number">5.2.</span> <span class="nav-text">下载 addons 源码包并解压</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%B1%E4%BA%8E-CentOS-xtables-%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98%EF%BC%8C%E4%BF%AE%E6%94%B9%E7%BC%96%E8%AF%91%E8%AE%BE%E7%BD%AE%EF%BC%8C%E6%B3%A8%E9%87%8A%E4%BB%A5%E4%B8%8B%E4%B8%A4%E8%A1%8C"><span class="nav-number">5.3.</span> <span class="nav-text">由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">5.4.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C%E8%BF%9B%E5%85%A5%E6%BA%90%E7%A0%81%E5%8C%85%E4%B8%8B-geoip-%E7%9B%AE%E5%BD%95%EF%BC%8C%E4%B8%8B%E8%BD%BD%E5%9C%B0%E7%90%86-IP-%E5%8C%85"><span class="nav-number">5.5.</span> <span class="nav-text">完成后，进入源码包下 geoip 目录，下载地理 IP 包</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E5%90%8E%E5%A4%8D%E5%88%B6-BE-LE-%E4%B8%A4%E4%B8%AA%E7%9B%AE%E5%BD%95%E8%87%B3%E6%8C%87%E5%AE%9A%E8%B7%AF%E5%BE%84%EF%BC%8CGeoIP-%E6%A8%A1%E5%9D%97%E9%85%8D%E7%BD%AE%E5%AE%8C%E6%88%90"><span class="nav-number">5.6.</span> <span class="nav-text">完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-iptables%EF%BC%8C%E5%AE%9E%E7%8E%B0%E6%B5%81%E9%87%8F%E8%BD%AC%E5%8F%91"><span class="nav-number">6.</span> <span class="nav-text">配置 iptables，实现流量转发</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B"><span class="nav-number">6.1.</span> <span class="nav-text">配置示例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E8%AE%BF%E9%97%AE%E5%A2%99%E5%A4%96%E7%BD%91%E7%AB%99%EF%BC%8C%E6%88%90%E5%8A%9F%E5%88%99-IP-%E6%98%BE%E7%A4%BA%E4%B8%BA-SS-%E7%9A%84%E5%87%BA%E5%8F%A3-IP"><span class="nav-number">6.2.</span> <span class="nav-text">尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98-iptables-%E8%A7%84%E5%88%99"><span class="nav-number">6.3.</span> <span class="nav-text">保存 iptables 规则</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Done%EF%BC%81"><span class="nav-number">7.</span> <span class="nav-text">Done！</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用 CentOS 实现小型网络路由 – 跨过长城
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2016-11-27 00:57:04 / Modified: 00:57:00" itemprop="dateCreated datePublished" datetime="2016-11-27T00:57:04+08:00">2016-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FxxkGFW/" itemprop="url" rel="index"><span itemprop="name">FxxkGFW</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。</p>
+<blockquote>
+<p>PS：由于发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>本篇需用到的组件（解决 DNS 污染问题以及提供代理通道）：</p>
+<ul>
+<li>  上篇中配置 CentOS 中所包含的 Dnsmasq, iptables 等组件</li>
+<li>  <span class="exturl" data-url="aHR0cDovL21lbWJlcnMuaG9tZS5ubC9wLmEucm9tYm91dHMvcGRuc2Qv">pdnsd<i class="fa fa-external-link-alt"></i></span>: 提供 TCP查询 获得可靠清洁的 DNS 记录。这个工具很久没有维护了，然而在  TCP 查询 DNS 时候，自己测试结果要快于 unbound 之类。当然使用 ss-tunnel 来转发 DNS 亦可，只是这边环境对 UDP 不友好，就没采用</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL0NoaW5hRE5T">ChinaDNS<i class="fa fa-external-link-alt"></i></span>: 清洗被污染的 DNS 记录</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZlbGl4b25tYXJzL2Ruc21hc3EtY2hpbmEtbGlzdA==">dnsmasq-china-list<i class="fa fa-external-link-alt"></i></span>: 国内域名列表，指定国内域名直接通过国内 DNS 进行解析，缓解 CDN 问题</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL3NoYWRvd3NvY2tzLWxpYmV2">Shadowsocks-libev<i class="fa fa-external-link-alt"></i></span>: 包含多个组件，我们用 ss-redir 来实现重定向</li>
+</ul>
+<h4 id="安装配置-pdnsd"><a href="#安装配置-pdnsd" class="headerlink" title="安装配置 pdnsd"></a>安装配置 pdnsd</h4><h5 id="于其官方页面获得-x86-64平台的下载地址"><a href="#于其官方页面获得-x86-64平台的下载地址" class="headerlink" title="于其官方页面获得 x86_64平台的下载地址"></a>于其官方页面获得 x86_64平台的<span class="exturl" data-url="aHR0cDovL21lbWJlcnMuaG9tZS5ubC9wLmEucm9tYm91dHMvcGRuc2QvcmVsZWFzZXMvcGRuc2QtMS4yLjlhLXBhcl9zbDYueDg2XzY0LnJwbQ==">下载地址<i class="fa fa-external-link-alt"></i></span></h5><h5 id="使用-curl-下载"><a href="#使用-curl-下载" class="headerlink" title="使用 curl 下载"></a>使用 curl 下载</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -O http://members.home.nl/p.a.rombouts/pdnsd/releases/pdnsd-1.2.9a-par_sl6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h5 id="yum-本地安装"><a href="#yum-本地安装" class="headerlink" title="yum 本地安装"></a>yum 本地安装</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall pdnsd-1.2.9a-par_sl6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h5 id="编辑其配置文件"><a href="#编辑其配置文件" class="headerlink" title="编辑其配置文件"></a>编辑其配置文件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/pdnsd.conf</span><br></pre></td></tr></table></figure>
+
+<h5 id="参考配置"><a href="#参考配置" class="headerlink" title="参考配置"></a>参考配置</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">global &#123;</span><br><span class="line">        perm_cache=0; #关闭 pdnsd 的缓存</span><br><span class="line">        cache_dir=&quot;/var/cache/pdnsd&quot;;</span><br><span class="line">        run_as=&quot;pdnsd&quot;;</span><br><span class="line">        server_ip = 127.0.0.1; #监听本地</span><br><span class="line">        server_port = 53535; #监听本地 53535 端口，注意错开 Dnsmasq, ChinaDNS 的端口</span><br><span class="line">        status_ctl = on;</span><br><span class="line">        query_method=tcp_only; #修改为仅通过 TCP 查询</span><br><span class="line">        min_ttl=15m;       # Retain cached entries at least 15 minutes.</span><br><span class="line">        max_ttl=1w;        # One week.</span><br><span class="line">        timeout=10;        # Global timeout option (10 seconds).</span><br><span class="line">        neg_domain_pol=on;</span><br><span class="line">        udpbufsize=1024;   # Upper limit on the size of UDP messages.</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">        label= &quot;opendns&quot;;</span><br><span class="line">        ip = 208.67.220.220, 208.67.222.222;  #上级 DNS 地址，需为国外支持 TCP 查询且无污染投毒的 DNS</span><br><span class="line">        reject = 208.69.32.0/24,  # You may need to add additional address ranges</span><br><span class="line">                208.69.34.0/24,  # here if the addresses of their search engines</span><br><span class="line">                208.67.219.0/24, # change.</span><br><span class="line">                208.67.217.0/24,</span><br><span class="line">                208.67.216.0/24;</span><br><span class="line">        reject_policy = fail;</span><br><span class="line">        port = 443; #上级 DNS 端口，这里使用 tcp 查询配合 443 端口</span><br><span class="line">        timeout=4; #查询超时</span><br><span class="line">        uptest=ping;</span><br><span class="line">        interval=10m;</span><br><span class="line">        purge_cache=off;</span><br><span class="line">        edns_query=yes;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">        label= &quot;v2ex&quot;;</span><br><span class="line">        ip = 199.91.73.222; #V2EX 只有這個地址有非標準端口所以單獨放出來</span><br><span class="line">        port = 3389; #指定支持的非標準端口</span><br><span class="line">        timeout=4;</span><br><span class="line">        uptest=ping;</span><br><span class="line">        ping_timeout = 100;</span><br><span class="line">        interval=10m;</span><br><span class="line">        purge_cache=off;</span><br><span class="line">        edns_query=off;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start pdnsd</span><br><span class="line">systemctl <span class="built_in">enable</span> pdnsd</span><br></pre></td></tr></table></figure>
+<h5 id="验证-pdnsd-正常工作（可查询且无投毒）"><a href="#验证-pdnsd-正常工作（可查询且无投毒）" class="headerlink" title="验证 pdnsd 正常工作（可查询且无投毒）"></a>验证 pdnsd 正常工作（可查询且无投毒）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p53535</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161126232539.png" alt="qq%e6%88%aa%e5%9b%be20161126232539"></p>
+<h4 id="安装配置-ChinaDNS"><a href="#安装配置-ChinaDNS" class="headerlink" title="安装配置 ChinaDNS"></a>安装配置 ChinaDNS</h4><blockquote>
+<p>本示例中 ChinaDNS 路径: /usr/local/other/chinadns-1.3.2</p>
+</blockquote>
+<blockquote>
+<p>参照其<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL0NoaW5hRE5TI2luc3RhbGw=">官方 Github 中 Linux/Unix 的安装方法<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<h5 id="下载源码到本地，编译"><a href="#下载源码到本地，编译" class="headerlink" title="下载源码到本地，编译"></a>下载源码到本地，编译</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/<span class="built_in">local</span>/other/chinadns-1.3.2 &amp;&amp; <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/other/chinadns-1.3.2</span><br><span class="line">./configure &amp;&amp; make</span><br></pre></td></tr></table></figure>
+
+<h5 id="替换-IP-黑名单"><a href="#替换-IP-黑名单" class="headerlink" title="替换 IP 黑名单"></a>替换 IP 黑名单</h5><p>其自带一个 IP 黑名单（iplist.txt），以及一个 中国区 IP 列表 （chnroute.txt ），我们这里将其 chnroute 替换为 <span class="exturl" data-url="aHR0cDovL3d3dy5pcGRlbnkuY29tL2lwYmxvY2tzLw==">ipdeny<i class="fa fa-external-link-alt"></i></span> 提供的最新 <span class="exturl" data-url="aHR0cDovL3d3dy5pcGRlbnkuY29tL2lwYmxvY2tzL2RhdGEvYWdncmVnYXRlZC9jbi1hZ2dyZWdhdGVkLnpvbmU=">list<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone &gt; ipdeny-cn.txt</span><br></pre></td></tr></table></figure>
+
+<h5 id="尝试启动-ChinaDNS"><a href="#尝试启动-ChinaDNS" class="headerlink" title="尝试启动 ChinaDNS"></a>尝试启动 ChinaDNS</h5><p>本示例监听了 5353 端口，加载黑名单，国内IP名单，开启压缩指针，并指定 180.76.76.76 （百度 DNS）为国内 DNS，127.0.0.1:53535 （之前配置的pdnsd）为国外 DNS，并且开启 verbose 调试，运行于后台</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/bin/chinadns -l /usr/<span class="built_in">local</span>/other/chinadns-1.3.2/iplist.txt -p 5353 -c /usr/<span class="built_in">local</span>/other/chinadns-1.3.2/ipdeny-cn.txt -s 180.76.76.76,127.0.0.1:53535 -d -m -v &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="验证其正常工作（正常返回-pass-结果）"><a href="#验证其正常工作（正常返回-pass-结果）" class="headerlink" title="验证其正常工作（正常返回 pass 结果）"></a>验证其正常工作（正常返回 pass 结果）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p5353</span><br></pre></td></tr></table></figure>
+
+<h5 id="结束调试并添加至开机自启"><a href="#结束调试并添加至开机自启" class="headerlink" title="结束调试并添加至开机自启"></a>结束调试并添加至开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">killall chinadns</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;nohup /usr/local/bin/chinadns -l /usr/local/other/chinadns-1.3.2/iplist.txt -b 127.0.0.1 -p 5353 -c /usr/local/other/chinadns-1.3.2/ipdeny-cn.txt -s 180.76.76.76,127.0.0.1:53535 -d -m -v &gt; /var/log/user/chinadns 2&gt;&amp;1 &amp;&quot;</span> &gt;&gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>记得如果时第一次启用 rc.local 先</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h4><h5 id="按照上一章配置"><a href="#按照上一章配置" class="headerlink" title="按照上一章配置"></a>按照<a href="/2016/11/24/centos-based-router-base-configuation/">上一章</a>配置</h5><h5 id="添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题"><a href="#添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题" class="headerlink" title="添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题"></a>添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf &gt; /etc/dnsmasq.d/accelerated-domains.china.conf</span><br><span class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/bogus-nxdomain.china.conf &gt; /etc/dnsmasq.d/bogus-nxdomain.china.conf</span><br></pre></td></tr></table></figure>
+
+<h5 id="重新加载-Dnsmasq"><a href="#重新加载-Dnsmasq" class="headerlink" title="重新加载 Dnsmasq"></a>重新加载 Dnsmasq</h5><blockquote>
+<p>会自动载入 /etc/dnsmasq.d 目录的配置文件</p>
+</blockquote>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205634-1024x229.png" alt="qq%e6%88%aa%e5%9b%be20161124205634"></p>
+<h5 id="测试-Dnsmasq"><a href="#测试-Dnsmasq" class="headerlink" title="测试 Dnsmasq"></a>测试 Dnsmasq</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig @127.0.0.1 google.com</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204706.png" alt="qq%e6%88%aa%e5%9b%be20161124204706"></p>
+<h4 id="安装配置-Shadowsocks-libev"><a href="#安装配置-Shadowsocks-libev" class="headerlink" title="安装配置 Shadowsocks-libev"></a>安装配置 Shadowsocks-libev</h4><h5 id="参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现"><a href="#参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现" class="headerlink" title="参考其官方 Github 得知，RHEL/CentOS 安装可通过源实现"></a>参考其官方 Github 得知，RHEL/CentOS 安装可通过<span class="exturl" data-url="aHR0cHM6Ly9jb3ByLmZlZG9yYWluZnJhY2xvdWQub3JnL2NvcHJzL2xpYnJlaGF0L3NoYWRvd3NvY2tzLw==">源<i class="fa fa-external-link-alt"></i></span>实现</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo &gt; /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo</span><br><span class="line">yum update</span><br><span class="line">yum install shadowsocks-libev</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="使用-ss-redir-监听本地端口"><a href="#使用-ss-redir-监听本地端口" class="headerlink" title="使用 ss-redir 监听本地端口"></a>使用 ss-redir 监听本地端口</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /usr/bin/ss-redir -s &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; -l &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m aes-256-cfb -b 0.0.0.0 -v &gt; /var/<span class="built_in">log</span>/user/ss-redir 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加至开机自启"><a href="#添加至开机自启" class="headerlink" title="添加至开机自启"></a>添加至开机自启</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;nohup /usr/bin/ss-redir -s &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; -l &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m &#123;SS加密方式&#125; -b 0.0.0.0 -v &gt; /var/log/user/ss-redir 2&gt;&amp;1 &amp;&quot;</span> &gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205514-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124205514"></p>
+<h4 id="安装-xtables-addons（GeoIP-模块）"><a href="#安装-xtables-addons（GeoIP-模块）" class="headerlink" title="安装 xtables-addons（GeoIP 模块）"></a>安装 xtables-addons（GeoIP 模块）</h4><h5 id="先直接使用-yum-安装必要组件"><a href="#先直接使用-yum-安装必要组件" class="headerlink" title="先直接使用 yum 安装必要组件"></a>先直接使用 yum 安装必要组件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install xtables-addons</span><br><span class="line">yum install kernel-devel-`uname -r` iptables-devel kernel-headers-`uname -r`</span><br><span class="line">yum install gcc gcc-c++ make automake unzip zip perl perl-Text-CSV_XS xz</span><br></pre></td></tr></table></figure>
+
+<h5 id="下载-addons-源码包并解压"><a href="#下载-addons-源码包并解压" class="headerlink" title="下载 addons 源码包并解压"></a>下载 addons 源码包并解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -O http://downloads.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-2.10.tar.xz</span><br><span class="line">tar -xvf xtables-addons-2.10.tar.xz</span><br><span class="line"><span class="built_in">cd</span> xtables-addons-2.10</span><br></pre></td></tr></table></figure>
+
+<h5 id="由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行"><a href="#由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行" class="headerlink" title="由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行"></a>由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi mconfig</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#build_SYSRQ=m</span></span><br><span class="line"><span class="comment">#build_length2=m</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205258.png" alt="qq%e6%88%aa%e5%9b%be20161124205258"></p>
+<h5 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h5 id="完成后，进入源码包下-geoip-目录，下载地理-IP-包"><a href="#完成后，进入源码包下-geoip-目录，下载地理-IP-包" class="headerlink" title="完成后，进入源码包下 geoip 目录，下载地理 IP 包"></a>完成后，进入源码包下 geoip 目录，下载地理 IP 包</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> geoip</span><br><span class="line">./xt_geoip_dl</span><br><span class="line">./xt_geoip_build *.csv</span><br></pre></td></tr></table></figure>
+
+<h5 id="完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成"><a href="#完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成" class="headerlink" title="完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成"></a>完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/share/xt_geoip/</span><br><span class="line">cp -r &#123;BE,LE&#125; /usr/share/xt_geoip/</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-iptables，实现流量转发"><a href="#配置-iptables，实现流量转发" class="headerlink" title="配置 iptables，实现流量转发"></a>配置 iptables，实现流量转发</h4><h5 id="配置示例"><a href="#配置示例" class="headerlink" title="配置示例"></a>配置示例</h5><blockquote>
+<p>若应用 geoip 行时出现找不到 chain 错误，说明 geoip 模块安装不正确</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -N SHADOWSOCKS <span class="comment">#新建 iptables NAT链，名为 SHADOWSOCKS</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d &#123;SS服务器IP地址&#125;/32 -j RETURN <span class="comment">#例外 SS 服务器的 IP，不通过代理</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -p tcp -j RETURN <span class="comment">#A类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 127.0.0.1/8 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -p tcp -j RETURN <span class="comment">#B类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -p tcp -j RETURN <span class="comment">#C类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -p tcp -m geoip ! --dst-cc CN -j REDIRECT --to-ports 1080 <span class="comment">#指定余下并且非CN的流量 重定向至本地 1080 端口（ss-redir 监听端口）</span></span><br><span class="line">iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS <span class="comment">#应用SHADOWSOCKS链</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<h5 id="尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP"><a href="#尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP" class="headerlink" title="尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP"></a>尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP</h5><p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204536-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204536"></p>
+<h5 id="保存-iptables-规则"><a href="#保存-iptables-规则" class="headerlink" title="保存 iptables 规则"></a>保存 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204640-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204640"></p>
+<h4 id="Done！"><a href="#Done！" class="headerlink" title="Done！"></a>Done！</h4>
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/" title="使用 CentOS 实现小型网络路由 – 跨过长城">https://www.meanevo.com/2016/11/27/centos-based-router-fxxk-gfw/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/11/24/centos-based-router-base-configuation/" rel="prev" title="使用 CentOS 实现小型网络路由 - 基础服务">
+                  <i class="fa fa-chevron-left"></i> 使用 CentOS 实现小型网络路由 - 基础服务
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/12/25/using-point-dev-domain-for-development/" rel="next" title="使用无需后期配置的 .dev 域名进行开发">
+                  使用无需后期配置的 .dev 域名进行开发 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="机器学习、神经网络等概念一直是行业热点，想要入门的话得需要一个环境吧，以下是一个新手介绍的在MacOS上配置。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CUDA 7, CuDNN 2, Caffe and Digits on MacOS">
+<meta property="og:url" content="https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="机器学习、神经网络等概念一直是行业热点，想要入门的话得需要一个环境吧，以下是一个新手介绍的在MacOS上配置。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-0-1024x930.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-2.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-1.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/98771466-32EC-4952-8001-54F9905CC132-1024x463.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/84E9C779-5AD9-4C83-A107-D6955A4E72CD.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-3.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-1-1-1024x313.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-0-1-1024x462.png">
+<meta property="article:published_time" content="2016-08-10T06:55:09.000Z">
+<meta property="article:modified_time" content="2016-08-10T06:55:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2016/08/QQ20160810-0-1024x930.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/","path":"2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/","title":"CUDA 7, CuDNN 2, Caffe and Digits on MacOS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CUDA 7, CuDNN 2, Caffe and Digits on MacOS | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E5%A6%82%E6%97%A2%E5%BE%80-Command-Line-Tools"><span class="nav-number">1.</span> <span class="nav-text">一如既往 Command Line Tools</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-CUDA-Toolkit"><span class="nav-number">2.</span> <span class="nav-text">安装 CUDA Toolkit</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Download%EF%BC%9Ahttps-developer-nvidia-com-cuda-downloads"><span class="nav-number">2.1.</span> <span class="nav-text">Download：https:&#x2F;&#x2F;developer.nvidia.com&#x2F;cuda-downloads</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Verify"><span class="nav-number">2.2.</span> <span class="nav-text">Verify</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-CuDNN"><span class="nav-number">3.</span> <span class="nav-text">安装 CuDNN</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Download%EF%BC%88%E9%9C%80%E8%A6%81%E6%B3%A8%E5%86%8C%E5%B9%B6%E5%A1%AB%E5%86%99%E9%97%AE%E5%8D%B7%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">Download（需要注册并填写问卷）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Extract-%E5%87%BA%E6%9D%A5-%E5%BE%97%E5%88%B0-cuda-%E6%96%87%E4%BB%B6%E5%A4%B9%EF%BC%8C%E5%B0%86%E5%85%B6%E5%AF%B9%E5%BA%94%E7%9B%AE%E5%BD%95%E6%94%BE%E5%88%B0%E7%B3%BB%E7%BB%9F%E4%BD%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">Extract 出来 得到 cuda 文件夹，将其对应目录放到系统位置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%BC%E5%87%BALIB-PATH"><span class="nav-number">3.3.</span> <span class="nav-text">导出LIB_PATH</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Python-%E7%8E%AF%E5%A2%83%EF%BC%8C%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8-brew-%E6%9D%A5%E5%AE%89%E8%A3%85%EF%BC%8COSX-%E8%87%AA%E5%B8%A6%E7%9A%84%E7%A8%8D%E8%80%81%EF%BC%8C%E5%B9%B6%E4%B8%94%E9%9C%80%E8%A6%81-pip"><span class="nav-number">4.</span> <span class="nav-text">配置 Python 环境，建议使用 brew 来安装，OSX 自带的稍老，并且需要 pip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Python-%E5%8C%85"><span class="nav-number">5.</span> <span class="nav-text">安装 Python 包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Caffe%EF%BC%88http-caffe-berkeleyvision-org%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">安装 Caffe（http:&#x2F;&#x2F;caffe.berkeleyvision.org）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Clone"><span class="nav-number">6.1.</span> <span class="nav-text">Clone</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Configuration"><span class="nav-number">6.2.</span> <span class="nav-text">Configuration</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Compile"><span class="nav-number">6.3.</span> <span class="nav-text">Compile</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Python-%E5%BA%93"><span class="nav-number">6.4.</span> <span class="nav-text">Python 库</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Torch%EF%BC%88http-torch-ch-docs-getting-started-html%EF%BC%89%EF%BC%882-0-Digits-%E5%8F%AF%E8%B7%B3%E8%BF%87%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">安装 Torch（http:&#x2F;&#x2F;torch.ch&#x2F;docs&#x2F;getting-started.html）（2.0 Digits 可跳过）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Clone-1"><span class="nav-number">7.1.</span> <span class="nav-text">Clone</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Install-Script"><span class="nav-number">7.2.</span> <span class="nav-text">Install Script</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Digits%EF%BC%88https-developer-nvidia-com-digits%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">安装 Digits（https:&#x2F;&#x2F;developer.nvidia.com&#x2F;digits）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Clone-2"><span class="nav-number">8.1.</span> <span class="nav-text">Clone</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Python-%E4%BE%9D%E8%B5%96"><span class="nav-number">8.2.</span> <span class="nav-text">Python 依赖</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Launch%EF%BC%81"><span class="nav-number">8.3.</span> <span class="nav-text">Launch！</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%BB%88%E4%BA%86%EF%BC%8C%E8%AE%BF%E9%97%AE-http-localhost-5000"><span class="nav-number">9.</span> <span class="nav-text">配置终了，访问 http:&#x2F;&#x2F;localhost:5000</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">10.</span> <span class="nav-text">补充</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CUDA 7, CuDNN 2, Caffe and Digits on MacOS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2016-08-10 14:55:09 / Modified: 14:55:00" itemprop="dateCreated datePublished" datetime="2016-08-10T14:55:09+08:00">2016-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Deep-Learning/" itemprop="url" rel="index"><span itemprop="name">Deep Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>机器学习、神经网络等概念一直是行业热点，想要入门的话得需要一个环境吧，以下是一个新手介绍的在MacOS上配置。</p>
+<span id="more"></span>
+
+<h4 id="一如既往-Command-Line-Tools"><a href="#一如既往-Command-Line-Tools" class="headerlink" title="一如既往 Command Line Tools"></a>一如既往 Command Line Tools</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcode-select --install</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-CUDA-Toolkit"><a href="#安装-CUDA-Toolkit" class="headerlink" title="安装 CUDA Toolkit"></a>安装 CUDA Toolkit</h4><h5 id="Download：https-developer-nvidia-com-cuda-downloads"><a href="#Download：https-developer-nvidia-com-cuda-downloads" class="headerlink" title="Download：https://developer.nvidia.com/cuda-downloads"></a>Download：<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9jdWRhLWRvd25sb2Fkcw==">https://developer.nvidia.com/cuda-downloads<i class="fa fa-external-link-alt"></i></span></h5><p><img data-src="/images/posts/2016/08/QQ20160810-0-1024x930.png" alt="QQ20160810-0"><br><img data-src="/images/posts/2016/08/QQ20160810-2.png" alt="QQ20160810-2"></p>
+<h5 id="Verify"><a href="#Verify" class="headerlink" title="Verify"></a>Verify</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/cuda/bin/nvcc --version</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Update：可进入系统面板中 CUDA 更新 Driver</p>
+</blockquote>
+<p><img data-src="/images/posts/2016/08/QQ20160810-1.png" alt="QQ20160810-1"></p>
+<h4 id="安装-CuDNN"><a href="#安装-CuDNN" class="headerlink" title="安装 CuDNN"></a>安装 CuDNN</h4><h5 id="Download（需要注册并填写问卷）"><a href="#Download（需要注册并填写问卷）" class="headerlink" title="Download（需要注册并填写问卷）"></a>Download（需要注册并填写问卷）</h5><p><span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9yZHAvY3Vkbm4tZG93bmxvYWQ=">https://developer.nvidia.com/rdp/cudnn-download<i class="fa fa-external-link-alt"></i></span><br><img data-src="/images/posts/2016/08/98771466-32EC-4952-8001-54F9905CC132-1024x463.jpg" alt="98771466-32EC-4952-8001-54F9905CC132"></p>
+<h5 id="Extract-出来-得到-cuda-文件夹，将其对应目录放到系统位置"><a href="#Extract-出来-得到-cuda-文件夹，将其对应目录放到系统位置" class="headerlink" title="Extract 出来 得到 cuda 文件夹，将其对应目录放到系统位置"></a>Extract 出来 得到 cuda 文件夹，将其对应目录放到系统位置</h5><blockquote>
+<p>这里以 /usr/local/cuda/lib 和 /usr/local/cuda/include 为例</p>
+</blockquote>
+<h5 id="导出LIB-PATH"><a href="#导出LIB-PATH" class="headerlink" title="导出LIB_PATH"></a>导出LIB_PATH</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/cuda/lib</span><br><span class="line"><span class="built_in">export</span> DYLD_LIBRARY_PATH=`<span class="built_in">pwd</span>`:<span class="variable">$DYLD_LIBRARY_PATH</span></span><br><span class="line">sudo chmod a+r /usr/<span class="built_in">local</span>/cuda/include/cudnn.h /usr/<span class="built_in">local</span>/cuda/lib/libcudnn*</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-Python-环境，建议使用-brew-来安装，OSX-自带的稍老，并且需要-pip"><a href="#配置-Python-环境，建议使用-brew-来安装，OSX-自带的稍老，并且需要-pip" class="headerlink" title="配置 Python 环境，建议使用 brew 来安装，OSX 自带的稍老，并且需要 pip"></a>配置 Python 环境，建议使用 brew 来安装，OSX 自带的稍老，并且需要 pip</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install python</span><br><span class="line">sudo easy_install pip</span><br><span class="line">sudo -H proxychains4 pip install --upgrade pip setuptools</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如若出错，请运行 brew doctor 诊断下 brew 错误，pip 安装可能需要翻墙。</p>
+</blockquote>
+<h4 id="安装-Python-包"><a href="#安装-Python-包" class="headerlink" title="安装 Python 包"></a>安装 Python 包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew tap homebrew/science</span><br><span class="line">brew update</span><br><span class="line">brew install snappy leveldb gflags glog szip lmdb hdf5 numpy opencv graphviz</span><br><span class="line">brew install --build-from-source --with-python -vd protobuf</span><br><span class="line">brew install --build-from-source -vd boost boost-python</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-Caffe（http-caffe-berkeleyvision-org）"><a href="#安装-Caffe（http-caffe-berkeleyvision-org）" class="headerlink" title="安装 Caffe（http://caffe.berkeleyvision.org）"></a>安装 Caffe（<span class="exturl" data-url="aHR0cDovL2NhZmZlLmJlcmtlbGV5dmlzaW9uLm9yZy8=">http://caffe.berkeleyvision.org<i class="fa fa-external-link-alt"></i></span>）</h4><h5 id="Clone"><a href="#Clone" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/BVLC/caffe.git</span><br><span class="line"><span class="built_in">cd</span> caffe</span><br><span class="line">cp Makefile.config.example Makefile.config</span><br></pre></td></tr></table></figure>
+
+<h5 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi Makefile.config</span><br></pre></td></tr></table></figure>
+
+<p>将其内的 Python 环境，numpy 路径配置好：<br><img data-src="/images/posts/2016/08/84E9C779-5AD9-4C83-A107-D6955A4E72CD.jpg" alt="84E9C779-5AD9-4C83-A107-D6955A4E72CD"></p>
+<h5 id="Compile"><a href="#Compile" class="headerlink" title="Compile"></a>Compile</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make all --<span class="built_in">jobs</span>=12</span><br><span class="line">make <span class="built_in">test</span> --<span class="built_in">jobs</span>=12</span><br><span class="line">make runtest</span><br></pre></td></tr></table></figure>
+
+<p>启动测试后（让他跑5分钟）如果输出无问题，说明基本运行：<br><img data-src="/images/posts/2016/08/QQ20160810-3.png" alt="QQ20160810-3"></p>
+<h5 id="Python-库"><a href="#Python-库" class="headerlink" title="Python 库"></a>Python 库</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> req <span class="keyword">in</span> $(cat python/requirements.txt); <span class="keyword">do</span> sudo -H pip install <span class="variable">$req</span>; <span class="keyword">done</span></span><br><span class="line">make pycaffe</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160810-1-1-1024x313.png" alt="QQ20160810-1"></p>
+<h4 id="安装-Torch（http-torch-ch-docs-getting-started-html）（2-0-Digits-可跳过）"><a href="#安装-Torch（http-torch-ch-docs-getting-started-html）（2-0-Digits-可跳过）" class="headerlink" title="安装 Torch（http://torch.ch/docs/getting-started.html）（2.0 Digits 可跳过）"></a>安装 Torch（<span class="exturl" data-url="aHR0cDovL3RvcmNoLmNoL2RvY3MvZ2V0dGluZy1zdGFydGVkLmh0bWw=">http://torch.ch/docs/getting-started.html<i class="fa fa-external-link-alt"></i></span>）（2.0 Digits 可跳过）</h4><h5 id="Clone-1"><a href="#Clone-1" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/torch/distro.git --recursive</span><br></pre></td></tr></table></figure>
+
+<h5 id="Install-Script"><a href="#Install-Script" class="headerlink" title="Install Script"></a>Install Script</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> torch</span><br><span class="line">./install-deps</span><br><span class="line">./install.sh -b</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-Digits（https-developer-nvidia-com-digits）"><a href="#安装-Digits（https-developer-nvidia-com-digits）" class="headerlink" title="安装 Digits（https://developer.nvidia.com/digits）"></a>安装 Digits（<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9kaWdpdHM=">https://developer.nvidia.com/digits<i class="fa fa-external-link-alt"></i></span>）</h4><h5 id="Clone-2"><a href="#Clone-2" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/NVIDIA/DIGITS.git</span><br><span class="line"><span class="built_in">cd</span> DIGITS</span><br></pre></td></tr></table></figure>
+
+<h5 id="Python-依赖"><a href="#Python-依赖" class="headerlink" title="Python 依赖"></a>Python 依赖</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo -H pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160810-0-1-1024x462.png" alt="QQ20160810-0"></p>
+<h5 id="Launch！"><a href="#Launch！" class="headerlink" title="Launch！"></a>Launch！</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> CAFFE_HOME=../caffe &amp;&amp; ./digits-devserver</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置终了，访问-http-localhost-5000"><a href="#配置终了，访问-http-localhost-5000" class="headerlink" title="配置终了，访问 http://localhost:5000"></a>配置终了，访问 <span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo1MDAwLw==">http://localhost:5000<i class="fa fa-external-link-alt"></i></span></h4><blockquote>
+<h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>推荐运行 pip 时，走国内镜像（例为豆瓣）：在命令后加 -i <span class="exturl" data-url="aHR0cHM6Ly9weXBpLmRvdWJhbi5jb20vc2ltcGxl">https://pypi.douban.com/simple<i class="fa fa-external-link-alt"></i></span> 即可。<br>如遇到启动 digits-devserver 时的 segmentation fault，考虑更换 xCode</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/" title="CUDA 7, CuDNN 2, Caffe and Digits on MacOS">https://www.meanevo.com/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/08/09/login-using-icloud-password/" rel="prev" title="使用 iCloud 登陆 MacOS">
+                  <i class="fa fa-chevron-left"></i> 使用 iCloud 登陆 MacOS
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/08/10/tensorflow-on-macos/" rel="next" title="TensorFlow on MacOS">
+                  TensorFlow on MacOS <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1502 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>A post form my HTC HD2</title>
+    <url>/2011/01/16/a-post-form-my-htc-hd2/</url>
+    <content><![CDATA[<p>I am use the HD2 with the Windows Phone7 . Its cool enough . But not have the Chinese Input .<br>Sorry for my pool English.<br>Posted from WordPress for Windows Phone</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>记一次阿里云配置 PPTPd，及 IPTables Log 调试</title>
+    <url>/2016/08/11/aliyun-pptp-writeup-and-iptables-using-logs/</url>
+    <content><![CDATA[<p>虽然爬墙主用 SS， 但是对于全局或非 TCP 协议的时候，SS 还是显得有些不足。</p>
+<p>配置 PPTP 应该是很多 FQer 第一个接触的方法，也是比较古老的方法，由于加密不足以及流量特征被 GFW 捕获，使用率降低。</p>
+<p>今天<del datetime="2016-08-11T09:55:56+00:00">吃多了</del>由于需要全局，就在Aliyun上重现一下配置过程。途中遇到了不少坑，谨作为记录</p>
+<span id="more"></span>
+
+<h3 id="PPTPd"><a href="#PPTPd" class="headerlink" title="PPTPd"></a>PPTPd</h3><h4 id="yum-安装-pptpd-软件包"><a href="#yum-安装-pptpd-软件包" class="headerlink" title="yum 安装 pptpd 软件包"></a>yum 安装 pptpd 软件包</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install pptpd</span><br></pre></td></tr></table></figure>
+
+<h4 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h4><h5 id="PPTPd-1"><a href="#PPTPd-1" class="headerlink" title="PPTPd"></a>PPTPd</h5><blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/pptpd.conf</span><br></pre></td></tr></table></figure>
+<p>在这个文件里主要就是对 localip 以及 remoteip 的配置，去掉注释并修改为希望的地址段，简单了说就是一个地址池，拨入的用户会从 remoteip 段中<del datetime="2016-08-11T09:55:56+00:00">分配</del>获得一个地址，而 localip 即是本机在 ppp 连接后的地址<br><img data-src="/images/posts/2016/08/QQ20160811-5.png" alt="QQ20160811-5"></p>
+</blockquote>
+<h5 id="Options"><a href="#Options" class="headerlink" title="Options"></a>Options</h5><blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/ppp/options.pptpd</span><br></pre></td></tr></table></figure>
+<p>这个文件中需要修改的就是 DNS 地址了，去掉注释并修改 ms-dns 的值，这里为什么修改成这个地址下面会讲，各位按照实际情况修改。<br>当然是用的协议标准也在这里，MPPE等，如若协议出错可修改。默认标准可不进行修改<br><img data-src="/images/posts/2016/08/QQ20160811-3.png" alt="QQ20160811-3"></p>
+</blockquote>
+<h5 id="Secrets"><a href="#Secrets" class="headerlink" title="Secrets"></a>Secrets</h5><blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/ppp/chap-secrets</span><br></pre></td></tr></table></figure>
+<p>由于不需要复杂认证，就在这里填写连接用用户名密码，格式为：用户名 pptpd 密码 <em>，最后的那个</em>为分配的 IP，指定 IP 的话，可以配合 iptables SNAT 至不同地址，实现多用户不同 IP（理论，未验证）</p>
+</blockquote>
+<h5 id="Sysctl"><a href="#Sysctl" class="headerlink" title="Sysctl"></a>Sysctl</h5><blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+<p>此处修改系统规则，修改 net.ipv4.ip_forward 项值为 1，启用 ip 转发？<br>如若存在 net.ipv4.tcp_syncookies 项目，请注释。<br><img data-src="/images/posts/2016/08/QQ20160811-6.png" alt="QQ20160811-6"><br>使修改生效 ```bash<br>sysctl -p</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">#### 启动 pptpd</span><br><span class="line">```bash</span><br><span class="line">systemctl restart pptpd</span><br></pre></td></tr></table></figure>
+
+<h4 id="开机启动"><a href="#开机启动" class="headerlink" title="开机启动"></a>开机启动</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> pptpd</span><br></pre></td></tr></table></figure>
+
+<h3 id="此时若是关闭-iptables，应该已经是可以连接的状态了，其实本该离成功不远了，但是偏偏在这之后才是噩梦。"><a href="#此时若是关闭-iptables，应该已经是可以连接的状态了，其实本该离成功不远了，但是偏偏在这之后才是噩梦。" class="headerlink" title="此时若是关闭 iptables，应该已经是可以连接的状态了，其实本该离成功不远了，但是偏偏在这之后才是噩梦。"></a>此时若是关闭 iptables，应该已经是可以连接的状态了，其实本该离成功不远了，但是偏偏在这之后才是噩梦。</h3><h3 id="IPTables"><a href="#IPTables" class="headerlink" title="IPTables"></a>IPTables</h3><h4 id="修改-iptables-配置（这里若使用-CentOS-系列系统，请禁用-firewalld，此篇教程使用-iptables-转发方法），基础配置请移步这篇"><a href="#修改-iptables-配置（这里若使用-CentOS-系列系统，请禁用-firewalld，此篇教程使用-iptables-转发方法），基础配置请移步这篇" class="headerlink" title="修改 iptables 配置（这里若使用 CentOS 系列系统，请禁用 firewalld，此篇教程使用 iptables 转发方法），基础配置请移步这篇"></a>修改 iptables 配置（这里若使用 CentOS 系列系统，请禁用 firewalld，此篇教程使用 iptables 转发方法），基础配置请移步<a href="/2015/06/07/red-hat-enterprise-linux-rhel-7-0-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/">这篇</a></h4><h5 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+<p>添加如下两行至适当位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-A INPUT -p gre -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 1723 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>其中第一行是放通 GRE 连接，第二行放通 1723端口 TCP 连接<br><img data-src="/images/posts/2016/08/QQ20160811-7.png" alt="QQ20160811-7"></p>
+<h5 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -A INPUT -p gre -j ACCEPT</span><br><span class="line">iptables -A INPUT -p tcp --dport 1723 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p>功能同上，执行完毕若无问题，执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/libexec/iptables/iptables.init save</span><br></pre></td></tr></table></figure>
+<p>进行保存，保存后可观察文件3.1.1中的文件变化，调整规则顺序。</p>
+<h3 id="此时开启-iptables-应该已经可以连接成功了（不成功请检查-pptpd-服务是否启动，云服务商是否未放通对应安全组），接着就是对内网地址进行-MASQUERADE，简单了说，就是实现最简单的路由转发。"><a href="#此时开启-iptables-应该已经可以连接成功了（不成功请检查-pptpd-服务是否启动，云服务商是否未放通对应安全组），接着就是对内网地址进行-MASQUERADE，简单了说，就是实现最简单的路由转发。" class="headerlink" title="此时开启 iptables 应该已经可以连接成功了（不成功请检查 pptpd 服务是否启动，云服务商是否未放通对应安全组），接着就是对内网地址进行 MASQUERADE，简单了说，就是实现最简单的路由转发。"></a>此时开启 iptables 应该已经可以连接成功了（不成功请检查 pptpd 服务是否启动，云服务商是否未放通对应安全组），接着就是对内网地址进行 MASQUERADE，简单了说，就是实现最简单的路由转发。</h3><p>下面三个任选其一，意思相近，</p>
+<ol>
+<li>对 pptp 进来的内网地址并且从 eth0 流出的连接 进行 MASQUERADE；<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 192.168.40.0/24 -o eth0 -j MASQUERADE</span><br></pre></td></tr></table></figure></li>
+<li>对 pptp 进来的内网地址并且从 172.16.100.1 流出的连接 进行 SNAT（效率较高？）；<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 192.168.40.0/24 -j SNAT --to-source 172.16.100.1</span><br></pre></td></tr></table></figure></li>
+<li>在命令2的基础上，进一步限制从 eth0 流出。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -s 192.168.40.0/24 -o eth0 -j SNAT --to-source 172.16.100.1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<blockquote>
+<p>此处 192.168.40.0/24 对应 2.1 步骤中的 remoteip 段，eth0 为外网网卡，172.16.100.1 则为外网IP，由于我的主机使用的私有网络，因此是一个内网地址，需按照实际情况修改，一般情况下同外网网卡IP。</p>
+<p>这里对不同 IP 指定不同出口网卡/出口 IP 应该可以实现多用户不同 IP。</p>
+</blockquote>
+<h3 id="一般教程到此也就结束了，因为已经成功了呀－-－，但是我这边则是-client-连接后，无论如何都-ping-不通，于是接着研究"><a href="#一般教程到此也就结束了，因为已经成功了呀－-－，但是我这边则是-client-连接后，无论如何都-ping-不通，于是接着研究" class="headerlink" title="一般教程到此也就结束了，因为已经成功了呀－ －，但是我这边则是 client 连接后，无论如何都 ping 不通，于是接着研究"></a>一般教程到此也就结束了，因为已经成功了呀－ －，但是我这边则是 client 连接后，无论如何都 ping 不通，于是接着研究</h3><h4 id="首先，把-iptables-的规则全部清空了，当然这只是临时的，不运行-save-是不会复写到文件内，restart-一下就会重新载入文件内配置"><a href="#首先，把-iptables-的规则全部清空了，当然这只是临时的，不运行-save-是不会复写到文件内，restart-一下就会重新载入文件内配置" class="headerlink" title="首先，把 iptables 的规则全部清空了，当然这只是临时的，不运行 save 是不会复写到文件内，restart 一下就会重新载入文件内配置"></a>首先，把 iptables 的规则全部清空了，当然这只是临时的，不运行 save 是不会复写到文件内，restart 一下就会重新载入文件内配置</h4><ul>
+<li><p>清空：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -F</span><br><span class="line">iptables -X</span><br></pre></td></tr></table></figure></li>
+<li><p>查看：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -F</span><br><span class="line">iptables -t nat -X</span><br><span class="line">iptables -t nat -nL</span><br></pre></td></tr></table></figure></li>
+<li><p>载入规则：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -A INPUT -p gre -j ACCEPT</span><br><span class="line">iptables -A INPUT -p tcp --dport 1723 -j ACCEPT</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>再连接试试，嗯，这下能 ping 通了，QQ 也接上了，但还是没法上网。对，就是 DNS 问题了。</p>
+<h3 id="问题一个个解决，第一个问题：为什么有规则时候会-ping-不通呢？"><a href="#问题一个个解决，第一个问题：为什么有规则时候会-ping-不通呢？" class="headerlink" title="问题一个个解决，第一个问题：为什么有规则时候会 ping 不通呢？"></a>问题一个个解决，第一个问题：为什么有规则时候会 ping 不通呢？</h3><p>通过排查，我们知道应该是原先 iptables 中的规则出错，其默认不设置的时候是放通的，也就是说是原先存在的 DROP or REJECT 操作挡了数据包。<br>一般来说，一件这种问题无非就是从 log 中排查，不过很遗憾 iptables 默认是不记录 REJECT 记录的，于是研究转变成：如何打开 iptables 的记录功能。</p>
+<h4 id="通过-http-linux-die-net-man-8-iptables-这篇文章，我们了解到-iptables-是带-logging-的，只需要在对对应连接做处理前，进行-LOG-操作即可"><a href="#通过-http-linux-die-net-man-8-iptables-这篇文章，我们了解到-iptables-是带-logging-的，只需要在对对应连接做处理前，进行-LOG-操作即可" class="headerlink" title="通过 http://linux.die.net/man/8/iptables 这篇文章，我们了解到 iptables 是带 logging 的，只需要在对对应连接做处理前，进行 LOG 操作即可"></a>通过 <span class="exturl" data-url="aHR0cDovL2xpbnV4LmRpZS5uZXQvbWFuLzgvaXB0YWJsZXM=">http://linux.die.net/man/8/iptables<i class="fa fa-external-link-alt"></i></span> 这篇文章，我们了解到 iptables 是带 logging 的，只需要在对对应连接做处理前，进行 LOG 操作即可</h4><h5 id="于是修改-iptables-配置"><a href="#于是修改-iptables-配置" class="headerlink" title="于是修改 iptables 配置"></a>于是修改 iptables 配置</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-A INPUT -m <span class="built_in">limit</span> --<span class="built_in">limit</span> 2/sec --limit-burst 2 -j LOG --log-prefix <span class="string">&quot;IPTABLES REJECTING INPUT: &quot;</span></span><br><span class="line">-A FORWARD -m <span class="built_in">limit</span> --<span class="built_in">limit</span> 2/sec --limit-burst 2 -j LOG --log-prefix <span class="string">&quot;IPTABLES REJECTING FORWARD: &quot;</span></span><br></pre></td></tr></table></figure>
+<p>分别将两条添加在 REJECT 操作之前即可。这里用到了 limit 功能，就是为了日志不爆炸。限制了每秒2条，并发最多2条，并且指定了日志的前缀。</p>
+<h5 id="重启-iptables，日志位于-var-log-messages"><a href="#重启-iptables，日志位于-var-log-messages" class="headerlink" title="重启 iptables，日志位于 /var/log/messages"></a>重启 iptables，日志位于 /var/log/messages</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tail -f /var/<span class="built_in">log</span>/messages</span><br></pre></td></tr></table></figure>
+
+<h5 id="打开pptp连接，发现端倪"><a href="#打开pptp连接，发现端倪" class="headerlink" title="打开pptp连接，发现端倪"></a>打开pptp连接，发现端倪</h5><p><img data-src="/images/posts/2016/08/QQ20160811-0-1024x425.png" alt="QQ20160811-0"></p>
+<h5 id="从日志看，是-FORWARD-被-REJECT-了，于是添加"><a href="#从日志看，是-FORWARD-被-REJECT-了，于是添加" class="headerlink" title="从日志看，是 FORWARD 被 REJECT 了，于是添加"></a>从日志看，是 FORWARD 被 REJECT 了，于是添加</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-A FORWARD -i ppp+ -j ACCEPT</span><br><span class="line">-A FORWARD -i eth0 -o ppp+ -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>意思是：接受来源于 ppp 开头的 interface 的转发，接受来源于 eth0 端口 并且转发到 ppp 开头的interface 的转发。</p>
+<h5 id="重启-iptables，问题解决"><a href="#重启-iptables，问题解决" class="headerlink" title="重启 iptables，问题解决"></a>重启 iptables，问题解决</h5><p>我的 iptables 配置，仅作参考：<br><img data-src="/images/posts/2016/08/QQ20160811-8-1024x693.png" alt="QQ20160811-8"></p>
+<h4 id="现在剩下第二个问题，为何无法解析域名呢？"><a href="#现在剩下第二个问题，为何无法解析域名呢？" class="headerlink" title="现在剩下第二个问题，为何无法解析域名呢？"></a>现在剩下第二个问题，为何无法解析域名呢？</h4><blockquote>
+<p>无法解析域名，第一个想到的应该就是 DNS 无法访问，由于 DNS 位于53端口，于是 nmap 扫一下，很奇怪，client 这边是可以访问的，而 server 侧则无法解析</p>
+<p>CentOS 默认不带 nslookup 工具，需要安装，这里就不展开说。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install bind-utils</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Client 侧 DNS：</li>
+</ul>
+<p><img data-src="/images/posts/2016/08/QQ20160811-9.png" alt="QQ20160811-9"></p>
+<ul>
+<li>Server 侧 DNS：</li>
+</ul>
+<p><img data-src="/images/posts/2016/08/QQ20160811-10.png" alt="QQ20160811-10"></p>
+<blockquote>
+<p>至今我还是没有理解为何，不过不碍事，毕竟已经找到问题了，想要解决是不难的。</p>
+</blockquote>
+<h5 id="查看-Server-侧的-DNS，因为本身是可以正常解析的，也就是说客户端使用-Server-的-DNS-应该可以绕过这个问题。"><a href="#查看-Server-侧的-DNS，因为本身是可以正常解析的，也就是说客户端使用-Server-的-DNS-应该可以绕过这个问题。" class="headerlink" title="查看 Server 侧的 DNS，因为本身是可以正常解析的，也就是说客户端使用 Server 的 DNS 应该可以绕过这个问题。"></a>查看 Server 侧的 DNS，因为本身是可以正常解析的，也就是说客户端使用 Server 的 DNS 应该可以绕过这个问题。</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat /etc/resolv.conf</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160811-11.png" alt="QQ20160811-11"></p>
+<h5 id="我们将这两个-DNS-地址，写入步骤2-2中的配置文件，重启-pptpd，问题解决。"><a href="#我们将这两个-DNS-地址，写入步骤2-2中的配置文件，重启-pptpd，问题解决。" class="headerlink" title="我们将这两个 DNS 地址，写入步骤2.2中的配置文件，重启 pptpd，问题解决。"></a>我们将这两个 DNS 地址，写入步骤2.2中的配置文件，重启 pptpd，问题解决。</h5><p><img data-src="/images/posts/2016/08/QQ20160811-2.png" alt="QQ20160811-2"></p>
+<h3 id="至此，大致上的问题解决了"><a href="#至此，大致上的问题解决了" class="headerlink" title="至此，大致上的问题解决了"></a>至此，大致上的问题解决了</h3><blockquote>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><p>已经可以通过 pptp 访问公网，但是速度比较慢，搜索后发现一个比较统一的说法就是修改 MTU 值，但是实测并没有什么…用，不过还是将它放在这里，指不定哪天就想到问题所在了呢？<br>修改 MTU 为1356：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -A FORWARD -p tcp --syn -s 192.168.40.0/24 -j TCPMSS --set-mss 1356</span><br></pre></td></tr></table></figure></blockquote>
+]]></content>
+      <categories>
+        <category>FxxkGFW</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Apache + PHP7 on MacOS</title>
+    <url>/2016/08/08/apache-php7-on-macos/</url>
+    <content><![CDATA[<p>在OS X 10.11.6上自带了5.x的PHP，不过版本控制不易，还是自己用brew重新装一个来的方便。<br>这里就顺带把Apache也说了，也算重配环境（Time Machine：Excuse me?）的备忘吧（其实就几个命令还蛮方便的）</p>
+<span id="more"></span>
+
+<h4 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew update</span><br><span class="line">brew tap homebrew/php</span><br><span class="line">brew install php70</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160808-1-1.png" alt="QQ20160808-1"><br><img data-src="/images/posts/2016/08/QQ20160808-0-1.png" alt="QQ20160808-0"></p>
+<blockquote>
+<p>装完info一下，看下路径在哪，php的安装方式就不详细讲了，fpm、ext均可</p>
+</blockquote>
+<ul>
+<li><p>Apache插件：<br><img data-src="/images/posts/2016/08/42797F24-AA13-4F6D-AD91-4D8F258B699F.jpg" alt="42797F24-AA13-4F6D-AD91-4D8F258B699F"></p>
+</li>
+<li><p>CLI PATH配置：</p>
+<blockquote>
+<p>其实只需要 export PATH=”$(brew –prefix php70)/bin:$PATH” 即可<br><img data-src="/images/posts/2016/08/QQ20160808-3.png" alt="QQ20160808-3"><br><img data-src="/images/posts/2016/08/QQ20160808-5.png" alt="QQ20160808-5"></p>
+</blockquote>
+</li>
+<li><p>PHP-FPM：<br><img data-src="/images/posts/2016/08/QQ20160808-4.png" alt="QQ20160808-4"></p>
+</li>
+</ul>
+<h4 id="这里就按照扩展方式让apache来调用php7"><a href="#这里就按照扩展方式让apache来调用php7" class="headerlink" title="这里就按照扩展方式让apache来调用php7"></a>这里就按照扩展方式让apache来调用php7</h4><h5 id="将插件位置添加至-etc-apache2-httpd-conf"><a href="#将插件位置添加至-etc-apache2-httpd-conf" class="headerlink" title="将插件位置添加至/etc/apache2/httpd.conf"></a>将插件位置添加至/etc/apache2/httpd.conf</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/apache2/httpd.conf</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160808-7.png" alt="QQ20160808-7"><br><img data-src="/images/posts/2016/08/QQ20160808-6.png" alt="QQ20160808-6"></p>
+<h5 id="添加默认页面-index-php"><a href="#添加默认页面-index-php" class="headerlink" title="添加默认页面 index.php"></a>添加默认页面 index.php</h5><p><img data-src="/images/posts/2016/08/QQ20160808-13.png" alt="QQ20160808-13"></p>
+<h4 id="保存重启apache，命令同-nix"><a href="#保存重启apache，命令同-nix" class="headerlink" title="保存重启apache，命令同*nix"></a>保存重启apache，命令同*nix</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apachectl restart</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160808-8.png" alt="QQ20160808-8"></p>
+<blockquote>
+<p>MacOS中，www（htdocs）文件夹位于/Library/WebServer/Documents</p>
+</blockquote>
+<h4 id="由于权限设定带来的不便，设置下当前用户写权限"><a href="#由于权限设定带来的不便，设置下当前用户写权限" class="headerlink" title="由于权限设定带来的不便，设置下当前用户写权限"></a>由于权限设定带来的不便，设置下当前用户写权限</h4><p><img data-src="/images/posts/2016/08/2169DE92-F108-4BA2-85B1-D3F7619E73DE-1024x759.jpg" alt="2169DE92-F108-4BA2-85B1-D3F7619E73DE"><br><img data-src="/images/posts/2016/08/5E04F2BA-701A-4BEA-90CB-117EF77813D6.jpg" alt="5E04F2BA-701A-4BEA-90CB-117EF77813D6"><br><img data-src="/images/posts/2016/08/A9BFBAD6-7587-433F-AE37-D51D1D743B0D.jpg" alt="A9BFBAD6-7587-433F-AE37-D51D1D743B0D"></p>
+<h4 id="新建一个测试文件"><a href="#新建一个测试文件" class="headerlink" title="新建一个测试文件"></a>新建一个测试文件</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /Library/WebServer/Documents/info.php</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160808-9.png" alt="QQ20160808-9"><img data-src="/images/posts/2016/08/7A7913C1-8E1A-471E-90E7-E019BD2915FD.jpg" alt="7A7913C1-8E1A-471E-90E7-E019BD2915FD"></p>
+<h4 id="访问localhost-info-php，done！"><a href="#访问localhost-info-php，done！" class="headerlink" title="访问localhost/info.php，done！"></a>访问localhost/info.php，done！</h4><p><img data-src="/images/posts/2016/08/QQ20160808-11.png" alt="QQ20160808-11"></p>
+<blockquote>
+<h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>php.ini位于 /usr/local/etc/php/7.0/php.ini<br>添加apache至开机启动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo launchctl load -w /System/Library/LaunchDaemons/org.apache.httpd.plist</span><br></pre></td></tr></table></figure></blockquote>
+]]></content>
+      <categories>
+        <category>Service</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>使用 CentOS 实现小型网络路由 - 基础服务</title>
+    <url>/2016/11/24/centos-based-router-base-configuation/</url>
+    <content><![CDATA[<p>前些时间入手 Gen8 一台，这东西作为家用虚拟化平台是不错的选择。作为一开始的设想，是想将它唯一的 PCI-e 用来插显卡，配合 VT-d 技术直通入虚拟机，而在 ESXi 上跑别的服务。那么，首先需要一个可靠的路由来做外网 NAT，于是就有了这篇。</p>
+<span id="more"></span>
+
+<p>关于软路由系统的选择，参考了<span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvTGlzdF9vZl9yb3V0ZXJfYW5kX2ZpcmV3YWxsX2Rpc3RyaWJ1dGlvbnM=">这篇 WIKI<i class="fa fa-external-link-alt"></i></span>。<br>首先并不是很喜欢使用普遍路由中使用的 DD-WRT or OpenWrt，DD 是因为功能不满足需求，而 OpenWrt 直到 15.05 才有官方的 x86-64，暂且不论兼容性，有许多包在 64 位需要自己编译，并且最新版的 OpenWrt 移除了 14.x 中的 oldpackages，导致 pdnsd 也没了。一直在使用的 RouterOS 配置简明，但是在 x86 上表现一般，且没有第三方的包（没有 VMXNET3 驱动），后来选择了 VyOS（前身Vyatta），看中的就是这玩意带一个类似硬路由的 shell，可惜使用时由于其官方 community 源 404，还是 pass 了。</p>
+<p>想来 Linux 用起比较顺手，就干脆用它来用作路由。看了一圈最后还是选了 CentOS，虽然其官方文档惨不忍睹，但是有 RHEL 这个老爹在，光是网络部分的文档就有 12 章之多，<span class="exturl" data-url="aHR0cHM6Ly9hY2Nlc3MucmVkaGF0LmNvbS9kb2N1bWVudGF0aW9uL2VuLVVTL1JlZF9IYXRfRW50ZXJwcmlzZV9MaW51eC83L2h0bWwvTmV0d29ya2luZ19HdWlkZS9jaC1JbnRyb2R1Y3Rpb25fdG9fUkhFTF9OZXR3b3JraW5nLmh0bWw=">RHEL 文档地址<i class="fa fa-external-link-alt"></i></span>。</p>
+<h4 id="开工之前首先先回想一下实现一个简单的路由需要哪些服务。"><a href="#开工之前首先先回想一下实现一个简单的路由需要哪些服务。" class="headerlink" title="开工之前首先先回想一下实现一个简单的路由需要哪些服务。"></a>开工之前首先先回想一下实现一个简单的路由需要哪些服务。</h4><ul>
+<li>NAT: Masquerade、转发流量就靠它了</li>
+<li>DHCP Server: 用来分配内网机器地址</li>
+<li>DNS Server: 域名 IP 映射，这里目标是配一个无劫持的 DNS<br>接着就是开工了：</li>
+</ul>
+<h4 id="配通本机网络"><a href="#配通本机网络" class="headerlink" title="配通本机网络"></a>配通本机网络</h4><p>确保本机 route 正确，能正常 ping 通外网 IP，这个就不多介绍了。</p>
+<blockquote>
+<p>提醒一下 CentOS7 自带的 nmcli 似乎有问题，于是下篇绕过这个管理器直接使用 CLI 来配置网络</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop NetworkManager</span><br><span class="line">systemctl <span class="built_in">disable</span> NetworkManager</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>本示例网卡分配情况：<img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124220734-1024x237.png" alt="qq%e6%88%aa%e5%9b%be20161124220734"></p>
+</blockquote>
+<h4 id="配置各个网络介面"><a href="#配置各个网络介面" class="headerlink" title="配置各个网络介面"></a>配置各个网络介面</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-br144</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-eno50338560</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-eno50338560.128</span><br></pre></td></tr></table></figure>
+
+<h5 id="参考配置"><a href="#参考配置" class="headerlink" title="参考配置"></a>参考配置</h5><blockquote>
+<h6 id="网桥-ifcfg-br144"><a href="#网桥-ifcfg-br144" class="headerlink" title="网桥 (ifcfg-br144)"></a>网桥 (ifcfg-br144)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DEVICE=br144 <span class="comment">#桥接设备名：brX</span></span><br><span class="line">TYPE=Bridge</span><br><span class="line">IPADDR=172.16.144.1 <span class="comment">#IP 地址</span></span><br><span class="line">PREFIX=20 <span class="comment">#网络标识</span></span><br><span class="line">GATEWAY=172.16.144.1 <span class="comment">#网关地址</span></span><br><span class="line">BOOTPROTO=none</span><br><span class="line">ONBOOT=yes</span><br><span class="line">MTU=9000</span><br><span class="line">STP=yes <span class="comment">#启用 STP</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h6 id="普通端口-ifcfg-eno33559296"><a href="#普通端口-ifcfg-eno33559296" class="headerlink" title="普通端口 (ifcfg-eno33559296)"></a>普通端口 (ifcfg-eno33559296)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">BOOTPROTO=none <span class="comment">#静态地址，如若是外网口设为dhcp</span></span><br><span class="line">DEFROUTE=no <span class="comment">#不添加默认路由，如若是外网口设为yes</span></span><br><span class="line">PEERDNS=no <span class="comment">#不添加默认 DNS，如若是外网口设为yes</span></span><br><span class="line">PEERROUTES=no</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=no</span><br><span class="line">IPV6_DEFROUTE=no</span><br><span class="line">IPV6_PEERDNS=no</span><br><span class="line">IPV6_PEERROUTES=no</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">NAME=eno33559296</span><br><span class="line">UUID=cf803907-bfb2-4157-9bee-79050d505cb4</span><br><span class="line">HWADDR=00:0c:29:20:7c:38 <span class="comment">#根据实际 MAC 地址修改</span></span><br><span class="line">DEVICE=eno33559296</span><br><span class="line">ONBOOT=yes <span class="comment">#随开机 UP</span></span><br><span class="line">MTU=9000 <span class="comment">#修改 MTU</span></span><br><span class="line">BRIDGE=br144 <span class="comment">#添加此行将此端口加入桥 br144，不需要添加 IP 设定，改为在桥 br144 中添加</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<h6 id="VLAN端口-ifcfg-eno50338560-128"><a href="#VLAN端口-ifcfg-eno50338560-128" class="headerlink" title="VLAN端口 (ifcfg-eno50338560.128)"></a>VLAN端口 (ifcfg-eno50338560.128)</h6></blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DEVICE=eno50338560.128 <span class="comment">#普通端口名.VLAN_ID</span></span><br><span class="line">BOOTPROTO=none</span><br><span class="line">ONBOOT=yes</span><br><span class="line">MTU=8972</span><br><span class="line">IPADDR=172.16.128.1 <span class="comment">#IP 地址</span></span><br><span class="line">PREFIX=20 <span class="comment">#网络标识</span></span><br><span class="line">NETWORK=172.16.128.0 <span class="comment">#所在网络</span></span><br><span class="line">VLAN=yes <span class="comment">#VLAN口</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="配置完毕重启网络服务"><a href="#配置完毕重启网络服务" class="headerlink" title="配置完毕重启网络服务"></a>配置完毕重启网络服务</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart network</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210139-1024x699.png" alt="qq%e6%88%aa%e5%9b%be20161124210139"></p>
+<h4 id="DHCPd"><a href="#DHCPd" class="headerlink" title="DHCPd"></a>DHCPd</h4><h5 id="这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装"><a href="#这里不使用-Dnsmasq-自带的-DHCP-Server，而是用-DHCPd-来实现（因为直接有官方文档），安装" class="headerlink" title="这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有官方文档），安装"></a>这里不使用 Dnsmasq 自带的 DHCP-Server，而是用 DHCPd 来实现（因为直接有<span class="exturl" data-url="aHR0cHM6Ly9hY2Nlc3MucmVkaGF0LmNvbS9kb2N1bWVudGF0aW9uL2VuLVVTL1JlZF9IYXRfRW50ZXJwcmlzZV9MaW51eC83L2h0bWwvTmV0d29ya2luZ19HdWlkZS9zZWMtZGhjcC1jb25maWd1cmluZy1zZXJ2ZXIuaHRtbA==">官方文档<i class="fa fa-external-link-alt"></i></span>），安装</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">disable</span> NetworkManager</span><br></pre></td></tr></table></figure>
+
+<h5 id="安装完毕后会自动生成一个配置示例"><a href="#安装完毕后会自动生成一个配置示例" class="headerlink" title="安装完毕后会自动生成一个配置示例"></a>安装完毕后会自动生成一个配置示例</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/share/doc/dhcp-&#123;version&#125;/dhcpd.conf.example</span><br></pre></td></tr></table></figure>
+
+<h5 id="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"><a href="#我们可以复制这个示例，也可以完全自己写，这里按照自己需求写" class="headerlink" title="我们可以复制这个示例，也可以完全自己写，这里按照自己需求写"></a>我们可以复制这个示例，也可以完全自己写，这里按照自己需求写</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/dhcp/dhcpd.conf</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210042-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210042"><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210054-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124210054"></p>
+<h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start dhcpd</span><br><span class="line">systemctl <span class="built_in">enable</span> dhcpd</span><br></pre></td></tr></table></figure>
+
+<h5 id="这里如果报错，使用-journalctl-xe-查看"><a href="#这里如果报错，使用-journalctl-xe-查看" class="headerlink" title="这里如果报错，使用 journalctl -xe 查看"></a>这里如果报错，使用 journalctl -xe 查看</h5><blockquote>
+<p>很有可能是 DHCPd 中的设置网段 并没有在当前端口中找到，检查 II 中的配置，并确保端口 UP 状态。<br>    6.  ###### 2016.11.26 补充：此版本（4.2.5-42） DHCPd 有 BUG，会意外退出。<span class="exturl" data-url="aHR0cHM6Ly9idWd6aWxsYS5yZWRoYXQuY29tL3Nob3dfYnVnLmNnaT9pZD0xMzAyMjgy">参考<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<blockquote>
+<ul>
+<li>解决方案：</li>
+</ul>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/NetworkManager/dispatcher.d/12-dhcpd</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p>找到行，添加带有 ‘+’ 的两行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$STATUS</span>&quot;</span> = <span class="string">&quot;up&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="comment"># restart the services</span></span><br><span class="line">+    systemctl reset-failed dhcpd.service</span><br><span class="line">    systemctl -q is-enabled dhcpd.service &amp;&amp; systemctl restart dhcpd.service</span><br><span class="line">+    systemctl reset-failed dhcpd6.service</span><br><span class="line">    systemctl -q is-enabled dhcpd6.service &amp;&amp; systemctl restart dhcpd6.service</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<h4 id="Dnsmasq"><a href="#Dnsmasq" class="headerlink" title="Dnsmasq"></a>Dnsmasq</h4><h5 id="系统自带了-Dnsmasq，我们只需要配置好，设置启动就可以"><a href="#系统自带了-Dnsmasq，我们只需要配置好，设置启动就可以" class="headerlink" title="系统自带了 Dnsmasq，我们只需要配置好，设置启动就可以"></a>系统自带了 Dnsmasq，我们只需要配置好，设置启动就可以</h5><h5 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/dnsmasq.conf</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意以下编辑选项，其他选项我这里都是被注释状态：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">domain-needed <span class="comment">#只解析合法域名</span></span><br><span class="line">bogus-priv</span><br><span class="line">no-resolv <span class="comment">#不读取 /etc/resolv.conf</span></span><br><span class="line">no-poll <span class="comment">#不读取 /etc/resolv.conf</span></span><br><span class="line">server=127.0.0.1<span class="comment">#5353 #上游 DNS 地址，这里设置成本地 5353 口，是因为有 ChinaDNS 监听在此端口，达到不被污染劫持的目的，具体配置在下一篇说</span></span><br><span class="line">except-interface=eno16780032 <span class="comment">#不监听外网端口，根据需要修改</span></span><br><span class="line">no-dhcp-interface=br144 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">no-dhcp-interface=eno50338560 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">no-dhcp-interface=eno50338560.12 <span class="comment">#不监听 DHCP 请求</span></span><br><span class="line">cache-size=2000 <span class="comment">#做 DNS 请求缓存</span></span><br><span class="line">conf-dir=/etc/dnsmasq.d <span class="comment">#加载额外配置文件的目录，这个后面优化无污染 DNS 时候用到</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205854.png" alt="qq%e6%88%aa%e5%9b%be20161124205854"></p>
+<h5 id="启动-amp-开机自启-1"><a href="#启动-amp-开机自启-1" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start dnsmasq</span><br><span class="line">systemctl <span class="built_in">enable</span> dnsmasq</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加-iptables-规则"><a href="#添加-iptables-规则" class="headerlink" title="添加 iptables 规则"></a>添加 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -I INPUT -p udp -m state --state NEW --dport 53 -j ACCEPT</span><br><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br><span class="line">systemctl restart iptables</span><br></pre></td></tr></table></figure>
+
+<h5 id="测试，若失败请确认上游-DNS-可用，监听设置正确"><a href="#测试，若失败请确认上游-DNS-可用，监听设置正确" class="headerlink" title="测试，若失败请确认上游 DNS 可用，监听设置正确"></a>测试，若失败请确认上游 DNS 可用，监听设置正确</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p53</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124224342.png" alt="qq%e6%88%aa%e5%9b%be20161124224342"></p>
+<h4 id="配置-NAT"><a href="#配置-NAT" class="headerlink" title="配置 NAT"></a>配置 NAT</h4><h5 id="这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置"><a href="#这个核心功能就由-iptables-来完成，安装基础配置请参考-CentOS7-基础配置" class="headerlink" title="这个核心功能就由 iptables 来完成，安装基础配置请参考 CentOS7 基础配置"></a>这个核心功能就由 iptables 来完成，安装基础配置请参考 <a href="/2015/06/07/redhat-enterprise-linux-rhel-7-configuration/">CentOS7 基础配置</a></h5><h5 id="添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032"><a href="#添加-Masquerade-规则，将内网流量伪装发送至出口端口-eno16780032" class="headerlink" title="添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)"></a>添加 Masquerade 规则，将内网流量伪装发送至出口端口 (eno16780032)</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -o eno16780032 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<h5 id="放行所有内网-INPUT-FORWARD-请求"><a href="#放行所有内网-INPUT-FORWARD-请求" class="headerlink" title="放行所有内网 INPUT FORWARD 请求"></a>放行所有内网 INPUT FORWARD 请求</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -I INPUT -i br144 -j ACCEPT</span><br><span class="line">iptables -I INPUT -i eno50338560 -j ACCEPT</span><br><span class="line">iptables -I INPUT -i eno50338560.128 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i br144 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o br144 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i eno50338560 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o eno50338560 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -i eno50338560.128 -j ACCEPT</span><br><span class="line">iptables -I FORWARD -o eno50338560.128 -j ACCEPT</span><br><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<h5 id="检查配置，按情况调整-INPUT-FORWARD-链规则位置"><a href="#检查配置，按情况调整-INPUT-FORWARD-链规则位置" class="headerlink" title="检查配置，按情况调整 INPUT/FORWARD 链规则位置"></a>检查配置，按情况调整 INPUT/FORWARD 链规则位置</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart iptables</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204955-1024x939.png" alt="qq%e6%88%aa%e5%9b%be20161124204955"></p>
+<h4 id="至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲"><a href="#至此基本路由功能配置完毕，还是挺省资源的。配合-ss-redir-实现-FxxkGFW-在下一章讲" class="headerlink" title="至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲"></a>至此基本路由功能配置完毕，还是挺省资源的。配合 ss-redir 实现 FxxkGFW 在下一章讲<img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124210417.png" alt="qq%e6%88%aa%e5%9b%be20161124210417"></h4>]]></content>
+      <categories>
+        <category>Routing</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>使用 CentOS 实现小型网络路由 – 跨过长城</title>
+    <url>/2016/11/27/centos-based-router-fxxk-gfw/</url>
+    <content><![CDATA[<p>跨长城有很多种方法，这里还是使用比较常用的 Shadowsocks 配合上一篇中使用 CentOS 搭建的软路由来实现透明翻墙。</p>
+<blockquote>
+<p>PS：由于发现访问国外网站速度平均不如使用代理后访问的速度，于是直接使用了暴力的 GeoIP 指定非 CN IP 直接通过本地代理访问。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>本篇需用到的组件（解决 DNS 污染问题以及提供代理通道）：</p>
+<ul>
+<li>  上篇中配置 CentOS 中所包含的 Dnsmasq, iptables 等组件</li>
+<li>  <span class="exturl" data-url="aHR0cDovL21lbWJlcnMuaG9tZS5ubC9wLmEucm9tYm91dHMvcGRuc2Qv">pdnsd<i class="fa fa-external-link-alt"></i></span>: 提供 TCP查询 获得可靠清洁的 DNS 记录。这个工具很久没有维护了，然而在  TCP 查询 DNS 时候，自己测试结果要快于 unbound 之类。当然使用 ss-tunnel 来转发 DNS 亦可，只是这边环境对 UDP 不友好，就没采用</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL0NoaW5hRE5T">ChinaDNS<i class="fa fa-external-link-alt"></i></span>: 清洗被污染的 DNS 记录</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZlbGl4b25tYXJzL2Ruc21hc3EtY2hpbmEtbGlzdA==">dnsmasq-china-list<i class="fa fa-external-link-alt"></i></span>: 国内域名列表，指定国内域名直接通过国内 DNS 进行解析，缓解 CDN 问题</li>
+<li>  <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL3NoYWRvd3NvY2tzLWxpYmV2">Shadowsocks-libev<i class="fa fa-external-link-alt"></i></span>: 包含多个组件，我们用 ss-redir 来实现重定向</li>
+</ul>
+<h4 id="安装配置-pdnsd"><a href="#安装配置-pdnsd" class="headerlink" title="安装配置 pdnsd"></a>安装配置 pdnsd</h4><h5 id="于其官方页面获得-x86-64平台的下载地址"><a href="#于其官方页面获得-x86-64平台的下载地址" class="headerlink" title="于其官方页面获得 x86_64平台的下载地址"></a>于其官方页面获得 x86_64平台的<span class="exturl" data-url="aHR0cDovL21lbWJlcnMuaG9tZS5ubC9wLmEucm9tYm91dHMvcGRuc2QvcmVsZWFzZXMvcGRuc2QtMS4yLjlhLXBhcl9zbDYueDg2XzY0LnJwbQ==">下载地址<i class="fa fa-external-link-alt"></i></span></h5><h5 id="使用-curl-下载"><a href="#使用-curl-下载" class="headerlink" title="使用 curl 下载"></a>使用 curl 下载</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -O http://members.home.nl/p.a.rombouts/pdnsd/releases/pdnsd-1.2.9a-par_sl6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h5 id="yum-本地安装"><a href="#yum-本地安装" class="headerlink" title="yum 本地安装"></a>yum 本地安装</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum localinstall pdnsd-1.2.9a-par_sl6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h5 id="编辑其配置文件"><a href="#编辑其配置文件" class="headerlink" title="编辑其配置文件"></a>编辑其配置文件</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/pdnsd.conf</span><br></pre></td></tr></table></figure>
+
+<h5 id="参考配置"><a href="#参考配置" class="headerlink" title="参考配置"></a>参考配置</h5><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">global &#123;</span><br><span class="line">        perm_cache=0; #关闭 pdnsd 的缓存</span><br><span class="line">        cache_dir=&quot;/var/cache/pdnsd&quot;;</span><br><span class="line">        run_as=&quot;pdnsd&quot;;</span><br><span class="line">        server_ip = 127.0.0.1; #监听本地</span><br><span class="line">        server_port = 53535; #监听本地 53535 端口，注意错开 Dnsmasq, ChinaDNS 的端口</span><br><span class="line">        status_ctl = on;</span><br><span class="line">        query_method=tcp_only; #修改为仅通过 TCP 查询</span><br><span class="line">        min_ttl=15m;       # Retain cached entries at least 15 minutes.</span><br><span class="line">        max_ttl=1w;        # One week.</span><br><span class="line">        timeout=10;        # Global timeout option (10 seconds).</span><br><span class="line">        neg_domain_pol=on;</span><br><span class="line">        udpbufsize=1024;   # Upper limit on the size of UDP messages.</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">        label= &quot;opendns&quot;;</span><br><span class="line">        ip = 208.67.220.220, 208.67.222.222;  #上级 DNS 地址，需为国外支持 TCP 查询且无污染投毒的 DNS</span><br><span class="line">        reject = 208.69.32.0/24,  # You may need to add additional address ranges</span><br><span class="line">                208.69.34.0/24,  # here if the addresses of their search engines</span><br><span class="line">                208.67.219.0/24, # change.</span><br><span class="line">                208.67.217.0/24,</span><br><span class="line">                208.67.216.0/24;</span><br><span class="line">        reject_policy = fail;</span><br><span class="line">        port = 443; #上级 DNS 端口，这里使用 tcp 查询配合 443 端口</span><br><span class="line">        timeout=4; #查询超时</span><br><span class="line">        uptest=ping;</span><br><span class="line">        interval=10m;</span><br><span class="line">        purge_cache=off;</span><br><span class="line">        edns_query=yes;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">        label= &quot;v2ex&quot;;</span><br><span class="line">        ip = 199.91.73.222; #V2EX 只有這個地址有非標準端口所以單獨放出來</span><br><span class="line">        port = 3389; #指定支持的非標準端口</span><br><span class="line">        timeout=4;</span><br><span class="line">        uptest=ping;</span><br><span class="line">        ping_timeout = 100;</span><br><span class="line">        interval=10m;</span><br><span class="line">        purge_cache=off;</span><br><span class="line">        edns_query=off;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-amp-开机自启"><a href="#启动-amp-开机自启" class="headerlink" title="启动&amp;开机自启"></a>启动&amp;开机自启</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start pdnsd</span><br><span class="line">systemctl <span class="built_in">enable</span> pdnsd</span><br></pre></td></tr></table></figure>
+<h5 id="验证-pdnsd-正常工作（可查询且无投毒）"><a href="#验证-pdnsd-正常工作（可查询且无投毒）" class="headerlink" title="验证 pdnsd 正常工作（可查询且无投毒）"></a>验证 pdnsd 正常工作（可查询且无投毒）</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p53535</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161126232539.png" alt="qq%e6%88%aa%e5%9b%be20161126232539"></p>
+<h4 id="安装配置-ChinaDNS"><a href="#安装配置-ChinaDNS" class="headerlink" title="安装配置 ChinaDNS"></a>安装配置 ChinaDNS</h4><blockquote>
+<p>本示例中 ChinaDNS 路径: /usr/local/other/chinadns-1.3.2</p>
+</blockquote>
+<blockquote>
+<p>参照其<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL0NoaW5hRE5TI2luc3RhbGw=">官方 Github 中 Linux/Unix 的安装方法<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<h5 id="下载源码到本地，编译"><a href="#下载源码到本地，编译" class="headerlink" title="下载源码到本地，编译"></a>下载源码到本地，编译</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p /usr/<span class="built_in">local</span>/other/chinadns-1.3.2 &amp;&amp; <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/other/chinadns-1.3.2</span><br><span class="line">./configure &amp;&amp; make</span><br></pre></td></tr></table></figure>
+
+<h5 id="替换-IP-黑名单"><a href="#替换-IP-黑名单" class="headerlink" title="替换 IP 黑名单"></a>替换 IP 黑名单</h5><p>其自带一个 IP 黑名单（iplist.txt），以及一个 中国区 IP 列表 （chnroute.txt ），我们这里将其 chnroute 替换为 <span class="exturl" data-url="aHR0cDovL3d3dy5pcGRlbnkuY29tL2lwYmxvY2tzLw==">ipdeny<i class="fa fa-external-link-alt"></i></span> 提供的最新 <span class="exturl" data-url="aHR0cDovL3d3dy5pcGRlbnkuY29tL2lwYmxvY2tzL2RhdGEvYWdncmVnYXRlZC9jbi1hZ2dyZWdhdGVkLnpvbmU=">list<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl http://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone &gt; ipdeny-cn.txt</span><br></pre></td></tr></table></figure>
+
+<h5 id="尝试启动-ChinaDNS"><a href="#尝试启动-ChinaDNS" class="headerlink" title="尝试启动 ChinaDNS"></a>尝试启动 ChinaDNS</h5><p>本示例监听了 5353 端口，加载黑名单，国内IP名单，开启压缩指针，并指定 180.76.76.76 （百度 DNS）为国内 DNS，127.0.0.1:53535 （之前配置的pdnsd）为国外 DNS，并且开启 verbose 调试，运行于后台</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/bin/chinadns -l /usr/<span class="built_in">local</span>/other/chinadns-1.3.2/iplist.txt -p 5353 -c /usr/<span class="built_in">local</span>/other/chinadns-1.3.2/ipdeny-cn.txt -s 180.76.76.76,127.0.0.1:53535 -d -m -v &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="验证其正常工作（正常返回-pass-结果）"><a href="#验证其正常工作（正常返回-pass-结果）" class="headerlink" title="验证其正常工作（正常返回 pass 结果）"></a>验证其正常工作（正常返回 pass 结果）</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dig @127.0.0.1 google.com -p5353</span><br></pre></td></tr></table></figure>
+
+<h5 id="结束调试并添加至开机自启"><a href="#结束调试并添加至开机自启" class="headerlink" title="结束调试并添加至开机自启"></a>结束调试并添加至开机自启</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">killall chinadns</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;nohup /usr/local/bin/chinadns -l /usr/local/other/chinadns-1.3.2/iplist.txt -b 127.0.0.1 -p 5353 -c /usr/local/other/chinadns-1.3.2/ipdeny-cn.txt -s 180.76.76.76,127.0.0.1:53535 -d -m -v &gt; /var/log/user/chinadns 2&gt;&amp;1 &amp;&quot;</span> &gt;&gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>记得如果时第一次启用 rc.local 先</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chmod +x /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h4><h5 id="按照上一章配置"><a href="#按照上一章配置" class="headerlink" title="按照上一章配置"></a>按照<a href="/2016/11/24/centos-based-router-base-configuation/">上一章</a>配置</h5><h5 id="添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题"><a href="#添加-dnsmasq-china-list-加速国内解析，并解决部分-CDN-问题" class="headerlink" title="添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题"></a>添加 dnsmasq-china-list 加速国内解析，并解决部分 CDN 问题</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf &gt; /etc/dnsmasq.d/accelerated-domains.china.conf</span><br><span class="line">curl https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/bogus-nxdomain.china.conf &gt; /etc/dnsmasq.d/bogus-nxdomain.china.conf</span><br></pre></td></tr></table></figure>
+
+<h5 id="重新加载-Dnsmasq"><a href="#重新加载-Dnsmasq" class="headerlink" title="重新加载 Dnsmasq"></a>重新加载 Dnsmasq</h5><blockquote>
+<p>会自动载入 /etc/dnsmasq.d 目录的配置文件</p>
+</blockquote>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205634-1024x229.png" alt="qq%e6%88%aa%e5%9b%be20161124205634"></p>
+<h5 id="测试-Dnsmasq"><a href="#测试-Dnsmasq" class="headerlink" title="测试 Dnsmasq"></a>测试 Dnsmasq</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dig @127.0.0.1 google.com</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204706.png" alt="qq%e6%88%aa%e5%9b%be20161124204706"></p>
+<h4 id="安装配置-Shadowsocks-libev"><a href="#安装配置-Shadowsocks-libev" class="headerlink" title="安装配置 Shadowsocks-libev"></a>安装配置 Shadowsocks-libev</h4><h5 id="参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现"><a href="#参考其官方-Github-得知，RHEL-CentOS-安装可通过源实现" class="headerlink" title="参考其官方 Github 得知，RHEL/CentOS 安装可通过源实现"></a>参考其官方 Github 得知，RHEL/CentOS 安装可通过<span class="exturl" data-url="aHR0cHM6Ly9jb3ByLmZlZG9yYWluZnJhY2xvdWQub3JnL2NvcHJzL2xpYnJlaGF0L3NoYWRvd3NvY2tzLw==">源<i class="fa fa-external-link-alt"></i></span>实现</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo &gt; /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo</span><br><span class="line">yum update</span><br><span class="line">yum install shadowsocks-libev</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="使用-ss-redir-监听本地端口"><a href="#使用-ss-redir-监听本地端口" class="headerlink" title="使用 ss-redir 监听本地端口"></a>使用 ss-redir 监听本地端口</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nohup /usr/bin/ss-redir -s &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; -l &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m aes-256-cfb -b 0.0.0.0 -v &gt; /var/<span class="built_in">log</span>/user/ss-redir 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加至开机自启"><a href="#添加至开机自启" class="headerlink" title="添加至开机自启"></a>添加至开机自启</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;nohup /usr/bin/ss-redir -s &#123;SS服务器地址&#125; -p &#123;SS服务器端口&#125; -l &#123;本地监听端口&#125; -k &#123;SS密钥&#125; -m &#123;SS加密方式&#125; -b 0.0.0.0 -v &gt; /var/log/user/ss-redir 2&gt;&amp;1 &amp;&quot;</span> &gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205514-1024x643.png" alt="qq%e6%88%aa%e5%9b%be20161124205514"></p>
+<h4 id="安装-xtables-addons（GeoIP-模块）"><a href="#安装-xtables-addons（GeoIP-模块）" class="headerlink" title="安装 xtables-addons（GeoIP 模块）"></a>安装 xtables-addons（GeoIP 模块）</h4><h5 id="先直接使用-yum-安装必要组件"><a href="#先直接使用-yum-安装必要组件" class="headerlink" title="先直接使用 yum 安装必要组件"></a>先直接使用 yum 安装必要组件</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install xtables-addons</span><br><span class="line">yum install kernel-devel-`uname -r` iptables-devel kernel-headers-`uname -r`</span><br><span class="line">yum install gcc gcc-c++ make automake unzip zip perl perl-Text-CSV_XS xz</span><br></pre></td></tr></table></figure>
+
+<h5 id="下载-addons-源码包并解压"><a href="#下载-addons-源码包并解压" class="headerlink" title="下载 addons 源码包并解压"></a>下载 addons 源码包并解压</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -O http://downloads.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-2.10.tar.xz</span><br><span class="line">tar -xvf xtables-addons-2.10.tar.xz</span><br><span class="line"><span class="built_in">cd</span> xtables-addons-2.10</span><br></pre></td></tr></table></figure>
+
+<h5 id="由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行"><a href="#由于-CentOS-xtables-兼容性问题，修改编译设置，注释以下两行" class="headerlink" title="由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行"></a>由于 CentOS-xtables 兼容性问题，修改编译设置，注释以下两行</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi mconfig</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#build_SYSRQ=m</span></span><br><span class="line"><span class="comment">#build_length2=m</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124205258.png" alt="qq%e6%88%aa%e5%9b%be20161124205258"></p>
+<h5 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h5 id="完成后，进入源码包下-geoip-目录，下载地理-IP-包"><a href="#完成后，进入源码包下-geoip-目录，下载地理-IP-包" class="headerlink" title="完成后，进入源码包下 geoip 目录，下载地理 IP 包"></a>完成后，进入源码包下 geoip 目录，下载地理 IP 包</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> geoip</span><br><span class="line">./xt_geoip_dl</span><br><span class="line">./xt_geoip_build *.csv</span><br></pre></td></tr></table></figure>
+
+<h5 id="完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成"><a href="#完成后复制-BE-LE-两个目录至指定路径，GeoIP-模块配置完成" class="headerlink" title="完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成"></a>完成后复制 BE LE 两个目录至指定路径，GeoIP 模块配置完成</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p /usr/share/xt_geoip/</span><br><span class="line">cp -r &#123;BE,LE&#125; /usr/share/xt_geoip/</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-iptables，实现流量转发"><a href="#配置-iptables，实现流量转发" class="headerlink" title="配置 iptables，实现流量转发"></a>配置 iptables，实现流量转发</h4><h5 id="配置示例"><a href="#配置示例" class="headerlink" title="配置示例"></a>配置示例</h5><blockquote>
+<p>若应用 geoip 行时出现找不到 chain 错误，说明 geoip 模块安装不正确</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -t nat -N SHADOWSOCKS <span class="comment">#新建 iptables NAT链，名为 SHADOWSOCKS</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d &#123;SS服务器IP地址&#125;/32 -j RETURN <span class="comment">#例外 SS 服务器的 IP，不通过代理</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -p tcp -j RETURN <span class="comment">#A类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 127.0.0.1/8 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -p tcp -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -p tcp -j RETURN <span class="comment">#B类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -p tcp -j RETURN <span class="comment">#C类 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN <span class="comment">#保留 IP 地址段</span></span><br><span class="line">iptables -t nat -A SHADOWSOCKS -p tcp -m geoip ! --dst-cc CN -j REDIRECT --to-ports 1080 <span class="comment">#指定余下并且非CN的流量 重定向至本地 1080 端口（ss-redir 监听端口）</span></span><br><span class="line">iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS <span class="comment">#应用SHADOWSOCKS链</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204739-1-1024x486.png" alt="qq%e6%88%aa%e5%9b%be20161124204739"></p>
+<h5 id="尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP"><a href="#尝试访问墙外网站，成功则-IP-显示为-SS-的出口-IP" class="headerlink" title="尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP"></a>尝试访问墙外网站，成功则 IP 显示为 SS 的出口 IP</h5><p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204536-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204536"></p>
+<h5 id="保存-iptables-规则"><a href="#保存-iptables-规则" class="headerlink" title="保存 iptables 规则"></a>保存 iptables 规则</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables-save &gt; /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/11/QQ%E6%88%AA%E5%9B%BE20161124204640-1024x655.png" alt="qq%e6%88%aa%e5%9b%be20161124204640"></p>
+<h4 id="Done！"><a href="#Done！" class="headerlink" title="Done！"></a>Done！</h4>]]></content>
+      <categories>
+        <category>FxxkGFW</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>CentOS7 修改DNS，CentOS-Base.repo原生源</title>
+    <url>/2016/08/04/centos7-modify-dns-and-centos-native-base-repo/</url>
+    <content><![CDATA[<p>前些日子买了企鹅的香港云服务，作为此博客的架设和SS之用，但是蛋疼的TX为了GFW设置了内地的DNS地址，导致Google等域名无法解析。</p>
+<span id="more"></span>
+
+<h4 id="于是修改先修改DNS"><a href="#于是修改先修改DNS" class="headerlink" title="于是修改先修改DNS"></a>于是修改先修改DNS</h4><p><img data-src="/images/posts/2016/08/995FF0F3-AD4A-4C86-80BC-AD63D243EE01.jpg" alt="995FF0F3-AD4A-4C86-80BC-AD63D243EE01"></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nmcli connection show System\ eth0</span><br><span class="line">nmcli connection modify System\ eth0 ipv4.dns <span class="string">&quot;8.8.4.4 8.8.8.8&quot;</span></span><br><span class="line">nmcli connection up System\ eth0</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改完，yum-update一下，咦？"><a href="#修改完，yum-update一下，咦？" class="headerlink" title="修改完，yum update一下，咦？"></a>修改完，yum update一下，咦？</h4><p><img data-src="/images/posts/2016/08/7455F9B7-A409-49D8-B17C-451780CD0659-1024x141.jpg" alt="7455F9B7-A409-49D8-B17C-451780CD0659"></p>
+<p>大意就是无法解析mirrors.tencentyun.com，经查证是个内网源。 8-O</p>
+<p>那么，就要修改yum源为CentOS自带的，163也可以但是由于在HK并且个人特殊的JP，所以用原生的。</p>
+<p>这里提供个原生的CentOS-Base.repo吧，每次找也麻烦。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># CentOS-Base.repo</span><br><span class="line">#</span><br><span class="line"># The mirror system uses the connecting IP address of the client and the</span><br><span class="line"># update status of each mirror to pick mirrors that are updated to and</span><br><span class="line"># geographically close to the client.  You should use this for CentOS updates</span><br><span class="line"># unless you are manually picking other mirrors.</span><br><span class="line">#</span><br><span class="line"># If the mirrorlist= does not work for you, as a fall back you can try the</span><br><span class="line"># remarked out baseurl= line instead.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">[base]</span><br><span class="line">name=CentOS-$releasever - Base</span><br><span class="line">mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#released updates</span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-$releasever - Updates</span><br><span class="line">mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/centos/$releasever/updates/$basearch/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#additional packages that may be useful</span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-$releasever - Extras</span><br><span class="line">mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/centos/$releasever/extras/$basearch/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#additional packages that extend functionality of existing packages</span><br><span class="line">[centosplus]</span><br><span class="line">name=CentOS-$releasever - Plus</span><br><span class="line">mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=centosplus&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/centos/$releasever/centosplus/$basearch/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
+
+<h4 id="编辑-etc-yum-repos-d-CentOS-Base-repo，写入，完工"><a href="#编辑-etc-yum-repos-d-CentOS-Base-repo，写入，完工" class="headerlink" title="编辑/etc/yum.repos.d/CentOS-Base.repo，写入，完工"></a>编辑/etc/yum.repos.d/CentOS-Base.repo，写入，完工</h4>]]></content>
+      <categories>
+        <category>System</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>CUDA 7, CuDNN 2, Caffe and Digits on MacOS</title>
+    <url>/2016/08/10/cuda-7-cudnn-2-caffe-and-digits-on-macos/</url>
+    <content><![CDATA[<p>机器学习、神经网络等概念一直是行业热点，想要入门的话得需要一个环境吧，以下是一个新手介绍的在MacOS上配置。</p>
+<span id="more"></span>
+
+<h4 id="一如既往-Command-Line-Tools"><a href="#一如既往-Command-Line-Tools" class="headerlink" title="一如既往 Command Line Tools"></a>一如既往 Command Line Tools</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">xcode-select --install</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-CUDA-Toolkit"><a href="#安装-CUDA-Toolkit" class="headerlink" title="安装 CUDA Toolkit"></a>安装 CUDA Toolkit</h4><h5 id="Download：https-developer-nvidia-com-cuda-downloads"><a href="#Download：https-developer-nvidia-com-cuda-downloads" class="headerlink" title="Download：https://developer.nvidia.com/cuda-downloads"></a>Download：<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9jdWRhLWRvd25sb2Fkcw==">https://developer.nvidia.com/cuda-downloads<i class="fa fa-external-link-alt"></i></span></h5><p><img data-src="/images/posts/2016/08/QQ20160810-0-1024x930.png" alt="QQ20160810-0"><br><img data-src="/images/posts/2016/08/QQ20160810-2.png" alt="QQ20160810-2"></p>
+<h5 id="Verify"><a href="#Verify" class="headerlink" title="Verify"></a>Verify</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/cuda/bin/nvcc --version</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Update：可进入系统面板中 CUDA 更新 Driver</p>
+</blockquote>
+<p><img data-src="/images/posts/2016/08/QQ20160810-1.png" alt="QQ20160810-1"></p>
+<h4 id="安装-CuDNN"><a href="#安装-CuDNN" class="headerlink" title="安装 CuDNN"></a>安装 CuDNN</h4><h5 id="Download（需要注册并填写问卷）"><a href="#Download（需要注册并填写问卷）" class="headerlink" title="Download（需要注册并填写问卷）"></a>Download（需要注册并填写问卷）</h5><p><span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9yZHAvY3Vkbm4tZG93bmxvYWQ=">https://developer.nvidia.com/rdp/cudnn-download<i class="fa fa-external-link-alt"></i></span><br><img data-src="/images/posts/2016/08/98771466-32EC-4952-8001-54F9905CC132-1024x463.jpg" alt="98771466-32EC-4952-8001-54F9905CC132"></p>
+<h5 id="Extract-出来-得到-cuda-文件夹，将其对应目录放到系统位置"><a href="#Extract-出来-得到-cuda-文件夹，将其对应目录放到系统位置" class="headerlink" title="Extract 出来 得到 cuda 文件夹，将其对应目录放到系统位置"></a>Extract 出来 得到 cuda 文件夹，将其对应目录放到系统位置</h5><blockquote>
+<p>这里以 /usr/local/cuda/lib 和 /usr/local/cuda/include 为例</p>
+</blockquote>
+<h5 id="导出LIB-PATH"><a href="#导出LIB-PATH" class="headerlink" title="导出LIB_PATH"></a>导出LIB_PATH</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/cuda/lib</span><br><span class="line"><span class="built_in">export</span> DYLD_LIBRARY_PATH=`<span class="built_in">pwd</span>`:<span class="variable">$DYLD_LIBRARY_PATH</span></span><br><span class="line">sudo chmod a+r /usr/<span class="built_in">local</span>/cuda/include/cudnn.h /usr/<span class="built_in">local</span>/cuda/lib/libcudnn*</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-Python-环境，建议使用-brew-来安装，OSX-自带的稍老，并且需要-pip"><a href="#配置-Python-环境，建议使用-brew-来安装，OSX-自带的稍老，并且需要-pip" class="headerlink" title="配置 Python 环境，建议使用 brew 来安装，OSX 自带的稍老，并且需要 pip"></a>配置 Python 环境，建议使用 brew 来安装，OSX 自带的稍老，并且需要 pip</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install python</span><br><span class="line">sudo easy_install pip</span><br><span class="line">sudo -H proxychains4 pip install --upgrade pip setuptools</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如若出错，请运行 brew doctor 诊断下 brew 错误，pip 安装可能需要翻墙。</p>
+</blockquote>
+<h4 id="安装-Python-包"><a href="#安装-Python-包" class="headerlink" title="安装 Python 包"></a>安装 Python 包</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew tap homebrew/science</span><br><span class="line">brew update</span><br><span class="line">brew install snappy leveldb gflags glog szip lmdb hdf5 numpy opencv graphviz</span><br><span class="line">brew install --build-from-source --with-python -vd protobuf</span><br><span class="line">brew install --build-from-source -vd boost boost-python</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-Caffe（http-caffe-berkeleyvision-org）"><a href="#安装-Caffe（http-caffe-berkeleyvision-org）" class="headerlink" title="安装 Caffe（http://caffe.berkeleyvision.org）"></a>安装 Caffe（<span class="exturl" data-url="aHR0cDovL2NhZmZlLmJlcmtlbGV5dmlzaW9uLm9yZy8=">http://caffe.berkeleyvision.org<i class="fa fa-external-link-alt"></i></span>）</h4><h5 id="Clone"><a href="#Clone" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/BVLC/caffe.git</span><br><span class="line"><span class="built_in">cd</span> caffe</span><br><span class="line">cp Makefile.config.example Makefile.config</span><br></pre></td></tr></table></figure>
+
+<h5 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi Makefile.config</span><br></pre></td></tr></table></figure>
+
+<p>将其内的 Python 环境，numpy 路径配置好：<br><img data-src="/images/posts/2016/08/84E9C779-5AD9-4C83-A107-D6955A4E72CD.jpg" alt="84E9C779-5AD9-4C83-A107-D6955A4E72CD"></p>
+<h5 id="Compile"><a href="#Compile" class="headerlink" title="Compile"></a>Compile</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make all --<span class="built_in">jobs</span>=12</span><br><span class="line">make <span class="built_in">test</span> --<span class="built_in">jobs</span>=12</span><br><span class="line">make runtest</span><br></pre></td></tr></table></figure>
+
+<p>启动测试后（让他跑5分钟）如果输出无问题，说明基本运行：<br><img data-src="/images/posts/2016/08/QQ20160810-3.png" alt="QQ20160810-3"></p>
+<h5 id="Python-库"><a href="#Python-库" class="headerlink" title="Python 库"></a>Python 库</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> req <span class="keyword">in</span> $(cat python/requirements.txt); <span class="keyword">do</span> sudo -H pip install <span class="variable">$req</span>; <span class="keyword">done</span></span><br><span class="line">make pycaffe</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160810-1-1-1024x313.png" alt="QQ20160810-1"></p>
+<h4 id="安装-Torch（http-torch-ch-docs-getting-started-html）（2-0-Digits-可跳过）"><a href="#安装-Torch（http-torch-ch-docs-getting-started-html）（2-0-Digits-可跳过）" class="headerlink" title="安装 Torch（http://torch.ch/docs/getting-started.html）（2.0 Digits 可跳过）"></a>安装 Torch（<span class="exturl" data-url="aHR0cDovL3RvcmNoLmNoL2RvY3MvZ2V0dGluZy1zdGFydGVkLmh0bWw=">http://torch.ch/docs/getting-started.html<i class="fa fa-external-link-alt"></i></span>）（2.0 Digits 可跳过）</h4><h5 id="Clone-1"><a href="#Clone-1" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/torch/distro.git --recursive</span><br></pre></td></tr></table></figure>
+
+<h5 id="Install-Script"><a href="#Install-Script" class="headerlink" title="Install Script"></a>Install Script</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> torch</span><br><span class="line">./install-deps</span><br><span class="line">./install.sh -b</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装-Digits（https-developer-nvidia-com-digits）"><a href="#安装-Digits（https-developer-nvidia-com-digits）" class="headerlink" title="安装 Digits（https://developer.nvidia.com/digits）"></a>安装 Digits（<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubnZpZGlhLmNvbS9kaWdpdHM=">https://developer.nvidia.com/digits<i class="fa fa-external-link-alt"></i></span>）</h4><h5 id="Clone-2"><a href="#Clone-2" class="headerlink" title="Clone"></a>Clone</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/NVIDIA/DIGITS.git</span><br><span class="line"><span class="built_in">cd</span> DIGITS</span><br></pre></td></tr></table></figure>
+
+<h5 id="Python-依赖"><a href="#Python-依赖" class="headerlink" title="Python 依赖"></a>Python 依赖</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo -H pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160810-0-1-1024x462.png" alt="QQ20160810-0"></p>
+<h5 id="Launch！"><a href="#Launch！" class="headerlink" title="Launch！"></a>Launch！</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> CAFFE_HOME=../caffe &amp;&amp; ./digits-devserver</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置终了，访问-http-localhost-5000"><a href="#配置终了，访问-http-localhost-5000" class="headerlink" title="配置终了，访问 http://localhost:5000"></a>配置终了，访问 <span class="exturl" data-url="aHR0cDovL2xvY2FsaG9zdDo1MDAwLw==">http://localhost:5000<i class="fa fa-external-link-alt"></i></span></h4><blockquote>
+<h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>推荐运行 pip 时，走国内镜像（例为豆瓣）：在命令后加 -i <span class="exturl" data-url="aHR0cHM6Ly9weXBpLmRvdWJhbi5jb20vc2ltcGxl">https://pypi.douban.com/simple<i class="fa fa-external-link-alt"></i></span> 即可。<br>如遇到启动 digits-devserver 时的 segmentation fault，考虑更换 xCode</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Deep Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>DarkEDGE UI For Android 2.2 自改UI</title>
+    <url>/2010/08/14/darkedge-ui-android-2-2-modified/</url>
+    <content><![CDATA[<p><a href="/images/posts/2010/08/snap20100814_2004081.png"><img data-src="/images/posts/2010/08/snap20100814_2004081.png" title="snap20100814_200408"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2005001.png"><img data-src="/images/posts/2010/08/snap20100814_2005001.png" title="snap20100814_200500"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002041.png"><img data-src="/images/posts/2010/08/snap20100814_2002041.png" title="snap20100814_200204"></a></p>
+<span id="more"></span>
+
+<p><a href="/images/posts/2010/08/snap20100814_2004381.png"><strong><img data-src="/images/posts/2010/08/snap20100814_2004381.png" title="snap20100814_200438"></strong></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2004271.png"><img data-src="/images/posts/2010/08/snap20100814_2004271.png" title="snap20100814_200427"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2004191.png"><img data-src="/images/posts/2010/08/snap20100814_2004191.png" title="snap20100814_200419"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2004111.png"><img data-src="/images/posts/2010/08/snap20100814_2004111.png" title="snap20100814_200411"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2004051.png"><img data-src="/images/posts/2010/08/snap20100814_2004051.png" title="snap20100814_200405"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2003521.png"><img data-src="/images/posts/2010/08/snap20100814_2003521.png" title="snap20100814_200352"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2003291.png"><img data-src="/images/posts/2010/08/snap20100814_2003291.png" title="snap20100814_200329"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2003251.png"><img data-src="/images/posts/2010/08/snap20100814_2003251.png" title="snap20100814_200325"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2003201.png"><img data-src="/images/posts/2010/08/snap20100814_2003201.png" title="snap20100814_200320"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_200310.png"><img data-src="/images/posts/2010/08/snap20100814_200310.png" title="snap20100814_200310"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_200304.png"><img data-src="/images/posts/2010/08/snap20100814_200304.png" title="snap20100814_200304"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_200238.png"><img data-src="/images/posts/2010/08/snap20100814_200238.png" title="snap20100814_200238"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002331.png"><img data-src="/images/posts/2010/08/snap20100814_2002331.png" title="snap20100814_200233"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002301.png"><img data-src="/images/posts/2010/08/snap20100814_2002301.png" title="snap20100814_200230"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002241.png"><img data-src="/images/posts/2010/08/snap20100814_2002241.png" title="snap20100814_200224"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002201.png"><img data-src="/images/posts/2010/08/snap20100814_2002201.png" title="snap20100814_200220"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002171.png"><img data-src="/images/posts/2010/08/snap20100814_2002171.png" title="snap20100814_200217"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002141.png"><img data-src="/images/posts/2010/08/snap20100814_2002141.png" title="snap20100814_200214"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2002091.png"><img data-src="/images/posts/2010/08/snap20100814_2002091.png" title="snap20100814_200209"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001491.png"><img data-src="/images/posts/2010/08/snap20100814_2001491.png" title="snap20100814_200149"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001461.png"><img data-src="/images/posts/2010/08/snap20100814_2001461.png" title="snap20100814_200146"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001281.png"><img data-src="/images/posts/2010/08/snap20100814_2001281.png" title="snap20100814_200128"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001241.png"><img data-src="/images/posts/2010/08/snap20100814_2001241.png" title="snap20100814_200124"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001181.png"><img data-src="/images/posts/2010/08/snap20100814_2001181.png" title="snap20100814_200118"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001091.png"><img data-src="/images/posts/2010/08/snap20100814_2001091.png" title="snap20100814_200109"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2001041.png"><img data-src="/images/posts/2010/08/snap20100814_2001041.png" title="snap20100814_200104"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_200100.png"><img data-src="/images/posts/2010/08/snap20100814_200100.png" title="snap20100814_200100"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_200052.png"><img data-src="/images/posts/2010/08/snap20100814_200052.png" title="snap20100814_200052"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000491.png"><img data-src="/images/posts/2010/08/snap20100814_2000491.png" title="snap20100814_200049"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000451.png"><img data-src="/images/posts/2010/08/snap20100814_2000451.png" title="snap20100814_200045"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000421.png"><img data-src="/images/posts/2010/08/snap20100814_2000421.png" title="snap20100814_200042"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000381.png"><img data-src="/images/posts/2010/08/snap20100814_2000381.png" title="snap20100814_200038"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000351.png"><img data-src="/images/posts/2010/08/snap20100814_2000351.png" title="snap20100814_200035"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_2000271.png"><img data-src="/images/posts/2010/08/snap20100814_2000271.png" title="snap20100814_200027"></a></p>
+<p><a href="/images/posts/2010/08/snap20100814_195922.png"><img data-src="/images/posts/2010/08/snap20100814_195922.png" title="snap20100814_195922"></a></p>
+<p><span style="font-family: 微软雅黑;"><span style="font-size: xx-large;"><span class="exturl" data-url="aHR0cDovL2Rvd24ucWlhbm5hby5jb20vc3BhY2UvZmlsZS9tYXJ0aW5jei9zaGFyZS8yMDEwLzgvMTQvRGFya0VkZ2VfRWRpdGVkX0JZX01lYW5NYWNoaW5lLnppcC8ucGFnZQ==">DarkEDGE UI_MeanMachine.zip<i class="fa fa-external-link-alt"></i></span></span></span></p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>在Mac上安装Fish</title>
+    <url>/2015/07/31/fish-on-macos/</url>
+    <content><![CDATA[<p>一直在Mac上用着自带的zsh，配合oh-my-zsh使用体验还算不错，主题也能定制很强大，</p>
+<p>但是近日一个大牛给我推荐fish，也厌倦了bash的繁琐，于是乎。。手痒了</p>
+<span id="more"></span>
+
+<p>首先得说，有了brew这个神器，Mac真的是Shell和GUI的完美结合。</p>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg"><img data-src="/images/posts/2015/07/48C7EFF5-CD87-43E1-8068-852A0F984536.jpg" alt="48C7EFF5-CD87-43E1-8068-852A0F984536"></a></p>
+<p>这时已经可以直接输入/usr/local/bin/fish体验了</p>
+<h4 id="编辑-etc-shells文件，可以看到自带的不少shell"><a href="#编辑-etc-shells文件，可以看到自带的不少shell" class="headerlink" title="编辑/etc/shells文件，可以看到自带的不少shell"></a>编辑/etc/shells文件，可以看到自带的不少shell</h4><p><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.03.06.png" alt="Screen Shot 2015-07-31 at 17.03.06"></p>
+<p>我们添加一行/usr/local/bin/fish</p>
+<h4 id="设置为默认shell，再见zsh"><a href="#设置为默认shell，再见zsh" class="headerlink" title="设置为默认shell，再见zsh"></a>设置为默认shell，再见zsh</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s /usr/<span class="built_in">local</span>/bin/fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.06.50.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.06.50.png" alt="Screen Shot 2015-07-31 at 17.06.50"></a></p>
+<h4 id="接下来，按照oh-my-fish的readme-https-github-com-oh-my-fish-oh-my-fish-中的安装方式，执行"><a href="#接下来，按照oh-my-fish的readme-https-github-com-oh-my-fish-oh-my-fish-中的安装方式，执行" class="headerlink" title="接下来，按照oh-my-fish的readme(https://github.com/oh-my-fish/oh-my-fish)中的安装方式，执行"></a>接下来，按照oh-my-fish的readme(<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29oLW15LWZpc2gvb2gtbXktZmlzaCklRTQlQjglQUQlRTclOUElODQlRTUlQUUlODklRTglQTMlODUlRTYlOTYlQjklRTUlQkMlOEYlRUYlQkMlOEMlRTYlODklQTclRTglQTElOEM=">https://github.com/oh-my-fish/oh-my-fish)中的安装方式，执行<i class="fa fa-external-link-alt"></i></span></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -L https://github.com/oh-my-fish/oh-my-fish/raw/master/tools/install.fish | fish</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.09.37.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.09.37-1024x801.png" alt="Screen Shot 2015-07-31 at 17.09.37"></a></p>
+<h4 id="重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下"><a href="#重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下" class="headerlink" title="重启terminal，可能是没有删除zsh主题的原因，提示主题未找到，安装一下"></a>重启terminal，<del>可能是没有删除zsh主题的原因，提示主题未找到，</del>安装一下</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.12.24-1.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.12.24-1.png" alt="Screen Shot 2015-07-31 at 17.12.24 1"></a></p>
+<h4 id="再次重启，完美，不得不说还是比较friendly的"><a href="#再次重启，完美，不得不说还是比较friendly的" class="headerlink" title="再次重启，完美，不得不说还是比较friendly的 :-)"></a>再次重启，完美，不得不说还是比较friendly的 :-)</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.15.37.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.15.37.png" alt="Screen Shot 2015-07-31 at 17.15.37"></a></p>
+<h4 id="接下来是autojump"><a href="#接下来是autojump" class="headerlink" title="接下来是autojump"></a>接下来是autojump</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install autojump</span><br></pre></td></tr></table></figure>
+<p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.31.53.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-17.31.53-1024x267.png" alt="Screen Shot 2015-07-31 at 17.31.53"></a></p>
+<h4 id="将提示内容放入fish配置文件-config-fish-config-fish"><a href="#将提示内容放入fish配置文件-config-fish-config-fish" class="headerlink" title="将提示内容放入fish配置文件(~/.config/fish/config.fish)"></a>将提示内容放入fish配置文件(~/.config/fish/config.fish)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[ -f /usr/<span class="built_in">local</span>/share/autojump/autojump.fish ]; and . /usr/<span class="built_in">local</span>/share/autojump/autojump.fish</span><br></pre></td></tr></table></figure>
+
+<h4 id="完工"><a href="#完工" class="headerlink" title="完工"></a>完工</h4><p><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.47.53.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.47.53-1024x626.png" alt="Screen Shot 2015-07-31 at 23.47.53"></a><br><a href="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.48.26.png"><img data-src="/images/posts/2015/07/Screen-Shot-2015-07-31-at-23.48.26-1024x626.png" alt="Screen Shot 2015-07-31 at 23.48.26"></a></p>
+]]></content>
+      <categories>
+        <category>OSX</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>可怜的8800Ultra 驱动装不上</title>
+    <url>/2010/08/14/gtx8800-driver-issue/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/2010/08/2.png" title="~"></p>
+<span id="more"></span>
+
+<p><span style="color: #ff0000;"> </span><span style="color: #ff0000;">就这样挂了吗？</span></p>
+<p><span style="color: #ff0000;"> </span></p>
+<p><span style="color: #ff0000;">我！不！甘！心！啊！</span></p>
+<span style="color: #ff0000;">
+</span>]]></content>
+      <categories>
+        <category>Hardware</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Hello World！</title>
+    <url>/2010/07/29/hello-world/</url>
+    <content><![CDATA[<h4 id="终于弄好了"><a href="#终于弄好了" class="headerlink" title="终于弄好了"></a><strong>终于弄好了</strong></h4><h4 id="恶心的Qzone竟然弄不过来"><a href="#恶心的Qzone竟然弄不过来" class="headerlink" title="恶心的Qzone竟然弄不过来"></a><strong>恶心的Qzone竟然弄不过来</strong></h4><h4 id="以后更新自己玩的东西了-Qzone-照常"><a href="#以后更新自己玩的东西了-Qzone-照常" class="headerlink" title="以后更新自己玩的东西了~   Qzone 照常"></a><strong>以后更新自己玩的东西了~   Qzone 照常</strong></h4><h4 id="呼呼"><a href="#呼呼" class="headerlink" title="呼呼~"></a><strong>呼呼~</strong></h4><h4 id="BY-Mean-Machine"><a href="#BY-Mean-Machine" class="headerlink" title="BY Mean Machine"></a><strong>BY Mean Machine</strong></h4>]]></content>
+  </entry>
+  <entry>
+    <title>使用 iCloud 登陆 MacOS</title>
+    <url>/2016/08/09/login-using-icloud-password/</url>
+    <content><![CDATA[<p>从10.11.4开始，全新安装的OSX在第一次安装完后没有设置使用iCloud登录的话，后续无法通过用户修改密码选择使用iCloud密码登陆，估计是Apple的安全策略吧。</p>
+<p>但是的确很不方便，那么看看怎么将它恢复。</p>
+<span id="more"></span>
+
+<h4 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h4><p>点击用户－修改密码时候，直接弹出密码修改框。</p>
+<p><img data-src="/images/posts/2016/08/QQ20160809-0.png" alt="QQ20160809-0"></p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="打开Terminal，输入-sudo-dscl-append-Users-用户目录-AuthenticationAuthority-“-AppleID-用户邮箱”"><a href="#打开Terminal，输入-sudo-dscl-append-Users-用户目录-AuthenticationAuthority-“-AppleID-用户邮箱”" class="headerlink" title="打开Terminal，输入 sudo dscl . append /Users/用户目录 AuthenticationAuthority “;AppleID;用户邮箱”"></a>打开Terminal，输入 sudo dscl . append /Users/用户目录 AuthenticationAuthority “;AppleID;用户邮箱”</h5><ul>
+<li>Eg：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dscl . append /Users/MeanEVO AuthenticationAuthority <span class="string">&quot;;AppleID;&lt;输入登录邮箱&gt;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"><a href="#执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码" class="headerlink" title="执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码"></a>执行后重启，再次进入用户设置，发现用户名下侧出现AppleID，继续修改密码</h5><p><img data-src="/images/posts/2016/08/QQ20160809-2.png" alt="QQ20160809-2"></p>
+<h5 id="待改进"><a href="#待改进" class="headerlink" title="待改进"></a>待改进</h5><p>虽然显示使用了AppleID的密码，但是登陆时候仍旧是老的密码，这里一个笨办法就是通过这里修改iCloud的密码，那么密码就会同步了。</p>
+<blockquote>
+<h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>Keychain弹出的话，需要进入Keychain设置内重置</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>OSX</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Mean Machine&#39;s HyperDroid Edition V3.7 [Dark EDGE] Android 2.3.2</title>
+    <url>/2011/02/10/mean-machines-hyperdroid-edition-v3-7-dark-edge-android-2-3-2/</url>
+    <content><![CDATA[<p><a href="/images/posts/2011/02/CAP2011020911172.jpg"><img data-src="/images/posts/2011/02/CAP201101281725.jpg" title="CAP201101281725"><br><img data-src="/images/posts/2011/02/CAP2011020911172.jpg" title="CAP2011020911172"></a></p>
+<span id="more"></span>
+<p><a href="/images/posts/2011/02/CAP201101281723.jpg"><img data-src="/images/posts/2011/02/CAP201101281723.jpg" title="CAP201101281723"></a><br><a href="/images/posts/2011/02/CAP201101281726.jpg"><img data-src="/images/posts/2011/02/CAP201101281726.jpg" title="CAP201101281726"></a><br><a href="/images/posts/2011/02/CAP201101281730.jpg"><img data-src="/images/posts/2011/02/CAP201101281730.jpg" title="CAP201101281730"></a><br><a href="/images/posts/2011/02/CAP2011012817271.jpg"><img data-src="/images/posts/2011/02/CAP2011012817271.jpg" title="CAP2011012817271"></a></p>
+<p><strong>因为在论坛上写的<br>就不转过来了 喜欢的去论坛下载吧<br>我的HD2坏了 。 尸体也出了 这就是最后一版吧</strong><br><span class="exturl" data-url="aHR0cDovL3d3dy5xZHBwYy5jb20vdGhyZWFkLTQ4NzkxLTEtMy5odG1s">http://www.qdppc.com/thread-48791-1-3.html<i class="fa fa-external-link-alt"></i></span></p>
+<p><span style="color: #ff6600;">伟大的机皇 HD2！~</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>利用Nginx反向代理，建立Google镜像站</title>
+    <url>/2015/08/20/mirrors-google-on-nginx/</url>
+    <content><![CDATA[<p>这段时间VPN不好用了，经常断续。</p>
+<p>之前用过不少Google镜像站，可惜寿命都不长，</p>
+<p>要是能建立一个私人Google镜像的话，也免去了绝大部分翻墙需求了。</p>
+<span id="more"></span>
+
+<p>于是，开工</p>
+<h3 id="首先，已经有开源项目在github上了"><a href="#首先，已经有开源项目在github上了" class="headerlink" title="首先，已经有开源项目在github上了"></a>首先，已经有开源项目在github上了</h3><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2N1YmVyL25neF9odHRwX2dvb2dsZV9maWx0ZXJfbW9kdWxl">https://github.com/cuber/ngx_http_google_filter_module<i class="fa fa-external-link-alt"></i></span></p>
+<p>其实部署很简单，是一个Nginx插件的形式，</p>
+<p>但Nginx不能想Apache那样直接加载so扩展。于是，这里的问题主要就涉及到Nginx及SSL之类的编译。</p>
+<h4 id="先安装依赖，官方缺少c-编译环境支持，这里就先安装"><a href="#先安装依赖，官方缺少c-编译环境支持，这里就先安装" class="headerlink" title="先安装依赖，官方缺少c++编译环境支持，这里就先安装"></a>先安装依赖，官方缺少c++编译环境支持，这里就先安装</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install build-essential git gcc g++ make gcc-c++</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取源码"><a href="#获取源码" class="headerlink" title="获取源码"></a>获取源码</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget <span class="string">&quot;http://nginx.org/download/nginx-1.7.8.tar.gz&quot;</span></span><br><span class="line">wget <span class="string">&quot;ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.tar.gz&quot;</span></span><br><span class="line">wget <span class="string">&quot;https://www.openssl.org/source/openssl-1.0.1j.tar.gz&quot;</span></span><br><span class="line">wget <span class="string">&quot;http://zlib.net/zlib-1.2.8.tar.gz&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="克隆扩展插件"><a href="#克隆扩展插件" class="headerlink" title="克隆扩展插件"></a>克隆扩展插件</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/cuber/ngx_http_google_filter_module</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/yaoweibin/ngx_http_substitutions_filter_module</span><br></pre></td></tr></table></figure>
+
+<h4 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar xzvf nginx-1.7.8.tar.gz</span><br><span class="line">tar xzvf pcre-8.36.tar.gz</span><br><span class="line">tar xzvf openssl-1.0.1j.tar.gz</span><br><span class="line">tar xzvf zlib-1.2.8.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h4 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> nginx-1.7.8</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./configure \</span><br><span class="line">  --prefix=/opt/nginx-1.7.8 \</span><br><span class="line">  --with-pcre=../pcre-8.36 \</span><br><span class="line">  --with-openssl=../openssl-1.0.1j \</span><br><span class="line">  --with-zlib=../zlib-1.2.8 \</span><br><span class="line">  --with-http_ssl_module \</span><br><span class="line">  --add-module=../ngx_http_google_filter_module \</span><br><span class="line">  --add-module=../ngx_http_substitutions_filter_module</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /opt/nginx-1.7.8/conf/nginx.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    server_name localhost;</span><br><span class="line">    listen 80;</span><br><span class="line">    resolver 8.8.8.8;</span><br><span class="line">    location / &#123;</span><br><span class="line">        google on;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo /opt/nginx-1.7.8/sbin/nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="完成，打开浏览器查看下Nginx强大的反代～"><a href="#完成，打开浏览器查看下Nginx强大的反代～" class="headerlink" title="完成，打开浏览器查看下Nginx强大的反代～"></a>完成，打开浏览器查看下Nginx强大的反代～</h4><blockquote>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><p>Nginx 反代openresty+lua玩法<br><span class="exturl" data-url="aHR0cDovL2Ryb3BzLndvb3l1bi5vcmcvdGlwcy82NDAz">http://drops.wooyun.org/tips/6403<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MotoBlur  On Milestone v0.1a !  115网盘地址更新~</title>
+    <url>/2010/08/19/motoblur-on-milestone/</url>
+    <content><![CDATA[<p><span style="line-height: normal; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px; font-size: small;"><strong>[v0.1a][21-08-2010] MotoBlur for Milestone</strong></span></p>
+<p>I have now more success with the Froyo 2.2 MotoBlur port to milestone but it required a more technical approach than just lib replacements here..<br>Partly because Verizon put some policies on Motorola to put it into the firmware, and partly because it required different audio handling.</p>
+<p>Most features seen in MotoFrenzy is also shared here. both good and bad ones. Battery wise this image offers utilities to manage wifi inactivity and battery training policies.</p>
+<p>I feel that the features found in the MotoBlur, justify a more proper release, than initially, as Battery management and scalable widgets seems like nice features to me.</p>
+<p><span style="font-size: small;">Download Mirror 1<span class="exturl" data-url="aHR0cDovL3JhcGlkc2hhcmUuY29tL2ZpbGVzLzQxNDEyNDI1MC9Nb3RvQmx1ci56aXAuaHRtbA==">MotoBlur v0.1 full image<i class="fa fa-external-link-alt"></i></span></span><br><span style="font-size: small;">Download Mirror 2<span class="exturl" data-url="aHR0cDovL2RleHQzci5rb21vZGluLm9yZy9Nb3RvQmx1ci56aXA=">MotoBlur v0.1 full image<i class="fa fa-external-link-alt"></i></span></span> (Thanks to klash for the mirror)</p>
+<span id="more"></span>
+
+<p><span style="color: red;"><strong>SERIOUS BUG IN SMS RECEPTION, IT KEEPS REPEATING RECEPTION (AT LEAST FOR ME HERE)<br>Remember to add the 0.1a update patch attached to this pot.</strong></span></p>
+<h2 id="Full-Image-install-instructions"><a href="#Full-Image-install-instructions" class="headerlink" title="Full Image install instructions"></a><strong>Full Image install instructions</strong></h2><blockquote>
+<p>You can use G.O.T recovery for installation of the image (i read latest OpenRecovery is no longer compatible)</p>
+<p>Copy the included MotoBlur folder onto your sdcard</p>
+<p>into the folder /nandroid/adbrecovery and recover from</p>
+<p>G.O.T Recovery menu.</p>
+</blockquote>
+<h2 id="First-time-install-information"><a href="#First-time-install-information" class="headerlink" title="First time install information"></a><strong>First time install information</strong></h2><blockquote>
+<ul>
+<li><p>Recommended is to remove your SIM card the first time you start up, as the card activation process during setup with a non-Verizon card fails and takes datatraffic and is slow, if you got a card in your phone. Take it out, and you are quickly offered the option to setup later.</p>
+</li>
+<li><p>G.O.T recovery should offer your the option to partition your SDCARD if you wish to use a ext2 sdcard partition for apps2sd functionality.</p>
+</li>
+<li><p>Overclock included, means you can take the sample “overclock” file from the .zip and copy to your SDCARD, and it will be activated at bootup. you can modify content of the overclock file, but you need to find details on parameters on the authors webpage <span class="exturl" data-url="aHR0cDovL2NvZGUuZ29vZ2xlLmNvbS9wL21pbGVzdG9uZS1vdmVyY2xvY2s=">here<i class="fa fa-external-link-alt"></i></span>.</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="Changelog"><a href="#Changelog" class="headerlink" title="Changelog"></a><strong>Changelog</strong></h2><blockquote>
+<p>v0.1a</p>
+<ul>
+<li><p>fixed SMS reception repeater, now only one instance occur of each sms.</p>
+</li>
+<li><p>Internet media / Youtube playback problem, fixed.</p>
+</li>
+<li><p>Removed emergency alert app, (US CDMA Users only)</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="Current-state-of-this-release-is"><a href="#Current-state-of-this-release-is" class="headerlink" title="Current state of this release is:"></a>Current state of this release is:</h2><p><strong>Issues</strong></p>
+<blockquote>
+<p><strong>Based on release version 2.2.90 of Droid2 firmware found.</strong></p>
+<p>Battery manager offers 5,10,15,30 minutes timeout for data connection now. (original was 15,30,45,60)</p>
+<p>GPS is a drawback for now, as Motorola started using new communication methods between their drivers on CDMA based firmwares.</p>
+<p>Fully deodex’d rom (requires little more memory, but is sufficient in Motorola phone environment)</p>
+<ul>
+<li>It should noted, that Droid2 comes with 512MB RAM, which might for more hours become an issue on milestone, if froyo2.2 memory management handles this badly.</li>
+</ul>
+</blockquote>
+<h2 id="Working"><a href="#Working" class="headerlink" title="Working"></a><strong>Working</strong></h2><blockquote>
+<p><span style="color: green;">MotoBlur Froyo2.2 functionality fully working.</p>
+<p>Languages supported (enabled) English , Spanish, French, German, Italian, Portugese</p>
+<p>Data icons fixed (E/G/3G/H) is now shown.</p>
+<p>Phone calls</p>
+<p>Mobile data</p>
+<p>Picture editor (lite edition) works.</p>
+<p>Market fully working (Flash 10 beta not released for blur, so you have to install manually)</p>
+<p>Regular Wifi working</p>
+<p>Bluetooth with advanced stereo functionality working.</p>
+<p>Audio/Video playback of MPEG4,MP3, OGG etc..</p>
+<p>Wifi DLNA supported (audio lib fix required to share video/audio, only picture sharing seems working)</p>
+<p>Overclock app + module included. (overclock file on sdcard still required to enable it)</p>
+<p>File copying over Wifi between windows machines possible. (have seen problem copying to local phone though)</p>
+<p>APPS2SD ext2 edition (not native function though)</p>
+<p>Phone can be unlocked without a sim inserted.</p>
+</span>
+</blockquote>
+<h2 id="Not-working-tested"><a href="#Not-working-tested" class="headerlink" title="Not working/tested"></a><strong>Not working/tested</strong></h2><blockquote>
+<p><span style="color: red;">AP Wifi (not working) being tested and corrected where possible. (Teether app included for now)</p>
+<p>Camera/VideoRecorder (Focus problem)</p>
+<p>USB (auto detect problems, hotfix will be released asap, problem is close to be fixed.)</p>
+<p>GPS (currently using new driver requirements, might not be solved)</p>
+<p>BlockBuster DRM movie viewing (incompatible libs currently)</p>
+<p>TextToSpeech diabled (reason for high cpu load is being tested)</p>
+<p>Backup services (work only with a valid Verizon sim-card)</p>
+</span>
+</blockquote>
+<h2 id="apps-removed"><a href="#apps-removed" class="headerlink" title="apps removed"></a><strong>apps removed</strong></h2><blockquote>
+<p>Dataplan + Data manager (Verizon only feature)</p>
+<p>MyVerizon</p>
+<p>CityID</p>
+<p>Boot animation (took 4MB of system space, added QuickOffice instead)</p>
+<p>BlockBuster application</p>
+<p>HelpCenter</p>
+<p>TtsService (TalkToSpeech packages)</p>
+<p>Firewall service (missing libs in original stock firmware, might be on purpose it’s removed)</p>
+</blockquote>
+<h2 id="2-1-kernel-limitations"><a href="#2-1-kernel-limitations" class="headerlink" title="2.1 kernel limitations"></a><strong>2.1 kernel limitations</strong></h2><p>As with the other 2.2 releases, these functions are limited due to missing kernel upgrades on our milestone.</p>
+<p>Full RIL support cannot be implemented as driver is officially not available.<br>Camera kernel requirements for focus.<br>Native Apps2SD in settings.<br>Swap? (we could only hope)</p>
+<p>115网盘地址：<span class="exturl" data-url="aHR0cDovL3UuMTE1LmNvbS9maWxlL2YzNTBmODc1MmM=">http://u.115.com/file/f350f8752c<i class="fa fa-external-link-alt"></i></span></p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MotoFrenzy~0.4 不断更新,,,..相机功能正常~</title>
+    <url>/2010/08/03/motofrenzy0-4/</url>
+    <content><![CDATA[<p>测试OK   下载：</p>
+<p>115网盘</p>
+<p>地址:<span class="exturl" data-url="aHR0cDovL3UuMTE1LmNvbS9maWxlL2YzNTBmODc1MmM=">http://u.115.com/file/f350f8752c<i class="fa fa-external-link-alt"></i></span></p>
+<p><a href="/images/posts/2010/08/CAP201008031418.jpg"><img data-src="/images/posts/2010/08/CAP201008031418.jpg" title="CAP201008031418"></a></p>
+<p><a href="/images/posts/2010/08/CAP201008031417.jpg"><img data-src="/images/posts/2010/08/CAP201008031417.jpg" title="CAP201008031417"></a></p>
+<span id="more"></span>
+
+<p><span style="color: red;">哦，这个主题我自己改的。。。。原来的是标准android的主题</span></p>
+<p><span style="font-size: large;"><span style="color: #0000ff;">Changelog history</span></span><br><span style="font-size: large;"><span style="color: #0000ff;"><br></span></span><strong>v0.4: 03-08-2010</strong></p>
+<blockquote>
+<p><span style="color: red;">Camera works (Video recorder do not)</span><br>Completely new rebuild with Droid stock FRG01B<br>Flash 10.1 included as apk (push it to the phone with “adb”</p>
+<p>its no longer possible to download with this release.</p>
+<p>build.prop does not match.</p>
+<p><span style="font-family: 微软雅黑;"><span style="font-size: large;"><span style="color: red;">大意 相机工作 (录像不工作)</span></span></span></p>
+<p><span style="font-family: 微软雅黑;"><span style="font-size: large;"><span style="color: red;">完整的Droid 包上移植! (FRG01B)</span></span></span></p>
+<p><span style="font-family: 微软雅黑;"><span style="font-size: large;"><span style="color: red;">内置Flash 10.1………</span></span></span><br>This is the Froyo FRG01 image for our Milestone. but as this is not using the kernel, there are some limit to functions based on kernel requirement. But its close, and works great and is alot faster.</p>
+<p>You can also follow updates on Twitter now: <a href="http://twitter.com/DexterPicard"><span style="color: #0066cc;">Dexter Picard (DexterPicard) on Twitter</span></a></p>
+<p><span style="color: blue;"><strong>Completely new rebuild of FRG01 with camera finally working</strong></span></p>
+<p><span style="font-size: medium;"><span style="color: blue;">**Primary Image download **</span></span></p>
+<p><strong><span style="font-size: medium;"><span style="color: #0000ff;">STATUS</span></span></strong></p>
+<blockquote>
+<p><span style="color: blue;">WORKING</span></p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>Camera</p>
+<p>Bluetooth</p>
+<p>GPS</p>
+<p>Radio (GSM,GPRS,HSPA)</p>
+<p>Wifi</p>
+<p>SDCard detection</p>
+<p>USB / ABD</p>
+<p>AC Charging (milestone specific option)</p>
+<p>3D games / full display support</p>
+<p>Video playback (Youtube etc..)</p>
+<p>Wipe</p>
+<p>G-sensor</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><span style="color: blue;">NOT WORKING</span></p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>Video Recorder<br><span style="font-family: 微软雅黑;"><span style="font-size: large;"><span style="color: red;">原贴<span class="exturl" data-url="aHR0cDovL2ZvcnVtLnhkYS1kZXZlbG9wZXJzLmNvbS9zaG93dGhyZWFkLnBocD90PTczNDgwMg==">http://forum.xda-developers.com/showthread.php?t=734802<i class="fa fa-external-link-alt"></i></span></span></span></span></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>我的帖子<span class="exturl" data-url="aHR0cDovL2l0ZnVuei5jb20vdmlld3RocmVhZC5waHA/dGlkPTIzNzA4JnBhZ2U9MSZleHRyYT0jcGlkNzc4MTUz">http://itfunz.com/viewthread.php?tid=23708&amp;page=1&amp;extra=#pid778153<i class="fa fa-external-link-alt"></i></span></p>
+<div></div>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>搭建私人 Ngrok 转发通道</title>
+    <url>/2016/07/02/ngrok-tunnel/</url>
+    <content><![CDATA[<p>不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。<br>好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。</p>
+<p>众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想法，自己搭建一个吧。</p>
+<span id="more"></span>
+
+<p>ngrok是这类工具中比较出名的一个了，可惜的是官方已经放弃了开源的1.x版本，2.x版本是官方提供做商业用。关于2.x版本的使用，可以参照这篇文章：<span class="exturl" data-url="aHR0cDovL3d3dy5qaWFuc2h1LmNvbS9wL2EwYTM0Zjc3MDgzNyVFRiVCQyU4OFBTJUVGJUJDJTlBJUU3JUFFJTgwJUU0JUI5JUE2JUU0JUI4JThEJUU5JTk0JTk5JUVGJUJDJThDJUU0JUI4JThEJUU1JTgzJThGJUU1JUJFJTg4JUU1JUE0JTlBJUU3JUJEJTkxJUU3JUFCJTk5JUU1JTg4JUIwJUU1JUE0JTg0JUU3JUIyJTk4JUU4JUI0JUI0JUU2JUEwJUJDJUU1JUJDJThGJUU5JTgzJUJEJUU3JTlDJThCJUU0JUI4JThEJUU4JTg4JTkyJUU2JTlDJThEJUVGJUJDJTg5JUUzJTgwJTgy">http://www.jianshu.com/p/a0a34f770837（PS：简书不错，不像很多网站到处粘贴格式都看不舒服）。<i class="fa fa-external-link-alt"></i></span></p>
+<h4 id="下载ngrok-1-x源码"><a href="#下载ngrok-1-x源码" class="headerlink" title="下载ngrok 1.x源码"></a>下载ngrok 1.x源码</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/inconshreveable/ngrok.git</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成证书，比如要使用xxx-example-com，则此处域名填写example-com"><a href="#生成证书，比如要使用xxx-example-com，则此处域名填写example-com" class="headerlink" title="生成证书，比如要使用xxx.example.com，则此处域名填写example.com"></a>生成证书，比如要使用xxx.example.com，则此处域名填写example.com</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out rootCA.key 2048</span><br><span class="line">openssl req -x509 -new -nodes -key rootCA.key -subj <span class="string">&quot;/CN=填写域名&quot;</span> -days 5000 -out rootCA.pem</span><br><span class="line">openssl genrsa -out server.key 2048</span><br><span class="line">openssl req -new -key server.key -subj <span class="string">&quot;/CN=填写域名&quot;</span> -out server.csr</span><br><span class="line">openssl x509 -req -<span class="keyword">in</span> server.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out server.crt -days 3650</span><br></pre></td></tr></table></figure>
+
+<h4 id="替换掉原来的cert"><a href="#替换掉原来的cert" class="headerlink" title="替换掉原来的cert"></a>替换掉原来的cert</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp rootCA.pem assets/client/tls/ngrokroot.crt</span><br><span class="line">cp server.crt assets/server/tls/snakeoil.crt</span><br><span class="line">cp server.key assets/server/tls/snakeoil.key</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置Go语言环境，编译参数"><a href="#配置Go语言环境，编译参数" class="headerlink" title="配置Go语言环境，编译参数"></a>配置Go语言环境，编译参数</h4><h5 id="安装Go"><a href="#安装Go" class="headerlink" title="安装Go"></a>安装Go</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install go</span><br></pre></td></tr></table></figure>
+
+<del datetime="2016-08-08T10:21:23+00:00">
+4.2、这里可以两种方式
+4.2.1、软连接
+ln -s /usr/local/go/bin/* /usr/bin/
+4.2.2、
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin
+4.3、
+export GOPATH=/usr/local/ngrok/
+</del>
+
+<h5 id="设置编译参数"><a href="#设置编译参数" class="headerlink" title="设置编译参数"></a>设置编译参数</h5><ul>
+<li>服务端32位：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GOOS=linux GOARCH=386</span><br></pre></td></tr></table></figure></li>
+<li>服务端64位：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GOOS=linux GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+<li>MacOS：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GOOS=darwin GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+<li>Windows：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GOOS=windows GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因"><a href="#编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因" class="headerlink" title="编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因"></a>编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make release-client</span><br><span class="line">make release-server</span><br><span class="line">make release-all</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>不同平台：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GOOS=darwin GOARCH=amd64 make release-client</span><br><span class="line">GOOS=linux GOARCH=amd64 make release-server</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h4><h5 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./bin/ngrokd -domain=<span class="string">&quot;example.com&quot;</span> -httpAddr=<span class="string">&quot;:8080&quot;</span> -httpsAddr=<span class="string">&quot;:8081&quot;</span> -tunnelAddr=<span class="string">&quot;:4443&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>第一个是服务器端的http映射地址，第二个是https，第三个是控制端口。若需直接访问请配通firewall。</p>
+<h5 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h5><h6 id="创建一个ngrok-cfg，内容"><a href="#创建一个ngrok-cfg，内容" class="headerlink" title="创建一个ngrok.cfg，内容"></a>创建一个ngrok.cfg，内容</h6><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server_addr: &quot;example.com:4443&quot;</span><br><span class="line">trust_host_root_certs: false</span><br></pre></td></tr></table></figure>
+
+<h6 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ngrok -subdomain 相对二级域名地址 -config=ngrok.cfg 80</span><br></pre></td></tr></table></figure>
+
+<p>这里的相对二级域名就是xxx.example.com的xxx</p>
+<h4 id="其他及优化"><a href="#其他及优化" class="headerlink" title="其他及优化"></a>其他及优化</h4><h5 id="域名DNS：将-example-com改A记录至服务器IP"><a href="#域名DNS：将-example-com改A记录至服务器IP" class="headerlink" title="域名DNS：将*.example.com改A记录至服务器IP"></a>域名DNS：将*.example.com改A记录至服务器IP</h5><h5 id="个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok"><a href="#个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok" class="headerlink" title="个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok"></a>个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok</h5><blockquote>
+<p>ngrok说白了是个被抛弃的项目，官方也说了，存在很大的性能以及内存泄漏问题，并且不会被（官方）修复，可以试试寻找github上修改好的的开源项目</p>
+</blockquote>
+<h5 id="可用于路由ngrok连接（需修改源码，附）"><a href="#可用于路由ngrok连接（需修改源码，附）" class="headerlink" title="可用于路由ngrok连接（需修改源码，附）"></a>可用于路由ngrok连接（需修改源码，附）</h5><blockquote>
+<p>用于Koolshare固件连接，修改源码（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2tvb2xzaGFyZS9uZ3Jvay0xLjcvYmxvYi9tYXN0ZXIvc3JjL25ncm9rL3NlcnZlci90bHMuZ28jTDQx">https://github.com/koolshare/ngrok-1.7/blob/master/src/ngrok/server/tls.go#L41<i class="fa fa-external-link-alt"></i></span>）：</p>
+<blockquote>
+<ol>
+<li>修改src/ngrok/server/tls.go，第41行添加:</li>
+</ol>
+</blockquote>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi src/ngrok/server/tls.go</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p><img data-src="/images/posts/2016/07/QQ20160808-16.png" alt="QQ20160808-16"><br>2. 重新编译。<br>3. 启动：<br><img data-src="/images/posts/2016/07/QQ20160808-18.png"><br><img data-src="/images/posts/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg" alt="38839900-DD59-45C4-AEA0-0471FB6BFE0B"></p>
+</blockquote>
+</blockquote>
+<h5 id="分享一个启动脚本，可添加此脚本至rc-local实现开机启动"><a href="#分享一个启动脚本，可添加此脚本至rc-local实现开机启动" class="headerlink" title="分享一个启动脚本，可添加此脚本至rc.local实现开机启动"></a>分享一个启动脚本，可添加此脚本至rc.local实现开机启动</h5><blockquote>
+<p>启动脚本（注意修改path、证书位置）：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">domain=<span class="string">&quot;example.com&quot;</span></span><br><span class="line">http_port=8080</span><br><span class="line">https_port=8081</span><br><span class="line">remote_port=4443</span><br><span class="line">path=/usr/share/ngrok</span><br><span class="line">cert_path=<span class="variable">$path</span>/assets/server/tls</span><br><span class="line"></span><br><span class="line">NPID=`ps -ef|grep ngrokd|grep -v grep|awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$NPID</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Not running, starting...&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Already running, restarting...&quot;</span></span><br><span class="line"><span class="built_in">kill</span> <span class="variable">$NPID</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">nohup <span class="variable">$path</span>/bin/ngrokd -domain=<span class="string">&quot;<span class="variable">$domain</span>&quot;</span> -httpAddr=<span class="string">&quot;:<span class="variable">$http_port</span>&quot;</span> -httpsAddr=<span class="string">&quot;:<span class="variable">$https_port</span>&quot;</span> -tlsCrt=<span class="variable">$cert_path</span>/snakeoil.crt -tlsKey=<span class="variable">$cert_path</span>/snakeoil.key -tunnelAddr=<span class="string">&quot;:<span class="variable">$remote_port</span>&quot;</span> &gt; /var/<span class="built_in">log</span>/ngrok.log 2&gt;&amp;1 &amp;</span><br><span class="line">sleep 1</span><br><span class="line">head /var/<span class="built_in">log</span>/ngrok.log</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/07/QQ20160808-12-1024x224.png" alt="QQ20160808-12"></p>
+]]></content>
+      <categories>
+        <category>FxxkGFW</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Open Recovery 1.37</title>
+    <url>/2010/08/23/open-recovery-1.37/</url>
+    <content><![CDATA[<p>Version: 1.37 RELEASE CANDIDATE, 1.14 STABLE<br>Credit for mankind (from alldroid) for the CustomUpdate, on which this recovery is based,<br>credit for poseidon (also from alldroid) for ADBRecovery,<br>credit for koush for mtd-utils and nandroid (uses script based on it),<br>credit for nadlabak for keyboard layout change script.<span style="font-size: large;">!!!IMPORTANT WARNING!!!</span><br>The md5 checksum files in the new nandroid in version 1.30 to 1.36 (fixed in 1.37) are not generated. The backups will restore normally, but there might be potential corruption.</p>
+<span id="more"></span>
+
+
+<p><strong>Version 1.37</strong></p>
+<div>
+<div>
+
+<p>** Bugfixes</p>
+<ul>
+<li>fixed nandroid restore not properly restoring yaffs2 partitions in old format</li>
+<li>fixed nandroid restore not restoring compressed backups</li>
+<li>fixed nandroid backup not taking md5 checksums**</li>
+</ul>
+<p><strong>1.37的Nandroid 可以正常使用了</strong></p>
+<p>**<br>**</p>
+<p><strong>添加了 adb命令行    可以在Recovery模式 使用</strong></p>
+<p>**<br>**</p>
+<p><strong>菜单模式修复 菜单之间前换不用 等待了</strong></p>
+<div></div>
+<div>Changes
+- console buffers up to 1000 lats printed lines (extended from 200)</div>
+<div></div>
+</div>
+</div>
+<div><span style="color: #ffff00;">**<span style="color: #ff0000;">!!!ATTENTION!!!
+New backup format is used since 1.30\. The recovery supports restoring the backups in the old format.
+The backups in old format (there is a file "nandroid.md5" file in the folder) go to folder /sdcard/nandroid/adbrecovery/.
+The backups in new format (there is a file "*.md5" file for each partition) go to folder /sdcard/nandroid/openrecovery/.</span>**</span></div>
+<div><span style="color: #ffff00;">**<span style="color: #ff0000;"> </span>**</span></div>
+<div><span style="color: #ffff00;">**<span style="color: #ff0000;">115地址：[http://u.115.com/file/f328655698](http://u.115.com/file/f328655698)</span>**</span></div>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Wordpress 在 WebServer 中的权限配置</title>
+    <url>/2016/08/08/permissions-in-wordpress-on-webserver/</url>
+    <content><![CDATA[<p>Wordpress默认安装时候的权限设置，会导致安装插件、主题，上传图片时候权限不足。</p>
+<p>有些时候朋友询问我这个问题时候，只能笼统的答道把wordpress文件夹权限修改为和php解析器相同的组，实在无办法就也只能临时开777，终究不是长远之道。</p>
+<p>于是就有了今天这篇。</p>
+<span id="more"></span>
+
+<h4 id="首先，要弄明白，是什么玩意儿的权限不足，导致无法写入"><a href="#首先，要弄明白，是什么玩意儿的权限不足，导致无法写入" class="headerlink" title="首先，要弄明白，是什么玩意儿的权限不足，导致无法写入"></a>首先，要弄明白，是什么玩意儿的权限不足，导致无法写入</h4><p>一般来说，这个得看Server的配置方式，基本上php的话两种常用方式：</p>
+<ul>
+<li>Apache + 动态链接扩展，windows和*nix一般用的都是这种方式。（注：win系的话，使用此种方式需要使用对应PHP的TS版本，即线程安全版才有插件）</li>
+</ul>
+<blockquote>
+<p>访问使用的是apache运行的用户（组），那么就需要将wordpress文件夹及子目录设置为同httpd.conf中配置。（默认apache）:</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Apache or Nginx + PHP-FPM，此种方式效率较高，且配合nginx配置简便，基本原理就是PHP服务监听一个端口，网页服务器将php请求转发至其端口。</li>
+</ul>
+<blockquote>
+<p>需要查看php-fpm的配置文件。（默认apache）:</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/opt/remi/php70/php-fpm.d/www.conf</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ20160808-0.png" alt="QQ20160808-0"><br><img data-src="/images/posts/2016/08/QQ20160808-1.png" alt="QQ20160808-1"></p>
+<h4 id="知道了用户，那么就可以修改目录的属性了"><a href="#知道了用户，那么就可以修改目录的属性了" class="headerlink" title="知道了用户，那么就可以修改目录的属性了"></a>知道了用户，那么就可以修改目录的属性了</h4><h5 id="修改所属用户、用户组，以修改为nginx为例，wp目录-usr-share-nginx-html-wordpress，-R递归修改"><a href="#修改所属用户、用户组，以修改为nginx为例，wp目录-usr-share-nginx-html-wordpress，-R递归修改" class="headerlink" title="修改所属用户、用户组，以修改为nginx为例，wp目录/usr/share/nginx/html/wordpress，-R递归修改"></a>修改所属用户、用户组，以修改为nginx为例，wp目录/usr/share/nginx/html/wordpress，-R递归修改</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chown -R nginx:nginx /usr/share/nginx/html/wordpress</span><br></pre></td></tr></table></figure>
+
+<h5 id="修复文件夹权限，还原正常文件夹权限"><a href="#修复文件夹权限，还原正常文件夹权限" class="headerlink" title="修复文件夹权限，还原正常文件夹权限"></a>修复文件夹权限，还原正常文件夹权限</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> d -<span class="built_in">exec</span> chmod 755 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<h5 id="修复文件权限，还原正常文件权限"><a href="#修复文件权限，还原正常文件权限" class="headerlink" title="修复文件权限，还原正常文件权限"></a>修复文件权限，还原正常文件权限</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> f -<span class="built_in">exec</span> chmod 644 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<h5 id="当然修改apache-or-fpm中配置的用户亦可，保持统一就行"><a href="#当然修改apache-or-fpm中配置的用户亦可，保持统一就行" class="headerlink" title="当然修改apache or fpm中配置的用户亦可，保持统一就行"></a>当然修改apache or fpm中配置的用户亦可，保持统一就行</h5><blockquote>
+<p>补充：<br>如若开启了 Selinux，则需要额外的设置：</p>
+</blockquote>
+<ol>
+<li>修改网页内容目录的 Selinux 权限 (Nginx or Apache)：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chcon -R -h -t httpd_sys_script_rw_t /usr/share/nginx/html/wordpress</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/08/QQ%E6%88%AA%E5%9B%BE20161003141521.png" alt="qq%e6%88%aa%e5%9b%be20161003141521"></p>
+<ol start="2">
+<li>PS：若需调试 Selinux，请参考 <span class="exturl" data-url="aHR0cHM6Ly93aWtpLmNlbnRvcy5vcmcvemgvSG93VG9zL1NFTGludXg=">https://wiki.centos.org/zh/HowTos/SELinux<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+<h4 id="完工"><a href="#完工" class="headerlink" title="完工"></a>完工</h4>]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Red Hat Enterprise Linux (RHEL) 7.0 基本配置</title>
+    <url>/2015/06/07/redhat-enterprise-linux-rhel-7-configuration/</url>
+    <content><![CDATA[<h3 id="扩展系统Yum源"><a href="#扩展系统Yum源" class="headerlink" title="扩展系统Yum源"></a><strong>扩展系统Yum源</strong></h3><ul>
+<li><h4 id="EPEL-Extra-Packages-for-Enterprise-Linux"><a href="#EPEL-Extra-Packages-for-Enterprise-Linux" class="headerlink" title="EPEL(Extra Packages for Enterprise Linux)"></a><em>EPEL(Extra Packages for Enterprise Linux)</em></h4><span id="more"></span></li>
+</ul>
+<blockquote>
+<p>官方地址：<span class="exturl" data-url="aHR0cDovL2RsLmZlZG9yYXByb2plY3Qub3JnL3B1Yi9lcGVsL09TJUU3JTg5JTg4JUU2JTlDJUFDJUU1JThGJUI3L3g4Nl82NC8=">http://dl.fedoraproject.org/pub/epel/OS版本号/x86_64/<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<ul>
+<li>Eg: CentOS7 使用 rpm 安装源：</li>
+</ul>
+<p><del>rpm -Uvh <span class="exturl" data-url="aHR0cDovL2RsLmZlZG9yYXByb2plY3Qub3JnL3B1Yi9lcGVsLzcveDg2XzY0L2UvZXBlbC1yZWxlYXNlLTctNS5ub2FyY2gucnBt">http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm<i class="fa fa-external-link-alt"></i></span> </del></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install epel-release</span><br></pre></td></tr></table></figure>
+
+<p>最常用的源，不多说了。</p>
+<p>国内的话，可以使用镜像来提高速度：</p>
+<ul>
+<li><p>网易：<span class="exturl" data-url="aHR0cDovL21pcnJvcnMuMTYzLmNvbS9jZW50b3MvNy9leHRyYXMveDg2XzY0L1BhY2thZ2VzL2VwZWwtcmVsZWFzZS03LTUubm9hcmNoLnJwbQ==">http://mirrors.163.com/centos/7/extras/x86_64/Packages/epel-release-7-5.noarch.rpm<i class="fa fa-external-link-alt"></i></span></p>
+</li>
+<li><p>USTC：<span class="exturl" data-url="aHR0cDovL2NlbnRvcy51c3RjLmVkdS5jbi9jZW50b3MvNy9leHRyYXMveDg2XzY0L1BhY2thZ2VzL2VwZWwtcmVsZWFzZS03LTUubm9hcmNoLnJwbQ==">http://centos.ustc.edu.cn/centos/7/extras/x86_64/Packages/epel-release-7-5.noarch.rpm<i class="fa fa-external-link-alt"></i></span></p>
+</li>
+<li><h4 id="REMI"><a href="#REMI" class="headerlink" title="REMI"></a><em>REMI</em></h4></li>
+</ul>
+<blockquote>
+<p>官方地址：<span class="exturl" data-url="aHR0cDovL3JwbXMuZmFtaWxsZWNvbGxldC5jb20vZW50ZXJwcmlzZS8lRTclODklODglRTYlOUMlQUMlRTUlOEYlQjcv">http://rpms.famillecollet.com/enterprise/版本号/<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<ul>
+<li>Eg: CentOS7 使用 rpm 安装源：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm</span><br></pre></td></tr></table></figure>
+
+<p>REMI拥有最新的PHP资源，截至2015-06-07 PHP版本为5.6.9，可直接使用yum安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpm -Uvh http://rpms.famillecollet.com/enterprise/7/php56/x86_64/php-5.6.9-1.el7.remi.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p>⚠：REMI源安装完毕后需要手动启用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/yum.repos.d/remi.repo</span><br></pre></td></tr></table></figure>
+
+<p>修改所需源 enabled=0 为 enabled=1</p>
+<h3 id="更改系统默认防火墙"><a href="#更改系统默认防火墙" class="headerlink" title="更改系统默认防火墙"></a><strong>更改系统默认防火墙</strong></h3><h4 id="关闭firewalld"><a href="#关闭firewalld" class="headerlink" title="关闭firewalld"></a>关闭firewalld</h4><ul>
+<li>停止firewalld</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>  禁止firewalld开机启动</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">disable</span> firewalld.service</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装iptables"><a href="#安装iptables" class="headerlink" title="安装iptables"></a>安装iptables</h4><ul>
+<li>  安装熟悉的iptables：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install iptables-services</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>  安装后使用</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -L</span><br></pre></td></tr></table></figure>
+
+<p>查看已启用规则，一般文件内默认有22端口规则，<br>若没有添加默认规则，则需手动添加iptables规则：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<p>以下例子开启了SSH，HTTP，MYSQL端口</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*filter</span><br><span class="line">:INPUT ACCEPT [0:0]</span><br><span class="line">:FORWARD ACCEPT [0:0]</span><br><span class="line">:OUTPUT ACCEPT [0:0]</span><br><span class="line"></span><br><span class="line">-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT</span><br><span class="line">-A INPUT -p icmp -j ACCEPT</span><br><span class="line">-A INPUT -i lo -j ACCEPT</span><br><span class="line">-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT</span><br><span class="line">-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT</span><br><span class="line">-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT</span><br><span class="line">-A INPUT -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">-A FORWARD -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">COMMIT</span><br></pre></td></tr></table></figure>
+
+<p>编辑完文件后，按ESC，输入 :wq! #保存退出，回车确认</p>
+<ul>
+<li>重启防火墙使配置生效</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart iptables.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>确认设置无误后，设置开机启动，若设置有误则重启后重新编辑配置文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> iptables.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装组件"><a href="#安装组件" class="headerlink" title="安装组件"></a><strong>安装组件</strong></h3><h4 id="安装网页服务器，解释语言"><a href="#安装网页服务器，解释语言" class="headerlink" title="安装网页服务器，解释语言"></a>安装网页服务器，解释语言</h4><h5 id="Apache-HTTPd"><a href="#Apache-HTTPd" class="headerlink" title="Apache HTTPd"></a>Apache HTTPd</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install httpd</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动httpd:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start httpd.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>停止httpd:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop httpd.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重启httpd:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart httpd.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置httpd开机启动:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> httpd.service</span><br></pre></td></tr></table></figure>
+
+<h5 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php</span><br></pre></td></tr></table></figure>
+
+<p>默认安装版本较旧(5.4.x)，若需最新版本，请安装php后继续添加REMI源安装”PHP+版本”：</p>
+<ul>
+<li>Eg: 安装PHP 5.6.9:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php56</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Eg: 安装PHP 7.0+:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php70</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>按需安装PHP组件:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php-mysql php-gd libjpeg* php-ldap php-odbc php-pear php-xml php-xmlrpc php-mhash</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>按需安装PHP 7组件:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php70-php-mysqlnd php70-php-gd libjpeg* php70-php-ldap php70-php-pear php70-php-xml php70-php-xmlrpc</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>用于开发的话，推荐安装xDebug:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install php-pecl-xdebug</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装数据库服务器"><a href="#安装数据库服务器" class="headerlink" title="安装数据库服务器"></a>安装数据库服务器</h4><ul>
+<li>MariaDB:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install mariadb mariadb-server</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>拷贝配置文件:（注：重名请覆盖）</li>
+</ul>
+<p>安装后默认提供5个配置文件，选择合适的复制至/etc/my.cnf</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">my-huge.cnf</span><br><span class="line">my-innodb-heavy-4G.cnf</span><br><span class="line">my-large.cnf</span><br><span class="line">my-medium.cnf</span><br><span class="line">my-small.cnf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置中型数据库：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp /usr/share/mysql/my-medium.cnf /etc/my.cnf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动MariaDB:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl start mariadb.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>停止MariaDB:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop mariadb.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重启MariaDB:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart mariadb.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置开机启动:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> mariadb.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装完成并启动数据库后，执行数据库自带初始化安装：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mysql_secure_installation</span><br></pre></td></tr></table></figure>
+
+<p>一路Y与回车，设置数据库root密码，直到出现 Thanks for using MariaDB!</p>
+<ul>
+<li>至此MariaDB安装结束，若需要远程登录（%权限）则：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure>
+
+<p>输入密码后按回车，进入mysql控制台，接着输入</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">use mysql;</span><br><span class="line">update <span class="keyword">user</span> <span class="keyword">set</span> host <span class="operator">=</span> <span class="string">&#x27;%&#x27;</span> <span class="keyword">where</span> <span class="keyword">user</span> <span class="operator">=</span> <span class="string">&#x27;root&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>接着会报错找到多个root用户，不用管他，还是会修改第一个root的访问权限为’%’</p>
+<p>最后别忘记刷新权限，使修改生效：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置组件"><a href="#配置组件" class="headerlink" title="配置组件"></a><strong>配置组件</strong></h3><h4 id="配置Apache-Httpd"><a href="#配置Apache-Httpd" class="headerlink" title="配置Apache Httpd"></a>配置Apache Httpd</h4><ul>
+<li>一般情况下修改Httpd配置文件：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/httpd/conf/httpd.conf</span><br></pre></td></tr></table></figure>
+
+<p>选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Options Indexes FollowSymLinks</span><br></pre></td></tr></table></figure>
+
+<p>修改为（禁止列目录）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Options FollowSymLinks</span><br></pre></td></tr></table></figure>
+
+<p>选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AllowOverride None</span><br></pre></td></tr></table></figure>
+
+<p>修改为（允许.htaccess文件Override设置）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AllowOverride All</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置PHP"><a href="#配置PHP" class="headerlink" title="配置PHP"></a>配置PHP</h4><ul>
+<li>一般情况下修改Httpd配置文件：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/php.ini</span><br></pre></td></tr></table></figure>
+
+<p>选项disable_functions可阻止PHP运行高危函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,escapeshellcmd,dll,popen,disk_free_space,checkdnsrr,checkdnsrr,getservbyname,getservbyport,disk_total_space,posix_ctermid,posix_get_last_error,posix_getcwd, posix_getegid,posix_geteuid,posix_getgid, posix_getgrgid,posix_getgrnam,posix_getgroups,posix_getlogin,posix_getpgid,posix_getpgrp,posix_getpid, posix_getppid,posix_getpwnam,posix_getpwuid, posix_getrlimit, posix_getsid,posix_getuid,posix_isatty, posix_kill,posix_mkfifo,posix_setegid,posix_seteuid,posix_setgid, posix_setpgid,posix_setsid,posix_setuid,posix_strerror,posix_times,posix_ttyname,posix_uname</span><br></pre></td></tr></table></figure>
+
+<p>选项open_basedir可限制PHP文件夹权限（此处限制到默认html文件夹以及tmp临时目录）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">open_basedir = /var/www/html/:/tmp/</span><br></pre></td></tr></table></figure>
+
+<h3 id="至此RHEL7服务器配置基本完成，关于SELinux，个人不建议关闭，可根据实际应用权限修改相应的设置以达到使安全性、可用性平衡的目的。"><a href="#至此RHEL7服务器配置基本完成，关于SELinux，个人不建议关闭，可根据实际应用权限修改相应的设置以达到使安全性、可用性平衡的目的。" class="headerlink" title="至此RHEL7服务器配置基本完成，关于SELinux，个人不建议关闭，可根据实际应用权限修改相应的设置以达到使安全性、可用性平衡的目的。"></a>至此RHEL7服务器配置基本完成，关于SELinux，个人不建议关闭，可根据实际应用权限修改相应的设置以达到使安全性、可用性平衡的目的。</h3>]]></content>
+      <categories>
+        <category>System</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Reopen</title>
+    <url>/2015/06/07/reopen/</url>
+    <content><![CDATA[<p><strong>距离最后一次更新博客已经有4年了吧</strong></p>
+<p><strong>终于找到了这次机会把博客重新启用</strong></p>
+<p><strong>主要是当作笔记本了吧，记录一些过程与经验</strong></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks</title>
+    <url>/2015/08/21/shadowsocks-on-centos7/</url>
+    <content><![CDATA[<p>接上文。接着来实现第二种方式：Shadowsocks。</p>
+<p>今天听说软件作者被请去喝茶了，不过这种思路估计不容易被封锁吧。</p>
+<span id="more"></span>
+
+<p>项目首页（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoYWRvd3NvY2tzL3NoYWRvd3NvY2tz">https://github.com/shadowsocks/shadowsocks<i class="fa fa-external-link-alt"></i></span>）</p>
+<p>如今SS安装使用已经很简单，几句命令而已，轻量级的优点吸引了不少人。</p>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install python-setuptools &amp;&amp; easy_install pip</span><br><span class="line">pip install shadowsocks</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo ssserver -p 443（端口） -k <span class="built_in">test</span>!ss（密码） -m aes-256-cfb（加密方式） --user nobody（运行用户）-d start</span><br></pre></td></tr></table></figure>
+
+<h5 id="添加防火墙规则"><a href="#添加防火墙规则" class="headerlink" title="添加防火墙规则"></a>添加防火墙规则</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<h5 id="测试，添加至启动项"><a href="#测试，添加至启动项" class="headerlink" title="测试，添加至启动项"></a>测试，添加至启动项</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;ssserver -p 443（端口） -k test!ss（密码） -m aes-256-cfb（加密方式） --user nobody（运行用户）-d start&quot;</span> &gt;&gt; /etc/rc.local</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br></pre></td></tr></table></figure>
+
+<h5 id="各个平台也几乎都有了SS客户端，输入服务器地址，密码，-ENJOY"><a href="#各个平台也几乎都有了SS客户端，输入服务器地址，密码，-ENJOY" class="headerlink" title="各个平台也几乎都有了SS客户端，输入服务器地址，密码， ENJOY!"></a>各个平台也几乎都有了SS客户端，输入服务器地址，密码， ENJOY!</h5><h5 id="其他几点以及一些实用的优化："><a href="#其他几点以及一些实用的优化：" class="headerlink" title="其他几点以及一些实用的优化："></a><strong>其他几点以及一些实用的优化：</strong></h5><blockquote>
+<p>关于SS的管理平台</p>
+<blockquote>
+<p>用的比较多的就是ss-panel以及whmcs，个人使用没必要安装。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>查看当前连接的脚本，因为是按需连接，所以只能看到当前连接在用的用户：</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -tun|grep 端口号|sort|awk <span class="string">&#x27;&#123;print $5&#125;&#x27;</span>|cut -d : -f 1|uniq</span><br></pre></td></tr></table></figure>
+<p>PHP Version: </p>
+</blockquote>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> exec(<span class="string">&quot;netstat -tun|grep 端口号|sort|awk &#x27;&#123;print <span class="subst">$5</span>&#125;&#x27;|cut -d : -f 1|uniq&quot;</span>, <span class="variable">$ips</span>); var_dump(<span class="variable">$ips</span>); <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>对于linux3.0以上内核，可以开启fast-open，启动命令中添加:</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo ssserver -p 443（端口） -k <span class="built_in">test</span>!ss（密码） -m aes-256-cfb（加密方式）--fast-open --user nobody（运行用户）-d start</span><br></pre></td></tr></table></figure>
+<p>当然客户端也要开启，添加到客户端配置json文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;fast_open&quot;</span>: <span class="literal">true</span>,</span><br></pre></td></tr></table></figure>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>关于TCP优化，开启Hybla算法，聊胜于无，按照网上配置吧，<span style="color: #ff0000;"><strong>实测Vultr还是不优化快一点，根据使用环境按需使用</strong></span>：</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">net.ipv4.tcp_syncookies = 1</span><br><span class="line">net.ipv4.tcp_tw_reuse = 1</span><br><span class="line">net.ipv4.tcp_tw_recycle = 0</span><br><span class="line">net.ipv4.tcp_fin_timeout = 30</span><br><span class="line">net.ipv4.tcp_keepalive_time = 1200</span><br><span class="line">net.ipv4.tcp_max_syn_backlog = 8192</span><br><span class="line">net.ipv4.tcp_max_tw_buckets = 5000</span><br><span class="line">net.ipv4.tcp_fastopen = 3</span><br><span class="line">net.ipv4.tcp_rmem = 4096 87380 67108864</span><br><span class="line">net.ipv4.tcp_wmem = 4096 65536 67108864</span><br><span class="line">net.ipv4.tcp_mtu_probing = 1</span><br><span class="line">net.ipv4.tcp_congestion_control = hybla</span><br></pre></td></tr></table></figure>
+<p>启用Hybla模块: </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/sbin/modprobe tcp_hybla</span><br></pre></td></tr></table></figure>
+<p>应用更改:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure></blockquote>
+</blockquote>
+]]></content>
+      <categories>
+        <category>FxxkGFW</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server</title>
+    <url>/2015/08/21/softether-on-centos7/</url>
+    <content><![CDATA[<p>虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。</p>
+<p>重新找了家Vultr搭，速度还不错，分享下。</p>
+<span id="more"></span>
+
+<p>首先，要使用上真正的Internet，现在比较流行的就是两种方式了</p>
+<ul>
+<li>  自己搭建传统VPN，即通过PPTP、L2TP、SSTP、OpenVPN甚至使用IPSec来实现流量转发；</li>
+<li>  使用Shadowsocks等Socks5代理。<br>先说传统VPN吧，这种方式用得最多，设备支持也比较好，撇开PPTP这种现在看起来加密不太好的，L2TP、SSTP还是比较坚挺，</li>
+</ul>
+<p>为了方便，就不再细说搭建PPTP服务器了，网上资料也很多，搭建也不难。</p>
+<p>本文第一部分就先介绍下SoftEther这个东西（以下简称SE）。在没有这个软件的时候，L2TP搭建还是比较麻烦的事情，更不用提OVPN了。</p>
+<p>官方网址：<span class="exturl" data-url="aHR0cDovL3d3dy5zb2Z0ZXRoZXIub3JnLw==">http://www.softether.org<i class="fa fa-external-link-alt"></i></span>（可能需要爬墙）</p>
+<p>SE是由日本筑波大学（University of Tsukuba）开发的免费软件，集成了L2TP、L2TP over IPSec、SSTP、OVPN服务端，并且管理工具的存在（SoftEther VPN Server Manager），使得设置变的非常简单，添加帐号、限速、NAT设置都有图形化界面。</p>
+<p>下面说下安装。</p>
+<h5 id="先进入官方的下载页面"><a href="#先进入官方的下载页面" class="headerlink" title="先进入官方的下载页面"></a>先进入官方的下载页面</h5><blockquote>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5zb2Z0ZXRoZXItZG93bmxvYWQuY29tL2VuLmFzcHg=">http://www.softether-download.com/en.aspx<i class="fa fa-external-link-alt"></i></span>，可能需要爬墙，软件选择VPN Server，目标平台，CPU类型，然后复制最新版本的下载连接。</p>
+</blockquote>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png" alt="Screen Shot 2015-08-21 at 21.58.51"></a></p>
+<h5 id="切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧"><a href="#切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧" class="headerlink" title="切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧"></a>切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p /usr/SoftEther &amp;&amp; <span class="built_in">cd</span> /usr/SoftEther</span><br></pre></td></tr></table></figure>
+
+<h5 id="直接从官方下载tar-gz包并解压"><a href="#直接从官方下载tar-gz包并解压" class="headerlink" title="直接从官方下载tar.gz包并解压"></a>直接从官方下载tar.gz包并解压</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br><span class="line">tar -zxvf softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png" alt="Screen Shot 2015-08-21 at 22.31.39"></a></p>
+<h5 id="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"><a href="#ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）" class="headerlink" title="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"></a>ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install gcc</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>失败请确认Root权限！</p>
+<h5 id="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动"><a href="#在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动" class="headerlink" title="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动"></a>在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动</h5><p><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png" alt="Screen Shot 2015-08-21 at 22.33.08"></p>
+<h5 id="启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"><a href="#启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等" class="headerlink" title="启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"></a>启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<p>添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 992 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 1194 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 4500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 5555 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png" alt="Screen Shot 2015-08-21 at 22.37.05"></a></p>
+<h5 id="OK，在防火墙重新启动之后，我们开启vpnserver服务"><a href="#OK，在防火墙重新启动之后，我们开启vpnserver服务" class="headerlink" title="OK，在防火墙重新启动之后，我们开启vpnserver服务"></a>OK，在防火墙重新启动之后，我们开启vpnserver服务</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl restart iptables.service</span><br><span class="line">/usr/SoftEther/vpnserver/vpnserver start</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png" alt="Screen Shot 2015-08-21 at 22.38.43"></a></p>
+<h5 id="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）"><a href="#下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）" class="headerlink" title="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016.08更新，MacOS也有了）"></a>下载、使用管理工具<del datetime="2016-08-10T16:17:38+00:00">（现在只有Win端，安装选择带有管理工具的）</del>（2016.08更新，MacOS也有了）</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png" alt="Screen Shot 2015-08-21 at 21.54.22"></a></p>
+<p>点击建立新设置 New Setting：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png" alt="Screen Shot 2015-08-21 at 22.15.11"></a><br><a href="/images/posts/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg"><img data-src="/images/posts/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg" alt="FE203E14-8098-40CA-B190-3B1B266AB290"></a></p>
+<p>第一次连接会让你设置密码：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png" alt="Screen Shot 2015-08-21 at 22.39.38"></a></p>
+<h5 id="初始设置，选择最后一项跳过后点确定设置L2TP"><a href="#初始设置，选择最后一项跳过后点确定设置L2TP" class="headerlink" title="初始设置，选择最后一项跳过后点确定设置L2TP"></a>初始设置，选择最后一项跳过后点确定设置L2TP</h5><p><a href="/images/posts/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg"><img data-src="/images/posts/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg" alt="CAD85159-0FBD-46BC-BE55-210F53869A2E"></a><a href="/images/posts/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg"><img data-src="/images/posts/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg" alt="BB4F5C41-E714-4211-B441-AB28365A968D"></a></p>
+<h5 id="添加用户，设置SecureNAT或者直接桥接网卡"><a href="#添加用户，设置SecureNAT或者直接桥接网卡" class="headerlink" title="添加用户，设置SecureNAT或者直接桥接网卡"></a>添加用户，设置SecureNAT或者直接桥接网卡</h5><ul>
+<li>一般使用SecureNAT，也就是接入后，分配设置地址池地址，然后NAT出到公网；</li>
+<li>桥接的话，用途比较特殊，一般用于内网机器，并且需要局域网开启混杂模式，每次接入都由桥接网卡上游DHCP分配地址。<br><a href="/images/posts/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE.jpg"><img data-src="/images/posts/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE-1024x712.jpg" alt="A76580D2-8CD5-4967-B75C-E8AB7AB678CE"></a></li>
+</ul>
+<p>打开NAT，默认的是192.168.30.0/24网段，可以自行更改：</p>
+<p><a href="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg"><img data-src="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg" alt="FE5BB991-1FA8-4FBC-9D66-73C99A244EFC"></a></p>
+<h5 id="测试连接"><a href="#测试连接" class="headerlink" title="测试连接"></a>测试连接</h5><h5 id="测试无误后，设置开机启动"><a href="#测试无误后，设置开机启动" class="headerlink" title="测试无误后，设置开机启动"></a>测试无误后，设置开机启动</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png" alt="Screen Shot 2015-08-21 at 22.51.45"></a></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/usr/SoftEther/vpnserver/vpnserver start&quot;</span> &gt;&gt; /etc/rc.d/rc.local</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>至此SoftEther搭建完成。</p>
+]]></content>
+      <categories>
+        <category>FxxkGFW</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>SyntaxNet on MacOS</title>
+    <url>/2016/08/13/syntaxnet-on-macos/</url>
+    <content><![CDATA[<p>继上次配好了 TF 之后，由于需要 NLP，转而使用 Google 自家的模型 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RlbnNvcmZsb3cvbW9kZWxzL3RyZWUvbWFzdGVyL3N5bnRheG5ldA==">SyntaxNet<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>简单的配置在官方 git 中都有说明了，这里主要是两个问题的解决。</p>
+<span id="more"></span>
+
+<h4 id="出现无法下载-gmock-的问题"><a href="#出现无法下载-gmock-的问题" class="headerlink" title="出现无法下载 gmock 的问题"></a>出现无法下载 gmock 的问题</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">no such package &#x27;@gmock_archive//&#x27;: Error downloading from https://archive.openswitch.net/gmock-1.7.0.zip</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-2-1024x223.png" alt="QQ20160813-2"><br>问题：大概是由于国内墙？或者是 Java 的问题，包没有下下来，或者验证不通过。<br>解决：那么手动下载它然后指定路径就行了吧。对于 bazel 一窍不通的我，翻了半天的配置，终于根据路径找到了配置下载地址的地方：</p>
+<h5 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h5><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">models/syntaxnet/tensorflow/tensorflow/workspace.bzl</span><br></pre></td></tr></table></figure>
+
+<h5 id="Download-gmock-到本地，我这里将它放到了tmp目录中"><a href="#Download-gmock-到本地，我这里将它放到了tmp目录中" class="headerlink" title="Download gmock 到本地，我这里将它放到了tmp目录中"></a>Download gmock 到本地，我这里将它放到了tmp目录中</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line">wget https://archive.openswitch.net/gmock-1.7.0.zip</span><br></pre></td></tr></table></figure>
+
+<h5 id="开启-python-的简单-http-服务"><a href="#开启-python-的简单-http-服务" class="headerlink" title="开启 python 的简单 http 服务"></a>开启 python 的简单 http 服务</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python -m SimpleHTTPServer <span class="number">8000</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="并且修改下载路径为本地"><a href="#并且修改下载路径为本地" class="headerlink" title="并且修改下载路径为本地"></a>并且修改下载路径为本地</h5><p>修改 PATH 中的文件，gmock 的路径位于 79 行，将其从</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">url = &quot;https://archive.openswitch.net/gmock-1.7.0.zip&quot;</span><br></pre></td></tr></table></figure>
+<p>修改为</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">url = &quot;http://localhost:8000/gmock-1.7.0.zip&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-0-1024x832.png" alt="QQ20160813-0"><br><img data-src="/images/posts/2016/08/QQ20160813-1.png" alt="QQ20160813-1"></p>
+<h5 id="重新启动编译"><a href="#重新启动编译" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bazel <span class="built_in">test</span> --linkopt=-headerpad_max_install_names syntaxnet/... util/utf8/...</span><br></pre></td></tr></table></figure>
+
+<h4 id="出现无法找到-python-的问题"><a href="#出现无法找到-python-的问题" class="headerlink" title="出现无法找到 python 的问题"></a>出现无法找到 python 的问题</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ERROR: Cannot find &#x27;external/org_tensorflow/util/python/python_lib&#x27;.  Did you run configure?</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/images/posts/2016/08/QQ20160813-3-1024x616.png" alt="QQ20160813-3"></p>
+<p>问题：之前运行 configure 时配置的为 python_include 的路径，这儿找不到是因为 python_lib 的路径错误，默认路径为 /usr/lib/python2.7/site-packages 而我这儿不存在。</p>
+<p>解决：参考 github issues #2703 中的方案，修改 configure 文件是一种解决方式，不过这儿修改 python_config.sh 更为恰当。</p>
+<h5 id="PATH-1"><a href="#PATH-1" class="headerlink" title="PATH"></a>PATH</h5><p><code>models/syntaxnet/tensorflow/util/python/python_config.sh</code></p>
+<p><img data-src="/images/posts/2016/08/QQ20160813-5-1024x622.png" alt="QQ20160813-5"><br><img data-src="/images/posts/2016/08/QQ20160813-8-1024x86.png" alt="QQ20160813-8"></p>
+<h5 id="使用这个-python-config-sh-替换-PATH-路径中的文件"><a href="#使用这个-python-config-sh-替换-PATH-路径中的文件" class="headerlink" title="使用这个 python_config.sh 替换 PATH 路径中的文件"></a>使用这个 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Rhbm1hbmUvdGVuc29yZmxvdy9jb21taXQvNDk1OWExMjkxMDQ1Njc0YTIzNzkzMjEyY2ZlOTRkNDgwNDc2MGYwMQ==">python_config.sh<i class="fa fa-external-link-alt"></i></span> 替换 PATH 路径中的文件</h5><h5 id="重新-configure，自动识别的路径应该已经是正确的了"><a href="#重新-configure，自动识别的路径应该已经是正确的了" class="headerlink" title="重新 configure，自动识别的路径应该已经是正确的了"></a>重新 configure，自动识别的路径应该已经是正确的了</h5><p><img data-src="/images/posts/2016/08/QQ20160813-10-1024x527.png" alt="QQ20160813-10"></p>
+<h5 id="重新启动编译-1"><a href="#重新启动编译-1" class="headerlink" title="重新启动编译"></a>重新启动编译</h5><p><img data-src="/images/posts/2016/08/QQ20160813-9-1024x591.png" alt="QQ20160813-9"></p>
+]]></content>
+      <categories>
+        <category>Deep Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>TensorFlow on MacOS</title>
+    <url>/2016/08/10/tensorflow-on-macos/</url>
+    <content><![CDATA[<p>前篇配置了 Caffe 和 Digits，还有一个框架就是 Google 开发的 TensorFlow。</p>
+<p>配置简单，简略配置下：</p>
+<span id="more"></span>
+
+<h5 id="CUDA、CuDNN-环境"><a href="#CUDA、CuDNN-环境" class="headerlink" title="CUDA、CuDNN 环境"></a>CUDA、CuDNN 环境</h5><h5 id="选择部署系统"><a href="#选择部署系统" class="headerlink" title="选择部署系统"></a>选择部署系统</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, CPU only, Python 2.7</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp27-none-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, GPU enabled, Python 2.7</span></span><br><span class="line"><span class="comment"># Requires CUDA toolkit 7.5 and CuDNN v4\. For other versions, see &quot;Install from sources&quot; below.</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0rc0-cp27-none-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Mac OS X, CPU only, Python 2.7:</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.10.0rc0-py2-none-any.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Mac OS X, GPU enabled, Python 2.7:</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow-0.10.0rc0-py2-none-any.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, CPU only, Python 3.4</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, GPU enabled, Python 3.4</span></span><br><span class="line"><span class="comment"># Requires CUDA toolkit 7.5 and CuDNN v4\. For other versions, see &quot;Install from sources&quot; below.</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0rc0-cp34-cp34m-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, CPU only, Python 3.5</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp35-cp35m-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu/Linux 64-bit, GPU enabled, Python 3.5</span></span><br><span class="line"><span class="comment"># Requires CUDA toolkit 7.5 and CuDNN v4\. For other versions, see &quot;Install from sources&quot; below.</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.10.0rc0-cp35-cp35m-linux_x86_64.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Mac OS X, CPU only, Python 3.4 or 3.5:</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.10.0rc0-py3-none-any.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># Mac OS X, GPU enabled, Python 3.4 or 3.5:</span></span><br><span class="line"><span class="built_in">export</span> TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow-0.10.0rc0-py3-none-any.whl</span><br></pre></td></tr></table></figure>
+
+<h5 id="pip-部署"><a href="#pip-部署" class="headerlink" title="pip 部署"></a>pip 部署</h5><h6 id="Python-2"><a href="#Python-2" class="headerlink" title="Python 2"></a>Python 2</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade <span class="variable">$TF_BINARY_URL</span></span><br></pre></td></tr></table></figure>
+
+<h6 id="Python-3"><a href="#Python-3" class="headerlink" title="Python 3"></a>Python 3</h6><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade <span class="variable">$TF_BINARY_URL</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="Env-配置"><a href="#Env-配置" class="headerlink" title="Env 配置"></a>Env 配置</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> CUDA_HOME=/usr/<span class="built_in">local</span>/cuda</span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="string">&quot;<span class="variable">$LD_LIBRARY_PATH</span>:/usr/local/cuda/lib:/usr/local/cuda/extras/CUPTI/lib&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="测试（Python-2-x）"><a href="#测试（Python-2-x）" class="headerlink" title="测试（Python 2.x）"></a>测试（Python 2.x）</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">hello = tf.constant(<span class="string">&#x27;Hello, TensorFlow!&#x27;</span>)</span><br><span class="line">sess = tf.Session()</span><br><span class="line"><span class="built_in">print</span>(sess.run(hello))</span><br><span class="line"><span class="comment"># Hello, TensorFlow!</span></span><br><span class="line">a = tf.constant(<span class="number">10</span>)</span><br><span class="line">b = tf.constant(<span class="number">32</span>)</span><br><span class="line"><span class="built_in">print</span>(sess.run(a + b))</span><br><span class="line"><span class="comment"># 42</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h5><ul>
+<li>遇到 Couldn’t open CUDA library libcuda.1.dylib. 或 failed to find libcuda.so on this system: Failed precondition: could not dlopen DSO: libcuda.1.dylib; dlerror: dlopen(libcuda.1.dylib, 5): image not found 问题：<br><img data-src="/images/posts/2016/08/QQ20160810-2-1-1024x139.png" alt="QQ20160810-2"><br>请确认 LD_LIBRARY_PATH 已配置，并且 libcuda.1.dylib 存在，我这里的情况是 libcuda.dylib 存在，于是我就软连接到 .1.dylib 上，运行成功。<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/cuda/lib</span><br><span class="line">ln -s libcuda.dylib libcuda.1.dylib</span><br></pre></td></tr></table></figure>
+<img data-src="/images/posts/2016/08/QQ20160810-3-1-1024x359.png" alt="QQ20160810-3"><br><img data-src="/images/posts/2016/08/QQ20160810-0-2-1024x534.png" alt="QQ20160810-0"></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Deep Learning</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Nginx 配置 SSL 实现 HTTPS 连接</title>
+    <url>/2015/08/20/using-nginx-with-ssl/</url>
+    <content><![CDATA[<p>配好了镜像，还想尝试一下玩一下SSL。</p>
+<span id="more"></span>
+
+<p>现在（2015-08）国内有 WoSign 可以提供免费的SSL证书（<span class="exturl" data-url="aHR0cHM6Ly9idXkud29zaWduLmNvbS9mcmVlLw==">https://buy.wosign.com/free/<i class="fa fa-external-link-alt"></i></span>）</p>
+<p>国外的话 Cloudflare（以下简称CF） 也不用介绍了，如果使用FlexSSL，不用在服务器上重新设置（<span class="exturl" data-url="aHR0cHM6Ly93d3cuY2xvdWRmbGFyZS5jb20v">https://www.cloudflare.com/<i class="fa fa-external-link-alt"></i></span>）</p>
+<p>不过 目标是直连服务器也能加密的Valid SSL Certificate，也就是CF中的Strict，也就是说从服务器到CF服务器到Client都是SSL加密的。</p>
+<p>Cloudflare SSL三种方式：</p>
+<p><a href="/images/posts/2015/08/cloudflare-SSL_04.gif"><img data-src="/images/posts/2015/08/cloudflare-SSL_04.gif" alt="cloudflare-SSL_04"></a></p>
+<p>OK，开工。</p>
+<h4 id="首先在WoSign注册"><a href="#首先在WoSign注册" class="headerlink" title="首先在WoSign注册"></a>首先在WoSign注册</h4><h5 id="填好域（多个换行输入）名输入验证码，第一次使用的话，会顺带注册账号信息"><a href="#填好域（多个换行输入）名输入验证码，第一次使用的话，会顺带注册账号信息" class="headerlink" title="填好域（多个换行输入）名输入验证码，第一次使用的话，会顺带注册账号信息"></a>填好域（多个换行输入）名输入验证码，第一次使用的话，会顺带注册账号信息</h5><p><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.16.26.png" alt="Screen Shot 2015-08-20 at 18.16.26"></p>
+<h4 id="验证域名"><a href="#验证域名" class="headerlink" title="验证域名"></a>验证域名</h4><p>系统自动挑选邮箱，可以使用邮件认证。也可以使用往根目录下存放文件的形式。</p>
+<h4 id="选择生成方式"><a href="#选择生成方式" class="headerlink" title="选择生成方式"></a>选择生成方式</h4><p>这里有两种选择，可以自己生成证书然后上传CSR文件签名，也可以全部交给WoSign。</p>
+<ul>
+<li><p>如果是在线生成<br>比较方便 直接生成完，就可以下载压缩包，压缩包解压密码就是在网站填写的密钥；</p>
+</li>
+<li><p>如果选择上传</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out privkey.key 2048</span><br><span class="line">openssl req -new -key privkey.pem -out cert.csr</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>然后cat出cert.scr填入上传即可。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="下到zip文件解压，里面有提供给不同服务端用的证书，这里我们选择For-Nginx，上传至服务器"><a href="#下到zip文件解压，里面有提供给不同服务端用的证书，这里我们选择For-Nginx，上传至服务器" class="headerlink" title="下到zip文件解压，里面有提供给不同服务端用的证书，这里我们选择For Nginx，上传至服务器"></a>下到zip文件解压，里面有提供给不同服务端用的证书，这里我们选择For Nginx，上传至服务器</h4><p><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.34.58.png" alt="Screen Shot 2015-08-20 at 18.34.58"></p>
+<h4 id="服务器端解压，存放于安全目录下"><a href="#服务器端解压，存放于安全目录下" class="headerlink" title="服务器端解压，存放于安全目录下"></a>服务器端解压，存放于安全目录下</h4><h4 id="配置Nginx"><a href="#配置Nginx" class="headerlink" title="配置Nginx"></a>配置Nginx</h4><ul>
+<li><p>打开443的Server，填入server_name</p>
+</li>
+<li><p>指定好crt、key文件路径，这里为什么是.unsecure文件，下面会讲到。</p>
+</li>
+<li><p>禁用SSLv3，添加下行:</p>
+</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.56.58.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.56.58-1024x626.png" alt="Screen Shot 2015-08-20 at 18.56.58"></a></p>
+<p>完整配置参考：</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> ssl;</span><br><span class="line">    <span class="attribute">server_name</span> <span class="regexp">*.example.com</span> example.com;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_certificate</span> /root/ssl/1_example.com_bundle.crt;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /root/ssl/2_example.com.key.unsecure;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">ssl_session_cache</span> shared:SSL:<span class="number">1m</span>;</span><br><span class="line">    <span class="comment"># ssl_session_timeout 5m;</span></span><br><span class="line">    <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_ciphers</span> <span class="string">&quot;ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">add_header</span> Strict-Transport-Security max-age=<span class="number">63072000</span>;</span><br><span class="line">    <span class="attribute">add_header</span> X-Frame-Options DENY;</span><br><span class="line">    <span class="attribute">add_header</span> X-Content-Type-Options nosniff;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">resolver</span> <span class="number">8.8.4.4</span>;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">google</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="attribute">google_scholar</span> <span class="literal">on</span>;</span><br><span class="line">        <span class="comment"># root html;</span></span><br><span class="line">        <span class="comment"># index index.html index.htm;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于SSL安全性的问题，参考：</p>
+<ul>
+<li>  <span class="exturl" data-url="aHR0cDovL25ldHNlY3VyaXR5LjUxY3RvLmNvbS9hcnQvMjAxNDA4LzQ0NzQ3My5odG0=">http://netsecurity.51cto.com/art/201408/447473.htm<i class="fa fa-external-link-alt"></i></span></li>
+<li>  <span class="exturl" data-url="aHR0cDovL3d3dy5vc2NoaW5hLm5ldC90cmFuc2xhdGUvc3Ryb25nX3NzbF9zZWN1cml0eV9vbl9uZ2lueA==">http://www.oschina.net/translate/strong_ssl_security_on_nginx<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<h4 id="其实到这里已经配置好了，可以重启Nginx"><a href="#其实到这里已经配置好了，可以重启Nginx" class="headerlink" title="其实到这里已经配置好了，可以重启Nginx"></a>其实到这里已经配置好了，可以重启Nginx</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/opt/nginx-1.7.8/sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<h4 id="每次启动要输入密钥，为了避免麻烦，使用OpenSSL工具去掉密码"><a href="#每次启动要输入密钥，为了避免麻烦，使用OpenSSL工具去掉密码" class="headerlink" title="每次启动要输入密钥，为了避免麻烦，使用OpenSSL工具去掉密码"></a>每次启动要输入密钥，为了避免麻烦，使用OpenSSL工具去掉密码</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> 2_example.com.key -out 2_example.com.key.unsecure</span><br></pre></td></tr></table></figure>
+
+<p>OK，修改下Nginx配置里的文件路径吧</p>
+<h4 id="重启Nginx，测试"><a href="#重启Nginx，测试" class="headerlink" title="重启Nginx，测试"></a>重启Nginx，测试</h4><p><span class="exturl" data-url="aHR0cHM6Ly9zc2xhbmFseXplci5jb21vZG9jYS5jb20v">https://sslanalyzer.comodoca.com/<i class="fa fa-external-link-alt"></i></span><br>从这个网站可以看到SSL应用情况。</p>
+<p>直连：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.13.54.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.13.54-288x300.png" alt="Screen Shot 2015-08-20 at 18.13.54"></a><a href="/images/posts/2015/08/AE9F4001-C97D-46D9-805E-332548BE669C.jpg"><img data-src="/images/posts/2015/08/AE9F4001-C97D-46D9-805E-332548BE669C-252x300.jpg" alt="AE9F4001-C97D-46D9-805E-332548BE669C"></a></p>
+<p>CloudFlare Strict：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.42.36.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.42.36-273x300.png" alt="Screen Shot 2015-08-20 at 18.42.36"></a><a href="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.43.57.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-20-at-18.43.57-203x300.png" alt="Screen Shot 2015-08-20 at 18.43.57"></a></p>
+<h4 id="嗯，搞定SSL了"><a href="#嗯，搞定SSL了" class="headerlink" title="嗯，搞定SSL了"></a>嗯，搞定SSL了</h4>]]></content>
+      <categories>
+        <category>HTTP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>使用无需后期配置的 .dev 域名进行开发</title>
+    <url>/2016/12/25/using-point-dev-domain-for-development/</url>
+    <content><![CDATA[<p>前些日子为了毕设，在 Laracasts 上浏览教程时发现，他们用做开发的域名，就是简单的 .dev 结尾。虽然平时使用 localhost 也无大碍，可是 dev 看着舒服啊，遂找了个时间研究。</p>
+<span id="more"></span>
+
+<p>首先 dev 不是正规的域名后缀，因此也不用担心会在 Internet 上重名，但也见到过文章说不建议使用这些非正规域名进行调试，不过具体原因已经记不清了，可能主观上我偏向于 dev 吧。</p>
+<h4 id="要做的事一共有俩（本文以-MacOS-为例）"><a href="#要做的事一共有俩（本文以-MacOS-为例）" class="headerlink" title="要做的事一共有俩（本文以 MacOS 为例）"></a>要做的事一共有俩（本文以 MacOS 为例）</h4><ol>
+<li>让 .dev 的域名解析到本地，也就是 127.0.0.1</li>
+<li>在 Web 服务器中按照域名指向目录，这里用 Nginx 实现</li>
+</ol>
+<h4 id="先来实现第一件事，要让本地解析一个域名，方法无非两种"><a href="#先来实现第一件事，要让本地解析一个域名，方法无非两种" class="headerlink" title="先来实现第一件事，要让本地解析一个域名，方法无非两种"></a>先来实现第一件事，要让本地解析一个域名，方法无非两种</h4><ol>
+<li><p>使用本机的 Host ，让其在发送至 DNS 之前就返回解析到 127.1</p>
+<blockquote>
+<p> 很简便，但是由于 host 是不能使用通配符（至少我没找到方法），每次新建项目只能修改一次 host 文件，不够自动化</p>
+</blockquote>
+</li>
+<li><p>修改 DNS，让 .dev 返回到本机，其他记录还是使用上级 DNS (下文示例)</p>
+<blockquote>
+<p>麻烦些，也有几种方法，一种是在 服务器（路由）上将 *.dev 的记录添加到 Dnsmasq 中，还有一种就是在本地搭建 Dnsmasq 等 DNS 工具，本文主要讲本地搭建 Dnsmasq</p>
+</blockquote>
+</li>
+</ol>
+<h5 id="安装-Dnsmasq"><a href="#安装-Dnsmasq" class="headerlink" title="安装 Dnsmasq"></a>安装 Dnsmasq</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install dnsmasq</span><br></pre></td></tr></table></figure>
+
+<h5 id="配置-Dnsmasq"><a href="#配置-Dnsmasq" class="headerlink" title="配置 Dnsmasq"></a>配置 Dnsmasq</h5><p>这里我还安装了 unbound 作为 Dnsmasq 解析的上层服务，顺便把 tcp 查询 OpenDNS也搭在本地了，具体还可参考<a href="/2016/11/27/centos-based-router-fxxk-gfw/">使用 CentOS 实现小型网络路由 – 跨过长城</a><br>跳过前面那个<del datetime="2016-12-24T17:04:52+00:00">多余的动作（忽略自动获取的上游 DNS，改用 unbound</del>，基本上就是使用默认即可，主要是添加以下一行，用于匹配域名</p>
+<blockquote>
+<p>PS：截图中我配置了从 dnsmasq.d 中加载所有文件（conf 中修改最后一行注释添加 conf-dir=/usr/local/etc/dnsmasq.d/,*.conf ），实际直接添加此行至 dnsmasq.conf 亦可）</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">address=/.dev/127.0.0.1</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/12/QQ20161224-3.png"></p>
+<h5 id="启动-Dnsmasq"><a href="#启动-Dnsmasq" class="headerlink" title="启动 Dnsmasq"></a>启动 Dnsmasq</h5><blockquote>
+<p>注意监听端口小于 1024 需要 sudo 权限，这点在 brew 安装时已经说明</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo brew services start dnsmasq</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/12/QQ20161225-1.png"></p>
+<h5 id="测试-Dnsmasq"><a href="#测试-Dnsmasq" class="headerlink" title="测试 Dnsmasq"></a>测试 Dnsmasq</h5><blockquote>
+<p>随机.dev 测试，-p参数跟端口</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dig test.dev @127.0.0.1 -p53</span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/12/QQ20161224-4.png"></p>
+<h5 id="修改系统-DNS-至本地"><a href="#修改系统-DNS-至本地" class="headerlink" title="修改系统 DNS 至本地"></a>修改系统 DNS 至本地</h5><p><img data-src="/images/posts/2016/12/QQ20161225-3.png"></p>
+<h4 id="现在访问-dev-即可解析出本机地址，接下来配置-Nginx，让其自动匹配-dev，访问对应文件夹"><a href="#现在访问-dev-即可解析出本机地址，接下来配置-Nginx，让其自动匹配-dev，访问对应文件夹" class="headerlink" title="现在访问 .dev 即可解析出本机地址，接下来配置 Nginx，让其自动匹配 ().dev，访问对应文件夹"></a>现在访问 <em>.dev 即可解析出本机地址，接下来配置 Nginx，让其自动匹配 (</em>).dev，访问对应文件夹</h4><h5 id="安装-nginx-就不细说了，同样是-brew-就行"><a href="#安装-nginx-就不细说了，同样是-brew-就行" class="headerlink" title="安装 nginx 就不细说了，同样是 brew 就行"></a>安装 nginx 就不细说了，同样是 brew 就行</h5><h5 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h5><p>brew 安装后的info 指出，nginx 会加载（/usr/local/etc/nginx/servers/）内的所有文件，那么我们就在这里新建配置文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /usr/<span class="built_in">local</span>/etc/nginx/servers/http-dev.conf</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>配置文件已上传至 Gist，<span class="exturl" data-url="aHR0cHM6Ly9naXN0LmdpdGh1Yi5jb20vbWVhbmV2by8wNDUzYmVkYzEwZGUwZjEwNmJiYWQzNmVjNjdhNmZiZA==">点击查看<i class="fa fa-external-link-alt"></i></span><br>PS：这里使用了 5002 端口，因为上层通过 HAProxy 进行转发，按实际需求修改 80 等</p>
+</blockquote>
+<p><img data-src="/images/posts/2016/12/QQ20161225-0-1-981x1024.png"></p>
+<h5 id="验证配置"><a href="#验证配置" class="headerlink" title="验证配置"></a>验证配置</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo brew services start nginx</span><br></pre></td></tr></table></figure>
+
+<h5 id="一些命令，方便调试定位错误"><a href="#一些命令，方便调试定位错误" class="headerlink" title="一些命令，方便调试定位错误"></a>一些命令，方便调试定位错误</h5><ul>
+<li><p>重启服务：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo brew services restart nginx</span><br><span class="line">sudo nginx -s reload</span><br></pre></td></tr></table></figure></li>
+<li><p>查看日志：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tail -f /usr/<span class="built_in">local</span>/var/<span class="built_in">log</span>/nginx/error.log</span><br></pre></td></tr></table></figure></li>
+<li><p>查看端口占用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo lsof -i tcp:5003</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="完成！实际效果如图"><a href="#完成！实际效果如图" class="headerlink" title="完成！实际效果如图"></a>完成！实际效果如图</h5><p><img data-src="/images/posts/2016/12/QQ20161224-5-1024x413.png"></p>
+<p>Rewrite 工作正常<br><img data-src="/images/posts/2016/12/QQ20161225-0-1024x340.png"></p>
+]]></content>
+      <categories>
+        <category>Service</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>VPN ~ Youtube Facebook 访问~</title>
+    <url>/2010/08/06/vpn-youtube-facebook-accessing/</url>
+    <content><![CDATA[<p>呵呵 ,上Youtube等  被大陆 封掉的网站</p>
+<span id="more"></span>
+
+<p>免费的 注册 <span class="exturl" data-url="aHR0cHM6Ly93d3cudnBucmVhY3Rvci5jb20v">https://www.vpnreactor.com/<i class="fa fa-external-link-alt"></i></span> 没有推销连接 = =</p>
+<p><img data-src="/images/posts/2010/08/4-e1281073207135.png" title="无标题"><br><img data-src="/images/posts/2010/08/1-e1281073388948.png" title="无标题"></p>
+<p>好像是 40分钟中断一次 ~</p>
+<p>这网站 服务器在国外  上传文件 我就用这个VPN传的</p>
+<p>可用于Android翻墙 Iphone等~ 测试通过</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>洗Nvidia GeForce 8800Ultra 日记</title>
+    <url>/2010/08/15/washing-a-gtx8800/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/2010/08/DSC03064.jpg" title="DSC03064"><br><img data-src="/images/posts/2010/08/DSC03079.jpg" title="DSC03079"></p>
+<span id="more"></span>
+<p><img data-src="/images/posts/2010/08/DSC03077.jpg" title="DSC03077"><br><img data-src="/images/posts/2010/08/DSC03076.jpg" title="DSC03076"><br><img data-src="/images/posts/2010/08/DSC03075.jpg" title="DSC03075"><br><img data-src="/images/posts/2010/08/DSC03074.jpg" title="DSC03074"><br><img data-src="/images/posts/2010/08/DSC03073.jpg" title="DSC03073"><br><img data-src="/images/posts/2010/08/DSC03071.jpg" title="DSC03071"><br><img data-src="/images/posts/2010/08/DSC03070.jpg" title="DSC03070"><br><img data-src="/images/posts/2010/08/DSC03069.jpg" title="DSC03069"><br><img data-src="/images/posts/2010/08/DSC03068.jpg" title="DSC03068"><br><img data-src="/images/posts/2010/08/DSC03067.jpg" title="DSC03067"><br><img data-src="/images/posts/2010/08/DSC03066.jpg" title="DSC03066"><br><img data-src="/images/posts/2010/08/DSC03065.jpg" title="DSC03065"><br><img data-src="/images/posts/2010/08/DSC030641.jpg" title="DSC03064"><br><img data-src="/images/posts/2010/08/DSC03063.jpg" title="DSC03063"><br><img data-src="/images/posts/2010/08/DSC03062.jpg" title="DSC03062"><br><img data-src="/images/posts/2010/08/DSC03061.jpg" title="DSC03061"><br><img data-src="/images/posts/2010/08/DSC030601.jpg" title="DSC03060"><br><img data-src="/images/posts/2010/08/DSC030591.jpg" title="DSC03059"><br><img data-src="/images/posts/2010/08/DSC030581.jpg" title="DSC03058"><br><img data-src="/images/posts/2010/08/DSC030571.jpg" title="DSC03057"></p>
+<p>想想那张 死的 华硕 8800 Ultra也没什么实用价值</p>
+<p><a href="/images/posts/2010/08/DSC03064.jpg"></a></p>
+<p>干脆就拆了。。    扔水里</p>
+]]></content>
+      <categories>
+        <category>Hardware</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>记一次海淘 x99 主板 到手点不亮 以及解决</title>
+    <url>/2016/07/28/x99-bios-update-slove-cpu-compatibility/</url>
+    <content><![CDATA[<p>整个六月，闲来无事逛逛张大妈，突然发现了这么一记剁手贴：<span class="exturl" data-url="aHR0cDovL3d3dy5zbXpkbS5jb20vcC82MjAxMzQ0Lw==">Prime会员专享： GIGABYTE 技嘉 GA-X99P-SLI 主板 $182.74（约1300）<i class="fa fa-external-link-alt"></i></span></p>
+<p>想来亚马逊间隔了几年又给了一次 Prime 的体验机会，于是就剁剁剁，但是就此产生的问题真是不少。首先是价格，虽然 x99 便宜了，但是其对应的 CPU 一直居高不下，毕竟5、6代还算是比较新出的，还有搭配的 DDR4 内存高频的价格简直不敢恭维。还有就是我根本没有考虑到 x 系列是不带核显的，这个在黑苹果时候再说。<br>其次是购买时候，此主板的 BIOS 还未更新支持 6 代的 CPU，由此到手后真是折腾了一番，以下主要记录此次折腾。</p>
+<span id="more"></span>
+
+<p><img data-src="/images/posts/2016/08/fx2.png" alt="fx2"><img data-src="/images/posts/2016/08/IMG_3450-1024x769.jpg" alt="IMG_3450"></p>
+<p>首先，收到主板和 U 之后，由于内存还在转运坑，于是京东淘了条先试机。收到内存，兴奋的装完机后，<strong>点亮。。。怎么重启了。。。</strong></p>
+<h4 id="还没见到自检画面即-reboot，这个问题从我的角度来看有几种可能"><a href="#还没见到自检画面即-reboot，这个问题从我的角度来看有几种可能" class="headerlink" title="还没见到自检画面即 reboot，这个问题从我的角度来看有几种可能"></a>还没见到自检画面即 reboot，这个问题从我的角度来看有几种可能</h4><ul>
+<li>CPU 插座接触不良（重新上）</li>
+<li>电源问题（短接，负载）</li>
+<li>主板有缺陷，运输途中损坏（这个比较悲催）</li>
+</ul>
+<p>一个个试过去，详细过程就不记了，简单的操作网上都有。结果问题依旧存在，由于不插内存时触发重启间隔缩短，由此确定很有可能问题出在 CPU 上，由于 CPU 坏的案例很少（我是没坏过），那就暂时把问题缩小到 CPU-&gt;MotherBoard 之间。</p>
+<p>逛了下技嘉的官网，由于这款未在国内上市，在其美帝官网上找到了支持，看了下，嗯。。6月中旬更新的 BIOS 才支持 6 系 CPU，这下好办了，问题就暂时转移到 BIOS 上（因为这种板子缺少 CPU微码 开不起的可能性很大）。</p>
+<p>继续看 其兄弟 GA-X99-UD3P 支持 QFlash Plus，也就是可以通过优盘在无 CPU 的情况下升级 BIOS，在看手上这块的，What？只能QFlash，<span style="color: #333399;">没有 Plus 支持</span>也就是没有刷 BIOS 的 USB 口！！<br><img data-src="/images/posts/2016/08/IMG_3452-1024x295.jpg" alt="IMG_3452"><img data-src="/images/posts/2016/08/IMG_3451-1024x138.jpg" alt="IMG_3451"><img data-src="/images/posts/2016/08/QQ20160819-1-1024x480.png" alt="QQ20160819-1"></p>
+<h4 id="这下比较棘手了，问题解决方案只有两种"><a href="#这下比较棘手了，问题解决方案只有两种" class="headerlink" title="这下比较棘手了，问题解决方案只有两种"></a>这下比较棘手了，问题解决方案只有两种</h4><ol>
+<li>带去本地电脑城，或者借一颗 5 系的 CPU 先点亮主板，升级 BIOS 后再换回</li>
+<li>想到之前刷 Thinkpad x230 使用的编程器，也许可以用来直接刷呢？</li>
+</ol>
+<h4 id="由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马"><a href="#由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马" class="headerlink" title="由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马"></a>由于方案1的实现需要出门，家里蹲不愿意出门，于是先执行方案2，活马当死马</h4><ul>
+<li>方案2的进行需要以下步骤：<ul>
+<li>确认 主板 BIOS 芯片型号：<span style="color: #333399;">MX25L12873F</span></li>
+<li>确认 编程器支持的 芯片型号：未找到对应</li>
+<li>确认封装，Google BIOS 芯片，找到对应定义图：<span style="color: #333399;">SOP8 封装</span></li>
+</ul>
+</li>
+</ul>
+<h4 id="以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧"><a href="#以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧" class="headerlink" title="以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧"></a>以上三点都确认完了，没有找到对应支持也是心中有点发虚，不过都进行到这一步了，硬着上吧</h4><h5 id="连接-编程器与主板-BIOS，先不接供电脚。这里直接刷的-主BIOS"><a href="#连接-编程器与主板-BIOS，先不接供电脚。这里直接刷的-主BIOS" class="headerlink" title="连接 编程器与主板 BIOS，先不接供电脚。这里直接刷的 主BIOS"></a>连接 编程器与主板 BIOS，先不接供电脚。这里直接刷的 主BIOS</h5><h5 id="选一个针脚定义相同的-大概可以替换的芯片型号，这里我选的：MX25L12845E"><a href="#选一个针脚定义相同的-大概可以替换的芯片型号，这里我选的：MX25L12845E" class="headerlink" title="选一个针脚定义相同的 大概可以替换的芯片型号，这里我选的：MX25L12845E"></a>选一个针脚定义相同的 大概可以替换的芯片型号，这里我选的：<span style="color: #333399;">MX25L12845E</span></h5><h5 id="开刷，提示接触不良，那么就给主板通电（就是一直重启的状态），目的是让其-BIOS-芯片有供电"><a href="#开刷，提示接触不良，那么就给主板通电（就是一直重启的状态），目的是让其-BIOS-芯片有供电" class="headerlink" title="开刷，提示接触不良，那么就给主板通电（就是一直重启的状态），目的是让其 BIOS 芯片有供电"></a>开刷，提示接触不良，那么就给主板通电（就是一直重启的状态），目的是<span style="color: #333399;">让其 BIOS 芯片有供电</span></h5><h5 id="再次检测，接触不良的针脚减少了，确认触电接触良好后，也只能先不管，让他读两遍芯片，校验正确后，说明连接是稳定的"><a href="#再次检测，接触不良的针脚减少了，确认触电接触良好后，也只能先不管，让他读两遍芯片，校验正确后，说明连接是稳定的" class="headerlink" title="再次检测，接触不良的针脚减少了，确认触电接触良好后，也只能先不管，让他读两遍芯片，校验正确后，说明连接是稳定的"></a>再次检测，接触不良的针脚减少了，确认触电接触良好后，也只能先不管，让他<span style="color: #333399;">读两遍芯片</span>，校验正确后，说明连接是稳定的</h5><h5 id="观察读出固件的头部，对比官方的-BIOS，相同，由此推断是可以刷入的"><a href="#观察读出固件的头部，对比官方的-BIOS，相同，由此推断是可以刷入的" class="headerlink" title="观察读出固件的头部，对比官方的 BIOS，相同，由此推断是可以刷入的"></a>观察读出固件的头部，对比官方的 BIOS，相同，由此推断是可以刷入的</h5><blockquote>
+<p>这里注意了，主板商提供的 升级BIOS，与编程器刷的 BIOS 是不同的，一般来说 升级BIOS 是不会替换原有 MAC SN 之类信息的，用编程器强制刷入，会造成清空，MAC 变为 88:88:88:88:87:88 之类</p>
+</blockquote>
+<h5 id="备份好原厂-BIOS，刷入-升级BIOS，然后。。"><a href="#备份好原厂-BIOS，刷入-升级BIOS，然后。。" class="headerlink" title="备份好原厂 BIOS，刷入 升级BIOS，然后。。"></a><strong>备份好原厂 BIOS</strong>，刷入 升级BIOS，然后。。</h5><p><img data-src="/images/posts/2016/08/IMG_3454-1024x738.jpg" alt="IMG_3454"></p>
+<h5 id="Boot！出乎意料的点亮了！"><a href="#Boot！出乎意料的点亮了！" class="headerlink" title="Boot！出乎意料的点亮了！"></a>Boot！出乎意料的点亮了！</h5><h5 id="由于-强刷了-BIOS，步骤5-中提到的问题出现，接着解决这个问题"><a href="#由于-强刷了-BIOS，步骤5-中提到的问题出现，接着解决这个问题" class="headerlink" title="由于 强刷了 BIOS，步骤5 中提到的问题出现，接着解决这个问题"></a>由于 强刷了 BIOS，步骤5 中提到的问题出现，接着解决这个问题</h5><ul>
+<li>先用技嘉的 @BIOS 尝试刷回 步骤6 中备份的 BIOS，提示无法降回老版本</li>
+<li>尝试使用 Flashrom 强刷，由于是强刷非官方的升级，预测原来的 MAC 等信息应该会一同刷回</li>
+<li>强刷完成，<span style="color: #333399;">千万不要重启</span>，否则又回到原点了，紧接着再次使用 步骤8.1 中的 @BIOS，升级 F22 BIOS，此时由于是官方升级 应该会保留信息</li>
+<li>完成重启，进 BIOS 查看 MAC 发现已恢复出厂！</li>
+</ul>
+<h4 id="至此，CPU-兼容问题解决，谨以此记录"><a href="#至此，CPU-兼容问题解决，谨以此记录" class="headerlink" title="至此，CPU 兼容问题解决，谨以此记录"></a>至此，CPU 兼容问题解决，谨以此记录</h4><p><img data-src="/images/posts/2016/08/IMG_3455-769x1024.jpg" alt="IMG_3455"><img data-src="/images/posts/2016/07/IMG_3461-e1471591723792-768x1024.jpg"></p>
+]]></content>
+      <categories>
+        <category>Hardware</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>关于zsh小键盘映射的问题</title>
+    <url>/2015/07/30/zsh-numpad-issue/</url>
+    <content><![CDATA[<p>Mac上的zsh真是好用，不过缺少了小键盘的支持，经常是输完了才发现根本没反应  - -</p>
+<p>看了下oh-my-zsh的issue发现需要手动映射小键盘（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3JvYmJ5cnVzc2VsbC9vaC1teS16c2gvaXNzdWVzLzI2NTQlRUYlQkMlODk=">https://github.com/robbyrussell/oh-my-zsh/issues/2654）<i class="fa fa-external-link-alt"></i></span></p>
+<span id="more"></span>
+
+<p>然后编辑用户目录下(~)的.zshrc文件 在后面追加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Fix numeric keypad</span><br><span class="line"># 0 . Enter</span><br><span class="line">bindkey -s &quot;^[Op&quot; &quot;0&quot;</span><br><span class="line">bindkey -s &quot;^[On&quot; &quot;.&quot;</span><br><span class="line">bindkey -s &quot;^[OM&quot; &quot;^M&quot;</span><br><span class="line"># 1 2 3</span><br><span class="line">bindkey -s &quot;^[Oq&quot; &quot;1&quot;</span><br><span class="line">bindkey -s &quot;^[Or&quot; &quot;2&quot;</span><br><span class="line">bindkey -s &quot;^[Os&quot; &quot;3&quot;</span><br><span class="line"># 4 5 6</span><br><span class="line">bindkey -s &quot;^[Ot&quot; &quot;4&quot;</span><br><span class="line">bindkey -s &quot;^[Ou&quot; &quot;5&quot;</span><br><span class="line">bindkey -s &quot;^[Ov&quot; &quot;6&quot;</span><br><span class="line"># 7 8 9</span><br><span class="line">bindkey -s &quot;^[Ow&quot; &quot;7&quot;</span><br><span class="line">bindkey -s &quot;^[Ox&quot; &quot;8&quot;</span><br><span class="line">bindkey -s &quot;^[Oy&quot; &quot;9&quot;</span><br><span class="line"># + -  * / =</span><br><span class="line">bindkey -s &quot;^[Ok&quot; &quot;+&quot;</span><br><span class="line">bindkey -s &quot;^[Om&quot; &quot;-&quot;</span><br><span class="line">bindkey -s &quot;^[Oj&quot; &quot;*&quot;</span><br><span class="line">bindkey -s &quot;^[Oo&quot; &quot;/&quot;</span><br><span class="line">bindkey -s &quot;^[OX&quot; &quot;=&quot;</span><br></pre></td></tr></table></figure>
+
+<p>嗯，重开个zsh，解决了 XD</p>
+]]></content>
+      <categories>
+        <category>OSX</category>
+      </categories>
+  </entry>
+</search>

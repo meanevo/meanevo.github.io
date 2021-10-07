@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。 众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建私人 Ngrok 转发通道">
+<meta property="og:url" content="https://www.meanevo.com/2016/07/02/ngrok-tunnel/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。 众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/07/QQ20160808-16.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/07/QQ20160808-18.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2016/07/QQ20160808-12-1024x224.png">
+<meta property="article:published_time" content="2016-07-02T10:50:34.000Z">
+<meta property="article:modified_time" content="2016-07-02T10:50:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2016/07/QQ20160808-16.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2016/07/02/ngrok-tunnel/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2016/07/02/ngrok-tunnel/","path":"2016/07/02/ngrok-tunnel/","title":"搭建私人 Ngrok 转发通道"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>搭建私人 Ngrok 转发通道 | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDngrok-1-x%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">下载ngrok 1.x源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AF%81%E4%B9%A6%EF%BC%8C%E6%AF%94%E5%A6%82%E8%A6%81%E4%BD%BF%E7%94%A8xxx-example-com%EF%BC%8C%E5%88%99%E6%AD%A4%E5%A4%84%E5%9F%9F%E5%90%8D%E5%A1%AB%E5%86%99example-com"><span class="nav-number">2.</span> <span class="nav-text">生成证书，比如要使用xxx.example.com，则此处域名填写example.com</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E6%8E%89%E5%8E%9F%E6%9D%A5%E7%9A%84cert"><span class="nav-number">3.</span> <span class="nav-text">替换掉原来的cert</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEGo%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%EF%BC%8C%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">配置Go语言环境，编译参数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Go"><span class="nav-number">4.1.</span> <span class="nav-text">安装Go</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0"><span class="nav-number">4.2.</span> <span class="nav-text">设置编译参数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91server%E5%92%8Cclient%EF%BC%8C%E6%B3%A8%E6%84%8Fclient%E5%BE%97%E7%94%A8%E8%87%AA%E5%B7%B1%E7%BC%96%E8%AF%91%E5%87%BA%E6%9D%A5%E7%9A%84%EF%BC%8C%E6%9C%89%E4%BA%9B%E7%8E%B0%E6%88%90%E7%9A%84%E8%BF%9E%E4%B8%8D%E4%B8%8A%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%98%AF%E8%AF%81%E4%B9%A6%E5%8E%9F%E5%9B%A0"><span class="nav-number">5.</span> <span class="nav-text">编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">运行</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">6.1.</span> <span class="nav-text">服务端</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">6.2.</span> <span class="nav-text">客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAngrok-cfg%EF%BC%8C%E5%86%85%E5%AE%B9"><span class="nav-number">6.2.1.</span> <span class="nav-text">创建一个ngrok.cfg，内容</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-number">6.2.2.</span> <span class="nav-text">启动</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%8F%8A%E4%BC%98%E5%8C%96"><span class="nav-number">7.</span> <span class="nav-text">其他及优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%9F%E5%90%8DDNS%EF%BC%9A%E5%B0%86-example-com%E6%94%B9A%E8%AE%B0%E5%BD%95%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8IP"><span class="nav-number">7.1.</span> <span class="nav-text">域名DNS：将*.example.com改A记录至服务器IP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%AA%E4%BA%BA%E5%BB%BA%E8%AE%AE%E5%9C%A8%E8%AE%BF%E9%97%AE%E5%89%8D%E5%86%8D%E5%8A%A0%E4%B8%80%E5%B1%82nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%EF%BC%8C%E4%BD%BF%E7%94%A8%E7%89%B9%E5%AE%9A%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%9180%E8%BD%AC%E5%8F%91%E5%88%B0ngrok"><span class="nav-number">7.2.</span> <span class="nav-text">个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%AF%E7%94%A8%E4%BA%8E%E8%B7%AF%E7%94%B1ngrok%E8%BF%9E%E6%8E%A5%EF%BC%88%E9%9C%80%E4%BF%AE%E6%94%B9%E6%BA%90%E7%A0%81%EF%BC%8C%E9%99%84%EF%BC%89"><span class="nav-number">7.3.</span> <span class="nav-text">可用于路由ngrok连接（需修改源码，附）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC%EF%BC%8C%E5%8F%AF%E6%B7%BB%E5%8A%A0%E6%AD%A4%E8%84%9A%E6%9C%AC%E8%87%B3rc-local%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8"><span class="nav-number">7.4.</span> <span class="nav-text">分享一个启动脚本，可添加此脚本至rc.local实现开机启动</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2016/07/02/ngrok-tunnel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          搭建私人 Ngrok 转发通道
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2016-07-02 18:50:34 / Modified: 18:50:00" itemprop="dateCreated datePublished" datetime="2016-07-02T18:50:34+08:00">2016-07-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FxxkGFW/" itemprop="url" rel="index"><span itemprop="name">FxxkGFW</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>不知什么时候，锅内电信把个人pppoe上网的80端口都给封了，更有甚者加入了大内网。于是，苦逼的猿们调微信时候就更崩溃了。。<br>好在网上有不少内网穿透工具，说白了就是从内网主动发送消息，穿透网关，那么必须就得有一台位于公网的Server来转发消息。具体原理可百度。</p>
+<p>众多网站提供的转发服务中，有花生棒之类的限流量，也有不限制但是带宽不足的，毕竟这么多人挤在一起想不慢都难。于是乎，本子自己动手丰衣足食的想法，自己搭建一个吧。</p>
+<span id="more"></span>
+
+<p>ngrok是这类工具中比较出名的一个了，可惜的是官方已经放弃了开源的1.x版本，2.x版本是官方提供做商业用。关于2.x版本的使用，可以参照这篇文章：<span class="exturl" data-url="aHR0cDovL3d3dy5qaWFuc2h1LmNvbS9wL2EwYTM0Zjc3MDgzNyVFRiVCQyU4OFBTJUVGJUJDJTlBJUU3JUFFJTgwJUU0JUI5JUE2JUU0JUI4JThEJUU5JTk0JTk5JUVGJUJDJThDJUU0JUI4JThEJUU1JTgzJThGJUU1JUJFJTg4JUU1JUE0JTlBJUU3JUJEJTkxJUU3JUFCJTk5JUU1JTg4JUIwJUU1JUE0JTg0JUU3JUIyJTk4JUU4JUI0JUI0JUU2JUEwJUJDJUU1JUJDJThGJUU5JTgzJUJEJUU3JTlDJThCJUU0JUI4JThEJUU4JTg4JTkyJUU2JTlDJThEJUVGJUJDJTg5JUUzJTgwJTgy">http://www.jianshu.com/p/a0a34f770837（PS：简书不错，不像很多网站到处粘贴格式都看不舒服）。<i class="fa fa-external-link-alt"></i></span></p>
+<h4 id="下载ngrok-1-x源码"><a href="#下载ngrok-1-x源码" class="headerlink" title="下载ngrok 1.x源码"></a>下载ngrok 1.x源码</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/inconshreveable/ngrok.git</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成证书，比如要使用xxx-example-com，则此处域名填写example-com"><a href="#生成证书，比如要使用xxx-example-com，则此处域名填写example-com" class="headerlink" title="生成证书，比如要使用xxx.example.com，则此处域名填写example.com"></a>生成证书，比如要使用xxx.example.com，则此处域名填写example.com</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -out rootCA.key 2048</span><br><span class="line">openssl req -x509 -new -nodes -key rootCA.key -subj <span class="string">&quot;/CN=填写域名&quot;</span> -days 5000 -out rootCA.pem</span><br><span class="line">openssl genrsa -out server.key 2048</span><br><span class="line">openssl req -new -key server.key -subj <span class="string">&quot;/CN=填写域名&quot;</span> -out server.csr</span><br><span class="line">openssl x509 -req -<span class="keyword">in</span> server.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out server.crt -days 3650</span><br></pre></td></tr></table></figure>
+
+<h4 id="替换掉原来的cert"><a href="#替换掉原来的cert" class="headerlink" title="替换掉原来的cert"></a>替换掉原来的cert</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp rootCA.pem assets/client/tls/ngrokroot.crt</span><br><span class="line">cp server.crt assets/server/tls/snakeoil.crt</span><br><span class="line">cp server.key assets/server/tls/snakeoil.key</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置Go语言环境，编译参数"><a href="#配置Go语言环境，编译参数" class="headerlink" title="配置Go语言环境，编译参数"></a>配置Go语言环境，编译参数</h4><h5 id="安装Go"><a href="#安装Go" class="headerlink" title="安装Go"></a>安装Go</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install go</span><br></pre></td></tr></table></figure>
+
+<del datetime="2016-08-08T10:21:23+00:00">
+4.2、这里可以两种方式
+4.2.1、软连接
+ln -s /usr/local/go/bin/* /usr/bin/
+4.2.2、
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin
+4.3、
+export GOPATH=/usr/local/ngrok/
+</del>
+
+<h5 id="设置编译参数"><a href="#设置编译参数" class="headerlink" title="设置编译参数"></a>设置编译参数</h5><ul>
+<li>服务端32位：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOOS=linux GOARCH=386</span><br></pre></td></tr></table></figure></li>
+<li>服务端64位：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOOS=linux GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+<li>MacOS：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOOS=darwin GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+<li>Windows：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GOOS=windows GOARCH=amd64</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因"><a href="#编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因" class="headerlink" title="编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因"></a>编译server和client，注意client得用自己编译出来的，有些现成的连不上，可能是证书原因</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make release-client</span><br><span class="line">make release-server</span><br><span class="line">make release-all</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>不同平台：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GOOS=darwin GOARCH=amd64 make release-client</span><br><span class="line">GOOS=linux GOARCH=amd64 make release-server</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h4><h5 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/ngrokd -domain=<span class="string">&quot;example.com&quot;</span> -httpAddr=<span class="string">&quot;:8080&quot;</span> -httpsAddr=<span class="string">&quot;:8081&quot;</span> -tunnelAddr=<span class="string">&quot;:4443&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>第一个是服务器端的http映射地址，第二个是https，第三个是控制端口。若需直接访问请配通firewall。</p>
+<h5 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h5><h6 id="创建一个ngrok-cfg，内容"><a href="#创建一个ngrok-cfg，内容" class="headerlink" title="创建一个ngrok.cfg，内容"></a>创建一个ngrok.cfg，内容</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server_addr: &quot;example.com:4443&quot;</span><br><span class="line">trust_host_root_certs: false</span><br></pre></td></tr></table></figure>
+
+<h6 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ngrok -subdomain 相对二级域名地址 -config=ngrok.cfg 80</span><br></pre></td></tr></table></figure>
+
+<p>这里的相对二级域名就是xxx.example.com的xxx</p>
+<h4 id="其他及优化"><a href="#其他及优化" class="headerlink" title="其他及优化"></a>其他及优化</h4><h5 id="域名DNS：将-example-com改A记录至服务器IP"><a href="#域名DNS：将-example-com改A记录至服务器IP" class="headerlink" title="域名DNS：将*.example.com改A记录至服务器IP"></a>域名DNS：将*.example.com改A记录至服务器IP</h5><h5 id="个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok"><a href="#个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok" class="headerlink" title="个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok"></a>个人建议在访问前再加一层nginx反向代理，使用特定域名访问外网80转发到ngrok</h5><blockquote>
+<p>ngrok说白了是个被抛弃的项目，官方也说了，存在很大的性能以及内存泄漏问题，并且不会被（官方）修复，可以试试寻找github上修改好的的开源项目</p>
+</blockquote>
+<h5 id="可用于路由ngrok连接（需修改源码，附）"><a href="#可用于路由ngrok连接（需修改源码，附）" class="headerlink" title="可用于路由ngrok连接（需修改源码，附）"></a>可用于路由ngrok连接（需修改源码，附）</h5><blockquote>
+<p>用于Koolshare固件连接，修改源码（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2tvb2xzaGFyZS9uZ3Jvay0xLjcvYmxvYi9tYXN0ZXIvc3JjL25ncm9rL3NlcnZlci90bHMuZ28jTDQx">https://github.com/koolshare/ngrok-1.7/blob/master/src/ngrok/server/tls.go#L41<i class="fa fa-external-link-alt"></i></span>）：</p>
+<blockquote>
+<ol>
+<li>修改src/ngrok/server/tls.go，第41行添加:</li>
+</ol>
+</blockquote>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi src/ngrok/server/tls.go</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p><img data-src="/images/posts/2016/07/QQ20160808-16.png" alt="QQ20160808-16"><br>2. 重新编译。<br>3. 启动：<br><img data-src="/images/posts/2016/07/QQ20160808-18.png"><br><img data-src="/images/posts/2016/08/38839900-DD59-45C4-AEA0-0471FB6BFE0B-1024x505.jpg" alt="38839900-DD59-45C4-AEA0-0471FB6BFE0B"></p>
+</blockquote>
+</blockquote>
+<h5 id="分享一个启动脚本，可添加此脚本至rc-local实现开机启动"><a href="#分享一个启动脚本，可添加此脚本至rc-local实现开机启动" class="headerlink" title="分享一个启动脚本，可添加此脚本至rc.local实现开机启动"></a>分享一个启动脚本，可添加此脚本至rc.local实现开机启动</h5><blockquote>
+<p>启动脚本（注意修改path、证书位置）：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">domain=<span class="string">&quot;example.com&quot;</span></span><br><span class="line">http_port=8080</span><br><span class="line">https_port=8081</span><br><span class="line">remote_port=4443</span><br><span class="line">path=/usr/share/ngrok</span><br><span class="line">cert_path=<span class="variable">$path</span>/assets/server/tls</span><br><span class="line"></span><br><span class="line">NPID=`ps -ef|grep ngrokd|grep -v grep|awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$NPID</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Not running, starting...&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Already running, restarting...&quot;</span></span><br><span class="line"><span class="built_in">kill</span> <span class="variable">$NPID</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">nohup <span class="variable">$path</span>/bin/ngrokd -domain=<span class="string">&quot;<span class="variable">$domain</span>&quot;</span> -httpAddr=<span class="string">&quot;:<span class="variable">$http_port</span>&quot;</span> -httpsAddr=<span class="string">&quot;:<span class="variable">$https_port</span>&quot;</span> -tlsCrt=<span class="variable">$cert_path</span>/snakeoil.crt -tlsKey=<span class="variable">$cert_path</span>/snakeoil.key -tunnelAddr=<span class="string">&quot;:<span class="variable">$remote_port</span>&quot;</span> &gt; /var/<span class="built_in">log</span>/ngrok.log 2&gt;&amp;1 &amp;</span><br><span class="line">sleep 1</span><br><span class="line">head /var/<span class="built_in">log</span>/ngrok.log</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img data-src="/images/posts/2016/07/QQ20160808-12-1024x224.png" alt="QQ20160808-12"></p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2016/07/02/ngrok-tunnel/" title="搭建私人 Ngrok 转发通道">https://www.meanevo.com/2016/07/02/ngrok-tunnel/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/08/21/shadowsocks-on-centos7/" rel="prev" title="关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks">
+                  <i class="fa fa-chevron-left"></i> 关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/28/x99-bios-update-slove-cpu-compatibility/" rel="next" title="记一次海淘 x99 主板 到手点不亮 以及解决">
+                  记一次海淘 x99 主板 到手点不亮 以及解决 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>

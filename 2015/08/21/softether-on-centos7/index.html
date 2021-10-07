@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="0_wazX4reh4HJLn2HIYta6FNAycd76OAh2rwlo979EE">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="/lib/@fortawesome/fontawesome-free/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/animate.css/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lib/pace-js/themes/silver/pace-theme-big-counter.css">
+  <script src="/lib/pace-js/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.meanevo.com","root":"/","images":"/images","scheme":"Pisces","darkmode":"auto","version":"8.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。 重新找了家Vultr搭，速度还不错，分享下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server">
+<meta property="og:url" content="https://www.meanevo.com/2015/08/21/softether-on-centos7/index.html">
+<meta property="og:site_name" content="MeanEVO!">
+<meta property="og:description" content="虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。 重新找了家Vultr搭，速度还不错，分享下。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE-1024x712.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg">
+<meta property="og:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png">
+<meta property="article:published_time" content="2015-08-21T14:56:44.000Z">
+<meta property="article:modified_time" content="2015-08-21T14:56:00.000Z">
+<meta property="article:author" content="Mean Machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.meanevo.com/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png">
+
+
+<link rel="canonical" href="https://www.meanevo.com/2015/08/21/softether-on-centos7/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://www.meanevo.com/2015/08/21/softether-on-centos7/","path":"2015/08/21/softether-on-centos7/","title":"关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server | MeanEVO!</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">MeanEVO!</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Inappreciable World</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%88%E8%BF%9B%E5%85%A5%E5%AE%98%E6%96%B9%E7%9A%84%E4%B8%8B%E8%BD%BD%E9%A1%B5%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">先进入官方的下载页面</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E5%88%B0%E4%B8%BB%E6%9C%BA%EF%BC%8Ccd-%E5%88%B0-usr%E7%9B%AE%E5%BD%95%E4%B8%8B%E6%96%B0%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%87%E4%BB%B6%E5%A4%B9%EF%BC%8C%E5%B0%B1%E5%8F%ABSoftEther%E5%90%A7"><span class="nav-number">2.</span> <span class="nav-text">切换到主机，cd 到&#x2F;usr目录下新建一个文件夹，就叫SoftEther吧</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E4%BB%8E%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BDtar-gz%E5%8C%85%E5%B9%B6%E8%A7%A3%E5%8E%8B"><span class="nav-number">3.</span> <span class="nav-text">直接从官方下载tar.gz包并解压</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ll%E4%B8%80%E4%B8%8B%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E4%BA%86%E4%B8%80%E4%B8%AAvpnserver%E7%9B%AE%E5%BD%95%EF%BC%8C%E5%B9%B6%E4%B8%94%E5%B7%B2%E7%BB%8F%E5%85%B7%E6%9C%89%E6%89%A7%E8%A1%8C%E6%9D%83%E9%99%90%EF%BC%8C%E8%BF%9B%E5%85%A5%E8%BF%99%E4%B8%AA%E6%96%87%E4%BB%B6%E5%A4%B9%EF%BC%8C%E7%BC%96%E8%AF%91%EF%BC%88%E5%85%88%E5%AE%89%E8%A3%85gcc%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%A8%E4%B8%80%E8%B7%AF%E6%8C%891%E5%90%8C%E6%84%8F%E4%BA%86%E5%87%A0%E6%9D%A1%E8%AE%B8%E5%8F%AF%E5%90%8E%EF%BC%8C%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F%EF%BC%8C%E6%8F%90%E7%A4%BA%E4%B8%AD%E5%86%99%E6%98%8E%E4%BA%86%E5%90%AF%E5%8A%A8%E5%91%BD%E4%BB%A4%EF%BC%88-vpnserver-start%EF%BC%89%EF%BC%8C%E4%B8%8D%E8%BF%87%E5%85%88%E4%B8%8D%E6%80%A5%E7%9D%80%E5%90%AF%E5%8A%A8"><span class="nav-number">5.</span> <span class="nav-text">在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（.&#x2F;vpnserver start），不过先不急着启动</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E4%B9%8B%E5%89%8D%EF%BC%8C%E5%85%88%E5%BE%97%E6%B7%BB%E5%8A%A0iptables%E8%A7%84%E5%88%99%E5%90%A7-XD%EF%BC%8C%E6%B7%BB%E5%8A%A0TCP%E7%AB%AF%E5%8F%A3443%EF%BC%8C992%EF%BC%8C1194%EF%BC%8C5555%E5%92%8CUDP-1701%E7%AB%AF%E5%8F%A3%EF%BC%88L2TP%EF%BC%89%EF%BC%8C%E8%AE%B0%E5%BE%97%E5%A6%82%E6%9E%9C%E8%B7%AF%E7%94%B1%E4%B8%8A%E6%9C%89VPN%E7%A9%BF%E9%80%8F%E6%8A%8A%E4%BB%96%E4%BB%AC%E6%89%93%E5%BC%80%EF%BC%8CGRE%E3%80%81ESP%E7%AD%89%E7%AD%89"><span class="nav-number">6.</span> <span class="nav-text">启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#OK%EF%BC%8C%E5%9C%A8%E9%98%B2%E7%81%AB%E5%A2%99%E9%87%8D%E6%96%B0%E5%90%AF%E5%8A%A8%E4%B9%8B%E5%90%8E%EF%BC%8C%E6%88%91%E4%BB%AC%E5%BC%80%E5%90%AFvpnserver%E6%9C%8D%E5%8A%A1"><span class="nav-number">7.</span> <span class="nav-text">OK，在防火墙重新启动之后，我们开启vpnserver服务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E3%80%81%E4%BD%BF%E7%94%A8%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%EF%BC%88%E7%8E%B0%E5%9C%A8%E5%8F%AA%E6%9C%89Win%E7%AB%AF%EF%BC%8C%E5%AE%89%E8%A3%85%E9%80%89%E6%8B%A9%E5%B8%A6%E6%9C%89%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E7%9A%84%EF%BC%89%EF%BC%882016-08%E6%9B%B4%E6%96%B0%EF%BC%8CMacOS%E4%B9%9F%E6%9C%89%E4%BA%86%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016.08更新，MacOS也有了）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E8%AE%BE%E7%BD%AE%EF%BC%8C%E9%80%89%E6%8B%A9%E6%9C%80%E5%90%8E%E4%B8%80%E9%A1%B9%E8%B7%B3%E8%BF%87%E5%90%8E%E7%82%B9%E7%A1%AE%E5%AE%9A%E8%AE%BE%E7%BD%AEL2TP"><span class="nav-number">9.</span> <span class="nav-text">初始设置，选择最后一项跳过后点确定设置L2TP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7%EF%BC%8C%E8%AE%BE%E7%BD%AESecureNAT%E6%88%96%E8%80%85%E7%9B%B4%E6%8E%A5%E6%A1%A5%E6%8E%A5%E7%BD%91%E5%8D%A1"><span class="nav-number">10.</span> <span class="nav-text">添加用户，设置SecureNAT或者直接桥接网卡</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5"><span class="nav-number">11.</span> <span class="nav-text">测试连接</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%97%A0%E8%AF%AF%E5%90%8E%EF%BC%8C%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8"><span class="nav-number">12.</span> <span class="nav-text">测试无误后，设置开机启动</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mean Machine"
+      src="/images/site/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Mean Machine</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL21lYW5ldm8=" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;meanevo"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly90d2l0dGVyLmNvbS9tZWFuZXZv" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;meanevo"><i class="fab fa-twitter fa-fw"></i>Twitter</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.meanevo.com/2015/08/21/softether-on-centos7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/site/avatar.jpg">
+      <meta itemprop="name" content="Mean Machine">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MeanEVO!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2015-08-21 22:56:44 / Modified: 22:56:00" itemprop="dateCreated datePublished" datetime="2015-08-21T22:56:44+08:00">2015-08-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/FxxkGFW/" itemprop="url" rel="index"><span itemprop="name">FxxkGFW</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>虽说一直买着主机搭梯子用，但是由于最近一直用的AWS到期，ConoHa限速512Kb的事情，梯子终于断了。</p>
+<p>重新找了家Vultr搭，速度还不错，分享下。</p>
+<span id="more"></span>
+
+<p>首先，要使用上真正的Internet，现在比较流行的就是两种方式了</p>
+<ul>
+<li>  自己搭建传统VPN，即通过PPTP、L2TP、SSTP、OpenVPN甚至使用IPSec来实现流量转发；</li>
+<li>  使用Shadowsocks等Socks5代理。<br>先说传统VPN吧，这种方式用得最多，设备支持也比较好，撇开PPTP这种现在看起来加密不太好的，L2TP、SSTP还是比较坚挺，</li>
+</ul>
+<p>为了方便，就不再细说搭建PPTP服务器了，网上资料也很多，搭建也不难。</p>
+<p>本文第一部分就先介绍下SoftEther这个东西（以下简称SE）。在没有这个软件的时候，L2TP搭建还是比较麻烦的事情，更不用提OVPN了。</p>
+<p>官方网址：<span class="exturl" data-url="aHR0cDovL3d3dy5zb2Z0ZXRoZXIub3JnLw==">http://www.softether.org<i class="fa fa-external-link-alt"></i></span>（可能需要爬墙）</p>
+<p>SE是由日本筑波大学（University of Tsukuba）开发的免费软件，集成了L2TP、L2TP over IPSec、SSTP、OVPN服务端，并且管理工具的存在（SoftEther VPN Server Manager），使得设置变的非常简单，添加帐号、限速、NAT设置都有图形化界面。</p>
+<p>下面说下安装。</p>
+<h5 id="先进入官方的下载页面"><a href="#先进入官方的下载页面" class="headerlink" title="先进入官方的下载页面"></a>先进入官方的下载页面</h5><blockquote>
+<p><span class="exturl" data-url="aHR0cDovL3d3dy5zb2Z0ZXRoZXItZG93bmxvYWQuY29tL2VuLmFzcHg=">http://www.softether-download.com/en.aspx<i class="fa fa-external-link-alt"></i></span>，可能需要爬墙，软件选择VPN Server，目标平台，CPU类型，然后复制最新版本的下载连接。</p>
+</blockquote>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.58.51-925x1024.png" alt="Screen Shot 2015-08-21 at 21.58.51"></a></p>
+<h5 id="切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧"><a href="#切换到主机，cd-到-usr目录下新建一个文件夹，就叫SoftEther吧" class="headerlink" title="切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧"></a>切换到主机，cd 到/usr目录下新建一个文件夹，就叫SoftEther吧</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/SoftEther &amp;&amp; <span class="built_in">cd</span> /usr/SoftEther</span><br></pre></td></tr></table></figure>
+
+<h5 id="直接从官方下载tar-gz包并解压"><a href="#直接从官方下载tar-gz包并解压" class="headerlink" title="直接从官方下载tar.gz包并解压"></a>直接从官方下载tar.gz包并解压</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.softether-download.com/files/softether/v4.18-9570-rtm-2015.07.26-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br><span class="line">tar -zxvf softether-vpnserver-v4.18-9570-rtm-2015.07.26-linux-x64-64bit.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.31.39-1024x714.png" alt="Screen Shot 2015-08-21 at 22.31.39"></a></p>
+<h5 id="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"><a href="#ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）" class="headerlink" title="ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）"></a>ll一下，可以看到自动创建了一个vpnserver目录，并且已经具有执行权限，进入这个文件夹，编译（先安装gcc）</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>失败请确认Root权限！</p>
+<h5 id="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动"><a href="#在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（-vpnserver-start），不过先不急着启动" class="headerlink" title="在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动"></a>在一路按1同意了几条许可后，安装成功，提示中写明了启动命令（./vpnserver start），不过先不急着启动</h5><p><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.33.08-1024x862.png" alt="Screen Shot 2015-08-21 at 22.33.08"></p>
+<h5 id="启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"><a href="#启动之前，先得添加iptables规则吧-XD，添加TCP端口443，992，1194，5555和UDP-1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等" class="headerlink" title="启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等"></a>启动之前，先得添加iptables规则吧 XD，添加TCP端口443，992，1194，5555和UDP 1701端口（L2TP），记得如果路由上有VPN穿透把他们打开，GRE、ESP等等</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/iptables</span><br></pre></td></tr></table></figure>
+
+<p>添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 992 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 1194 -j ACCEPT</span><br><span class="line">-A INPUT -p udp -m state --state NEW -m udp --dport 4500 -j ACCEPT</span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 5555 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.37.05.png" alt="Screen Shot 2015-08-21 at 22.37.05"></a></p>
+<h5 id="OK，在防火墙重新启动之后，我们开启vpnserver服务"><a href="#OK，在防火墙重新启动之后，我们开启vpnserver服务" class="headerlink" title="OK，在防火墙重新启动之后，我们开启vpnserver服务"></a>OK，在防火墙重新启动之后，我们开启vpnserver服务</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart iptables.service</span><br><span class="line">/usr/SoftEther/vpnserver/vpnserver start</span><br></pre></td></tr></table></figure>
+
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.38.43.png" alt="Screen Shot 2015-08-21 at 22.38.43"></a></p>
+<h5 id="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）"><a href="#下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016-08更新，MacOS也有了）" class="headerlink" title="下载、使用管理工具（现在只有Win端，安装选择带有管理工具的）（2016.08更新，MacOS也有了）"></a>下载、使用管理工具<del datetime="2016-08-10T16:17:38+00:00">（现在只有Win端，安装选择带有管理工具的）</del>（2016.08更新，MacOS也有了）</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-21.54.22.png" alt="Screen Shot 2015-08-21 at 21.54.22"></a></p>
+<p>点击建立新设置 New Setting：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.15.11.png" alt="Screen Shot 2015-08-21 at 22.15.11"></a><br><a href="/images/posts/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg"><img data-src="/images/posts/2015/08/FE203E14-8098-40CA-B190-3B1B266AB290.jpg" alt="FE203E14-8098-40CA-B190-3B1B266AB290"></a></p>
+<p>第一次连接会让你设置密码：</p>
+<p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.39.38.png" alt="Screen Shot 2015-08-21 at 22.39.38"></a></p>
+<h5 id="初始设置，选择最后一项跳过后点确定设置L2TP"><a href="#初始设置，选择最后一项跳过后点确定设置L2TP" class="headerlink" title="初始设置，选择最后一项跳过后点确定设置L2TP"></a>初始设置，选择最后一项跳过后点确定设置L2TP</h5><p><a href="/images/posts/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg"><img data-src="/images/posts/2015/08/CAD85159-0FBD-46BC-BE55-210F53869A2E.jpg" alt="CAD85159-0FBD-46BC-BE55-210F53869A2E"></a><a href="/images/posts/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg"><img data-src="/images/posts/2015/08/BB4F5C41-E714-4211-B441-AB28365A968D.jpg" alt="BB4F5C41-E714-4211-B441-AB28365A968D"></a></p>
+<h5 id="添加用户，设置SecureNAT或者直接桥接网卡"><a href="#添加用户，设置SecureNAT或者直接桥接网卡" class="headerlink" title="添加用户，设置SecureNAT或者直接桥接网卡"></a>添加用户，设置SecureNAT或者直接桥接网卡</h5><ul>
+<li>一般使用SecureNAT，也就是接入后，分配设置地址池地址，然后NAT出到公网；</li>
+<li>桥接的话，用途比较特殊，一般用于内网机器，并且需要局域网开启混杂模式，每次接入都由桥接网卡上游DHCP分配地址。<br><a href="/images/posts/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE.jpg"><img data-src="/images/posts/2015/08/A76580D2-8CD5-4967-B75C-E8AB7AB678CE-1024x712.jpg" alt="A76580D2-8CD5-4967-B75C-E8AB7AB678CE"></a></li>
+</ul>
+<p>打开NAT，默认的是192.168.30.0/24网段，可以自行更改：</p>
+<p><a href="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg"><img data-src="/images/posts/2015/08/FE5BB991-1FA8-4FBC-9D66-73C99A244EFC.jpg" alt="FE5BB991-1FA8-4FBC-9D66-73C99A244EFC"></a></p>
+<h5 id="测试连接"><a href="#测试连接" class="headerlink" title="测试连接"></a>测试连接</h5><h5 id="测试无误后，设置开机启动"><a href="#测试无误后，设置开机启动" class="headerlink" title="测试无误后，设置开机启动"></a>测试无误后，设置开机启动</h5><p><a href="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png"><img data-src="/images/posts/2015/08/Screen-Shot-2015-08-21-at-22.51.45.png" alt="Screen Shot 2015-08-21 at 22.51.45"></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/usr/SoftEther/vpnserver/vpnserver start&quot;</span> &gt;&gt; /etc/rc.d/rc.local</span><br><span class="line">chmod +x /etc/rc.d/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>至此SoftEther搭建完成。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Mean Machine
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://www.meanevo.com/2015/08/21/softether-on-centos7/" title="关于CentOS爬墙那点事，CentOS7 VPN－SoftEther VPN Server">https://www.meanevo.com/2015/08/21/softether-on-centos7/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC8="><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2015/08/20/using-nginx-with-ssl/" rel="prev" title="Nginx 配置 SSL 实现 HTTPS 连接">
+                  <i class="fa fa-chevron-left"></i> Nginx 配置 SSL 实现 HTTPS 连接
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2015/08/21/shadowsocks-on-centos7/" rel="next" title="关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks">
+                  关于CentOS爬墙那点事，CentOS7 VPN－Shadowsocks <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2010 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mean Machine</span>
+</div>
+  <div class="powered-by">Powered by <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl" data-url="aHR0cHM6Ly90aGVtZS1uZXh0LmpzLm9yZy9waXNjZXMv">NexT.Pisces</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="/lib/animejs/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="/lib/lozad/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="/lib/pangu/dist/browser/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/lib/hexo-generator-searchdb/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+</body>
+</html>
